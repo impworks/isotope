@@ -1,0 +1,48 @@
+﻿namespace Isotope.Code.Services.Config
+{
+    /// <summary>
+    /// Global configuration properties defined in appsettings.json.
+    /// </summary>
+    public class StaticConfig
+    {
+        public ConnectionStringsConfig ConnectionStrings { get; set; }
+        public DebugConfig Debug { get; set; }
+        public WebServerConfig WebServer { get; set; }
+        public DemoModeConfig DemoMode { get; set; }
+    }
+
+    /// <summary>
+    /// Connection string properties.
+    /// </summary>
+    public class ConnectionStringsConfig
+    {
+        public string Database { get; set; }
+    }
+
+    /// <summary>
+    /// Properties related to debugging.
+    /// </summary>
+    public class DebugConfig
+    {
+        public bool DetailedExceptions { get; set; }
+    }
+
+    /// <summary>
+    /// Webserver properties.
+    /// </summary>
+    public class WebServerConfig
+    {
+        public bool RequireHttps { get; set; }
+        public long? MaxUploadSize { get; set; }
+    }
+
+    /// <summary>
+    /// Demo mode configuration options.
+    /// </summary>
+    public class DemoModeConfig
+    {
+        public bool Enabled { get; set; }
+        public bool ClearOnStartup { get; set; }
+        public string YandexMetrikaId { get; set; }
+    }
+}
