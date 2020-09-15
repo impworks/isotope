@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Isotope.Data.Models
 {
@@ -10,12 +9,12 @@ namespace Isotope.Data.Models
     public class Folder
     {
         /// <summary>
-        /// Surrogate ID.
+        /// Unique random key of the folder.
         /// </summary>
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
+        [StringLength(50)]
+        public string Key { get; set; }
+        
         /// <summary>
         /// Readable name of the folder.
         /// </summary>
@@ -42,7 +41,7 @@ namespace Isotope.Data.Models
         /// <summary>
         /// Cached number of photos within this folder.
         /// </summary>
-        public int ImageCount { get; set; }
+        public int MediaCount { get; set; }
 
         /// <summary>
         /// Media to display as the folder's preview.

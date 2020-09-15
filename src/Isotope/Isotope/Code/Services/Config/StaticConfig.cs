@@ -5,7 +5,7 @@
     /// </summary>
     public class StaticConfig
     {
-        public ConnectionStringsConfig ConnectionStrings { get; set; }
+        public DatabaseConfig Database { get; set; }
         public DebugConfig Debug { get; set; }
         public WebServerConfig WebServer { get; set; }
         public DemoModeConfig DemoMode { get; set; }
@@ -14,9 +14,9 @@
     /// <summary>
     /// Connection string properties.
     /// </summary>
-    public class ConnectionStringsConfig
+    public class DatabaseConfig
     {
-        public string Database { get; set; }
+        public string ConnectionString { get; set; }
     }
 
     /// <summary>
@@ -43,6 +43,7 @@
     {
         public bool Enabled { get; set; }
         public bool ClearOnStartup { get; set; }
+        public bool SeedSampleData { get; set; }
         public string YandexMetrikaId { get; set; }
     }
 }

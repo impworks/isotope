@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Isotope.Areas.Front.Controllers
 {
@@ -9,10 +10,19 @@ namespace Isotope.Areas.Front.Controllers
     public class HomeController: ControllerBase
     {
         /// <summary>
+        /// Hack to workaround regex not matching an empty string.
+        /// </summary>
+        [Route("")]
+        public IActionResult Index()
+        {
+            return File("~/@assets/front.html", "text/html");
+        }
+
+        /// <summary>
         /// Catch-all method for displaying SPA.
         /// </summary>
-        [Route("{**path}")]
-        public IActionResult Index()
+        [Route("{**path:regex(^(?!@))}")]
+        public IActionResult Index(string path)
         {
             return File("~/@assets/front.html", "text/html");
         }

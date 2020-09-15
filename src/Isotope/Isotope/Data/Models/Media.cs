@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Isotope.Data.Models
 {
     public class Media
     {
         /// <summary>
-        /// Surrogate ID.
+        /// Unique random key of the image.
         /// </summary>
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        [StringLength(50)]
+        public string Id { get; set; }
 
         /// <summary>
         /// Full path to the image.
@@ -27,7 +26,7 @@ namespace Isotope.Data.Models
         /// <summary>
         /// ID of the folder that contains this image.
         /// </summary>
-        public int FolderId { get; set; }
+        public string FolderId { get; set; }
 
         /// <summary>
         /// Detailed description of the file.

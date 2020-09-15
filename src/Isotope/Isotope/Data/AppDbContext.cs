@@ -23,5 +23,11 @@ namespace Isotope.Data
         public DbSet<TagHash> TagHashes => Set<TagHash>();
 
         public DbSet<DynamicConfigWrapper> DynamicConfig => Set<DynamicConfigWrapper>();
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Media>().HasIndex(x => x.Id);
+            base.OnModelCreating(builder);
+        }
     }
 }

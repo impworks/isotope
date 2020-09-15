@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Isotope.Code.Config;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +10,7 @@ namespace Isotope
     {
         public static void Main(string[] args)
         {
+            AppContext.SetSwitch("Microsoft.AspNetCore.Routing.UseCorrectCatchAllBehavior", true);
             CreateHostBuilder(args).Build().Run();
         }
 
