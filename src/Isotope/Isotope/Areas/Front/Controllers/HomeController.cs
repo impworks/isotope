@@ -9,12 +9,12 @@ namespace Isotope.Areas.Front.Controllers
     public class HomeController: ControllerBase
     {
         /// <summary>
-        /// Catch-all method for displayng SPA.
+        /// Catch-all method for displaying SPA.
         /// </summary>
         [Route("{**path}")]
         public IActionResult Index()
         {
-            return Ok("Frontend SPA");
+            return File("~/@assets/front.html", "text/html");
         }
     }
 }
