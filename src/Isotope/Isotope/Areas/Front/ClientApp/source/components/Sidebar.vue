@@ -13,9 +13,12 @@
 <template>
     <div class="sidebar">
         <div class="header">
-            <a class="logo">
-                logo
-            </a>
+            <router-link
+                to="/"
+                class="logo"
+            >
+                isotope
+            </router-link>
             <div class="actions">
                 actions
             </div>
@@ -27,6 +30,7 @@
 </template>
 
 <style lang="scss">
+    @import "../../styles/variables";
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";
@@ -36,6 +40,7 @@
         position: relative;
         background: $white;
         width: 21rem;
+        box-shadow: $box-shadow-sm;
 
         @include media-breakpoint-down(sm) {
             top: 0;
@@ -54,15 +59,31 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
+            align-items: center;
             padding: 1rem;
 
             .logo {
+                $font-size: 1.8rem;
+
                 display: block;
+                color: $gray-900;
+                line-height: 1;
+                font-weight: bold;
+                font-size: $font-size;
+                background-image: url(../../images/logo.svg);
+                background-size: auto 100%;
+                background-repeat: no-repeat;
+                padding-left: $font-size * 1.85;
+                padding-right: 1rem;
+
+                &:hover {
+                    text-decoration: none;
+                }
             }
         }
 
         &-content {
-            
+
             @include media-breakpoint-down(sm) {
                 display: none;
             }

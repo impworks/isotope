@@ -32,7 +32,7 @@
     .main-view {
         
         @include media-breakpoint-down(sm) {
-            padding-top: 4rem;
+            padding-top: 3.8rem;
         }
 
         @include media-breakpoint-up(md) {
