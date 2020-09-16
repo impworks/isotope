@@ -14,17 +14,19 @@
                 Back button
             </button>
         </div>
-        <div class="scrollable">
+        <perfect-scrollbar class="scrollable">
             <a 
                 href="#"
                 class="folder"
+                :class="{ 'opened': opened == i }"
                 v-for="i in 100" 
                 :key="i"
                 @click="opened = i"
             >
-                Folder name
+                <div class="folder-icon"></div>
+                <div class="folder-name">Folder name </div>
             </a>
-        </div>
+        </perfect-scrollbar >
     </div>
 </template>
 
@@ -50,7 +52,48 @@
         }
 
         .folder {
-            display: block;
+            display: flex;
+            flex-direction: row;
+            padding: 0.5em 1em;
+            line-height: 1.5;
+            color: $gray-800;
+            border-bottom: 1px solid $gray-100;
+
+            &:hover {
+                text-decoration: none;
+                background-color: $gray-100;
+            }
+
+            &-icon,
+            &-name {
+                flex: 0 0 auto;
+            }
+
+            &-icon {
+                $size: 1.5em;
+
+                width: $size;
+                height: $size;
+                background-image: url(../../images/folder.svg);
+                background-position: 0 0;
+                background-size: auto 200%;
+                background-repeat: no-repeat;
+            }
+
+            &-name {
+                flex-grow: 1;
+                padding: 0 1em;
+                flex: 0 1 auto;
+            }
+
+            &.opened {
+                color: $white;
+                background-color: $primary;
+
+                .folder-icon {
+                    background-position: 0 100%;
+                }
+            }
         }
     }
 </style>
