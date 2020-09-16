@@ -7,3 +7,5 @@ new Vue({
     router: Router,
     render: h => h(Root)
 }).$mount('#root');
+
+import '../styles/main.scss';
