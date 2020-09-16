@@ -21,12 +21,28 @@ namespace Isotope.Data
         public DbSet<FolderTagBinding> FolderTags => Set<FolderTagBinding>();
         public DbSet<MediaTagBinding> MediaTags => Set<MediaTagBinding>();
         public DbSet<TagHash> TagHashes => Set<TagHash>();
+        public DbSet<TagSuggestion> TagSuggestions => Set<TagSuggestion>();
+        public DbSet<SharedLink> SharedLinks => Set<SharedLink>();
 
         public DbSet<DynamicConfigWrapper> DynamicConfig => Set<DynamicConfigWrapper>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Media>().HasIndex(x => x.Id);
+            builder.Entity<Folder>().HasOne(x => x.Thumbnail).WithMany().IsRequired(false);
+            builder.Entity<Folder>().HasIndex(x => x.Path).IsUnique(true);
+
+            builder.Entity<Media>().HasOne(x => x.Folder).WithMany().HasForeignKey(x => x.FolderKey).IsRequired(true);
+
+            builder.Entity<SharedLink>().HasOne(x => x.Folder).WithMany().IsRequired(false);
+
+            builder.Entity<FolderTagBinding>().HasOne(x => x.Folder).WithMany(x => x.Tags).IsRequired(true);
+
+            builder.Entity<MediaTagBinding>().HasOne(x => x.Media).WithMany(x => x.Tags).IsRequired(true);
+            builder.Entity<MediaTagBinding>().OwnsOne(x => x.Location);
+
+            builder.Entity<TagSuggestion>().HasOne(x => x.Media).WithMany().IsRequired(true);
+            builder.Entity<TagSuggestion>().OwnsOne(x => x.Location);
+            
             base.OnModelCreating(builder);
         }
     }

@@ -10,7 +10,7 @@ namespace Isotope.Data.Models
         /// </summary>
         [Key]
         [StringLength(50)]
-        public string Id { get; set; }
+        public string Key { get; set; }
 
         /// <summary>
         /// Full path to the image.
@@ -26,7 +26,7 @@ namespace Isotope.Data.Models
         /// <summary>
         /// ID of the folder that contains this image.
         /// </summary>
-        public string FolderId { get; set; }
+        public string FolderKey { get; set; }
 
         /// <summary>
         /// Detailed description of the file.

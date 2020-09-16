@@ -1,5 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Isotope.Data.Models
 {
@@ -9,10 +9,11 @@ namespace Isotope.Data.Models
     public class DynamicConfigWrapper
     {
         /// <summary>
-        /// Surrogate key.
+        /// Surrogate ID.
         /// </summary>
         [Key]
-        public Guid Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         /// <summary>
         /// Serialized configuration.

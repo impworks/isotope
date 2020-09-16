@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace Isotope.Code.Config
 {
@@ -32,6 +34,7 @@ namespace Isotope.Code.Config
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureMvcServices(services);
+            ConfigureDatabaseServices(services);
         }
 
         /// <summary>
@@ -39,6 +42,17 @@ namespace Isotope.Code.Config
         /// </summary>
         public void Configure(IApplicationBuilder app)
         {
+            if (Environment.IsDevelopment())
+                app.UseSerilogRequestLogging();
+
+            if (Configuration.WebServer.RequireHttps)
+                app.UseHttpsRedirection();
+
+            if (Configuration.Debug.DetailedExceptions)
+                app.UseDeveloperExceptionPage();
+            
+            InitDatabase(app);
+            
             app.UseForwardedHeaders(GetforwardedHeadersOptions())
                .UseStaticFiles()
                .UseRouting()

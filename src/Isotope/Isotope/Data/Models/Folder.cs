@@ -51,6 +51,6 @@ namespace Isotope.Data.Models
         /// <summary>
         /// Tags attributed to this folder.
         /// </summary>
-        public ICollection<FolderTagBinding> TagInstances { get; set; }
+        public ICollection<FolderTagBinding> Tags { get; set; }
     }
 }

@@ -12,6 +12,7 @@
     <Folder Include="Areas\Front\ClientApp\source\config\" />
     <Folder Include="Areas\Front\ClientApp\source\vms\" />
     <Folder Include="Code\Utils\" />
+    <Folder Include="Data\Migrations" />
     <Folder Include="Storage\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
