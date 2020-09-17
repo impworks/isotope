@@ -115,7 +115,7 @@
             color: $gray-800;
             border-top: 1px solid $gray-200;
 
-            &:first-child {
+            &:first-of-type {
                 border-top-color: rgba(0,0,0,0);
             }
 
@@ -147,7 +147,12 @@
             }
 
             &:not(.opened):active {
+                border-color: $gray-300;
                 background-color: $gray-300;
+
+                & + .folder {
+                    border-top-color: $gray-300;
+                }
             }
 
             &.opened {
