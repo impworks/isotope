@@ -13,7 +13,6 @@ namespace Isotope.Code.Config
         /// <summary>
         /// Registers database-related services.
         /// </summary>
-        /// <param name="services"></param>
         private void ConfigureDatabaseServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(opts => opts.UseSqlite(Configuration.Database.ConnectionString));

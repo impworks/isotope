@@ -136,9 +136,14 @@ namespace Isotope.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("TagId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FolderKey");
+
+                    b.HasIndex("TagId");
 
                     b.ToTable("FolderTags");
                 });
@@ -167,6 +172,9 @@ namespace Isotope.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasMaxLength(500);
 
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Key");
 
                     b.HasIndex("FolderKey");
@@ -184,9 +192,17 @@ namespace Isotope.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("TagId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MediaKey");
+
+                    b.HasIndex("TagId");
 
                     b.ToTable("MediaTags");
                 });
@@ -424,6 +440,10 @@ namespace Isotope.Data.Migrations
                         .HasForeignKey("FolderKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Isotope.Data.Models.Tag", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId");
                 });
 
             modelBuilder.Entity("Isotope.Data.Models.Media", b =>
@@ -442,6 +462,10 @@ namespace Isotope.Data.Migrations
                         .HasForeignKey("MediaKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Isotope.Data.Models.Tag", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId");
 
                     b.OwnsOne("Isotope.Data.Models.MediaTagBindingLocation", "Location", b1 =>
                         {

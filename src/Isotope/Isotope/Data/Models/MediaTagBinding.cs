@@ -14,5 +14,10 @@
         /// Related media file.
         /// </summary>
         public Media Media { get; set; }
+        
+        /// <summary>
+        /// Type of the binding.
+        /// </summary>
+        public TagBindingType Type { get; set; }
     }
 }

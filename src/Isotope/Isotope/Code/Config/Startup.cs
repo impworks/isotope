@@ -35,6 +35,8 @@ namespace Isotope.Code.Config
         {
             ConfigureMvcServices(services);
             ConfigureDatabaseServices(services);
+            ConfigureMapsterServices(services);
+            ConfigureAppServices(services);
         }
 
         /// <summary>

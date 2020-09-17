@@ -205,11 +205,18 @@ namespace Isotope.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TagId = table.Column<int>(nullable: true),
                     FolderKey = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FolderTags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FolderTags_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -219,6 +226,7 @@ namespace Isotope.Data.Migrations
                     Key = table.Column<string>(maxLength: 50, nullable: false),
                     Path = table.Column<string>(maxLength: 500, nullable: true),
                     FolderKey = table.Column<string>(nullable: false),
+                    Type = table.Column<int>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     Date = table.Column<string>(maxLength: 10, nullable: true),
                     Order = table.Column<int>(nullable: false)
@@ -256,11 +264,13 @@ namespace Isotope.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TagId = table.Column<int>(nullable: true),
                     Location_X = table.Column<double>(nullable: true),
                     Location_Y = table.Column<double>(nullable: true),
                     Location_Width = table.Column<double>(nullable: true),
                     Location_Height = table.Column<double>(nullable: true),
-                    MediaKey = table.Column<string>(nullable: false)
+                    MediaKey = table.Column<string>(nullable: false),
+                    Type = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -271,6 +281,12 @@ namespace Isotope.Data.Migrations
                         principalTable: "Media",
                         principalColumn: "Key",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MediaTags_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -375,6 +391,11 @@ namespace Isotope.Data.Migrations
                 column: "FolderKey");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FolderTags_TagId",
+                table: "FolderTags",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Media_FolderKey",
                 table: "Media",
                 column: "FolderKey");
@@ -383,6 +404,11 @@ namespace Isotope.Data.Migrations
                 name: "IX_MediaTags_MediaKey",
                 table: "MediaTags",
                 column: "MediaKey");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MediaTags_TagId",
+                table: "MediaTags",
+                column: "TagId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SharedLinks_FolderKey",

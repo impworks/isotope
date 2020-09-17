@@ -21,7 +21,7 @@ namespace Isotope.Code.Utils.Helpers
             var result = await source.FirstOrDefaultAsync(predicate);
 
             if(result == null)
-                throw new OperationException(error);
+                throw new NotFoundException(error);
 
             return result;
         }

@@ -14,5 +14,10 @@ namespace Isotope.Data.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        
+        /// <summary>
+        /// Related tag.
+        /// </summary>
+        public Tag Tag { get; set; }
     }
 }

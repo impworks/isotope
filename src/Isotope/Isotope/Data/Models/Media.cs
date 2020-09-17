@@ -27,6 +27,11 @@ namespace Isotope.Data.Models
         /// ID of the folder that contains this image.
         /// </summary>
         public string FolderKey { get; set; }
+        
+        /// <summary>
+        /// Type of the media.
+        /// </summary>
+        public MediaType Type { get; set; }
 
         /// <summary>
         /// Detailed description of the file.
