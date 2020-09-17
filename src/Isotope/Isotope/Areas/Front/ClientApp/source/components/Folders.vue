@@ -75,27 +75,12 @@
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
 
-    .folder-slide-enter-active ,
-    .folder-slide-leave-active {
-        transition: transform 100ms ease,
-                    opacity 100ms ease;
-    }
-
-    .folder-slide-enter {
-        transform: translateX(10%);
-        opacity: 0;
-    }
-
-    .folder-slide-leave-to {
-        transform: translateX(-10%);
-        opacity: 0;
-    }
-
     .folders {
         display: flex;
         flex-direction: column;
         flex: 1 1 auto;
         min-height: 0;
+        overflow: hidden;
 
         > * {
             flex: 0 0 auto;
@@ -150,7 +135,7 @@
                 border-color: $gray-300;
                 background-color: $gray-300;
 
-                & + .folder {
+                & + .folder:not(.opened) {
                     border-top-color: $gray-300;
                 }
             }
