@@ -25,7 +25,7 @@
 
     .gallery {
         padding: 1rem;
-        background: $gray-100;
+        background: $gray-200;
 
         @include media-breakpoint-up(md) {
             flex: 1 0 auto;

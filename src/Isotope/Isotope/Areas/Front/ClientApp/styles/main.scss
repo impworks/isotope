@@ -2,7 +2,9 @@
 @import "./node_modules/bootstrap/scss/bootstrap";
 @import "mixins";
 @import "fonts";
+@import "icons";
 @import "scrollbar";
+@import "animations";
 
 html, body {
     height: 100%;

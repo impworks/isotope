@@ -1,0 +1,17 @@
+/* slide-fade */
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+    transition: transform 120ms ease,
+                opacity 120ms ease;
+}
+
+.slide-fade-enter {
+    transform: translateX(-1rem);
+    opacity: 0;
+}
+
+.slide-fade-leave-to {
+    transform: translateX(1rem);
+    opacity: 0;
+}

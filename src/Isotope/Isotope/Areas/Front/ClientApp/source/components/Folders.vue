@@ -9,11 +9,6 @@
 
 <template>
     <div class="folders">
-        <div>
-            <button class="btn btn-block btn-primary">
-                Back button
-            </button>
-        </div>
         <perfect-scrollbar class="scrollable">
             <a 
                 href="#"
@@ -57,11 +52,15 @@
             padding: 0.5em 1em;
             line-height: 1.5;
             color: $gray-800;
-            border-bottom: 1px solid $gray-100;
+            border-top: 1px solid $gray-200;
+
+            &:first-child {
+                border-top-color: rgba(0,0,0,0);
+            }
 
             &:hover {
                 text-decoration: none;
-                background-color: $gray-100;
+                background-color: $gray-200;
             }
 
             &-icon,
@@ -89,6 +88,11 @@
             &.opened {
                 color: $white;
                 background-color: $primary;
+                border-color: $primary;
+
+                & + .folder {
+                    border-top-color: rgba(0,0,0,0);
+                }
 
                 .folder-icon {
                     background-position: 0 100%;

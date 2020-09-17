@@ -1,13 +1,17 @@
 <script lang="ts">
     import { Vue, Component } from "vue-property-decorator";
+    import Filters from './Filters.vue';
     import Folders from './Folders.vue';
 
     @Component({
         components: { 
+            Filters,
             Folders
         }
     })
-    export default class Sidebar extends Vue {} 
+    export default class Sidebar extends Vue {
+        isFiltersActive: boolean = false;
+    } 
 </script>
 
 <template>
@@ -23,8 +27,32 @@
                 actions
             </div>
         </div>
+         <div class="sidebar-navigation">
+            <div class="switch">
+                <button 
+                    class="left"
+                    :class="{ 'active': !isFiltersActive }"
+                    @click="isFiltersActive = false"
+                >
+                    <i class="icon icon-folder"></i> 
+                    Folders
+                </button>
+                <button 
+                    class="right"
+                    :class="{ 'active': isFiltersActive }"
+                    @click="isFiltersActive = true"
+                >
+                    <i class="icon icon-filter"></i> 
+                    Filters
+                </button>
+                <div class="indicator"></div>
+            </div>
+        </div>
         <div class="sidebar-content">
-            <folders></folders>
+            <transition name="slide-fade" mode="out-in">
+                <filters v-if="isFiltersActive"></filters>
+                <folders v-else></folders>
+            </transition>
         </div>
     </div>
 </template>
@@ -82,7 +110,78 @@
             }
         }
 
+        &-navigation {
+            background: $gray-100;
+            border-top: 1px solid $gray-300;
+            border-bottom: 1px solid $gray-300;
+            padding: 0.75rem 1rem;
+
+            @include media-breakpoint-down(sm) {
+                display: none;
+            }
+
+            .switch {
+                display: flex;
+                position: relative;
+
+                button {
+                    z-index: 2;
+                    flex: 1 1 50%;
+                    display: block;
+                    color: $gray-600;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    line-height: 1;
+                    padding: 0.5em 1em;
+                    transition: color 200ms ease;
+                    border: 2px solid $gray-600;
+                    background: none;
+
+                    &:focus {
+                        outline: none;
+                    }
+
+                    &.active {
+                        color: $white;
+                    }
+
+                    &.left {
+                        border-radius: $border-radius 0 0 $border-radius;
+                        border-right: 0;
+
+                        &.active ~ .indicator {
+                            left: 0;
+                        }
+                    }
+
+                    &.right {
+                        border-radius: 0 $border-radius $border-radius 0;
+                        border-left: 0;
+                        
+                        &.active ~ .indicator {
+                            left: 50%;
+                        }
+                    }
+
+                    .icon {
+                        margin-right: 0.1em;
+                    }
+                }
+
+                .indicator {
+                    width: 50%;
+                    height: 100%;
+                    position: absolute;
+                    z-index: 1;
+                    background: $gray-600;
+                    border-radius: $border-radius;
+                    transition: left 200ms cubic-bezier(0.77, 0, 0.175, 1);
+                }
+            }
+        }
+
         &-content {
+            position: relative;
 
             @include media-breakpoint-down(sm) {
                 display: none;

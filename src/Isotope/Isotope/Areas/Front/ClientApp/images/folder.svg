@@ -16,7 +16,7 @@
             <g transform="translate(3 6)" fill="#fff">
                 <rect width="19" height="15"/>
             </g>
-            <rect x="5" y="8" width="15" height="11" fill="#0B93E7" fill-rule="nonzero"/>
+            <rect x="5" y="8" width="15" height="11" fill="#00aeee" fill-rule="nonzero"/>
         </g>
         <g transform="translate(0 3)" fill-rule="nonzero">
             <path d="m3 0h6.2667c1.1046-2.0291e-16 2 0.89543 2 2v1h15.733c1.1046 0 2 0.89543 2 2v17c0 1.1046-0.89543 2-2 2h-24c-1.1046 0-2-0.89543-2-2v-19-1c0-1.1046 0.89543-2 2-2z" fill="url(#b)"/>
