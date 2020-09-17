@@ -1,17 +1,36 @@
-/* slide-fade */
+/* slide-fade-left */
 
-.slide-fade-enter-active,
-.slide-fade-leave-active {
+.slide-fade-left-enter-active,
+.slide-fade-left-leave-active {
     transition: transform 120ms ease,
                 opacity 120ms ease;
 }
 
-.slide-fade-enter {
+.slide-fade-left-enter {
     transform: translateX(-1rem);
     opacity: 0;
 }
 
-.slide-fade-leave-to {
+.slide-fade-left-leave-to {
     transform: translateX(1rem);
+    opacity: 0;
+}
+
+
+/* slide-fade-right */
+
+.slide-fade-right-enter-active,
+.slide-fade-right-leave-active {
+    transition: transform 120ms ease,
+                opacity 120ms ease;
+}
+
+.slide-fade-right-enter {
+    transform: translateX(1rem);
+    opacity: 0;
+}
+
+.slide-fade-right-leave-to {
+    transform: translateX(-1rem);
     opacity: 0;
 }

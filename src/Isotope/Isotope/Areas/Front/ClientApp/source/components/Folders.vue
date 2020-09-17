@@ -3,25 +3,70 @@
 
     @Component
     export default class Folders extends Vue {
-        opened: number = 0;
+        opened: Folder = null;
+        currentFolder = 1;
+        folderId = 1;
+        folders: Folder[] = [];
+        things: string[] = ['Rock', 'Paper', 'Scissor'];
+
+        mounted() {
+            this.folders = this.getFolders();
+        }
+
+        getFolderId(): number {
+            return this.folderId++;
+        }
+
+        getFolders(): Folder[] {
+            let result = [];
+
+            for (let i = 0; i < (Math.random() * (100 - 10) + 10); i++) {
+                result.push({
+                    id: this.getFolderId(),
+                    name: this.things[Math.floor(Math.random() * this.things.length)]
+                });
+            }
+
+            return result;
+        }
+
+        openFolder(i : number, folder: Folder) {
+            this.opened = folder;
+            
+            setTimeout(() => {
+                if (i != 0 && i % 5 == 0) {
+                    this.currentFolder++;
+                    this.folders = this.getFolders();
+                }
+            }, 1);
+        }
     } 
+
+    interface Folder {
+        id: number;
+        name: string;
+    }
+
 </script>
 
 <template>
     <div class="folders">
-        <perfect-scrollbar class="scrollable">
-            <a 
-                href="#"
-                class="folder"
-                :class="{ 'opened': opened == i }"
-                v-for="i in 100" 
-                :key="i"
-                @click="opened = i"
-            >
-                <div class="folder-icon"></div>
-                <div class="folder-name">Folder name </div>
-            </a>
-        </perfect-scrollbar >
+        <transition name="slide-fade-right" mode="out-in">
+            <perfect-scrollbar class="scrollable" :key="currentFolder">
+                    <a 
+                        href="#"
+                        class="folder"
+                        :class="{ 'opened': opened == folder }"
+                        v-for="(folder, i) in folders" 
+                        :key="i"
+                        @click="openFolder(i, folder)"
+                    >
+                        <div class="folder-icon"></div>
+                        <div v-if="i != 0 && i % 5 == 0" class="folder-name">Folder with many other folders</div>
+                        <div v-else class="folder-name">{{ folder.name }} folder</div>
+                    </a>
+            </perfect-scrollbar >
+        </transition>
     </div>
 </template>
 
@@ -29,6 +74,22 @@
     @import "../../styles/variables";
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
+
+    .folder-slide-enter-active ,
+    .folder-slide-leave-active {
+        transition: transform 100ms ease,
+                    opacity 100ms ease;
+    }
+
+    .folder-slide-enter {
+        transform: translateX(10%);
+        opacity: 0;
+    }
+
+    .folder-slide-leave-to {
+        transform: translateX(-10%);
+        opacity: 0;
+    }
 
     .folders {
         display: flex;
@@ -83,6 +144,10 @@
                 flex-grow: 1;
                 padding: 0 1em;
                 flex: 0 1 auto;
+            }
+
+            &:not(.opened):active {
+                background-color: $gray-300;
             }
 
             &.opened {

@@ -49,7 +49,7 @@
             </div>
         </div>
         <div class="sidebar-content">
-            <transition name="slide-fade" mode="out-in">
+            <transition name="slide-fade-left" mode="out-in">
                 <filters v-if="isFiltersActive"></filters>
                 <folders v-else></folders>
             </transition>
