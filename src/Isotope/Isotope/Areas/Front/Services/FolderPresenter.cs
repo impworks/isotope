@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Impworks.Utils.Linq;
 using Impworks.Utils.Strings;
 using Isotope.Areas.Front.Dto;
 using Isotope.Code.Utils.Date;
@@ -36,6 +37,7 @@ namespace Isotope.Areas.Front.Services
         {
             var query = _db.Folders
                            .AsNoTracking()
+                           .OrderBy(x => x.Caption)
                            .AsQueryable();
             
             if (ctx.Link != null)
@@ -96,6 +98,7 @@ namespace Isotope.Areas.Front.Services
                 ? await _db.Folders
                            .AsNoTracking()
                            .Where(x => x.Path.StartsWith(path) && x.Depth == folder.Depth + 1)
+                           .OrderBy(x => x.Caption)
                            .ProjectToType<FolderVM>(_mapper.Config)
                            .ToArrayAsync()
                 : new FolderVM[0];
@@ -126,7 +129,7 @@ namespace Isotope.Areas.Front.Services
             if (tagIds?.Count > 0)
                 query = query.Where(x => x.Tags.Any(y => tagIds.Contains(y.Tag.Id)));
 
-            var media = await query.ToListAsync();
+            var media = await query.OrderBy(x => x.Order).ToListAsync();
 
             var dateFrom = FuzzyDate.TryParse(StringHelper.Coalesce(request.DateFrom, ctx.Link?.DateFrom));
             var dateTo = FuzzyDate.TryParse(StringHelper.Coalesce(request.DateTo, ctx.Link?.DateTo));

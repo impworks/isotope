@@ -12,13 +12,17 @@ namespace Isotope.Areas.Front.Controllers
     [ApiController]
     public class ApiController: ControllerBase
     {
-        public ApiController(FolderPresenter folders, UserContextManager ucm)
+        public ApiController(FolderPresenter folders, TagsPresenter tags, MediaPresenter media, UserContextManager ucm)
         {
             _folders = folders;
+            _tags = tags;
+            _media = media;
             _ucm = ucm;
         }
 
         private readonly FolderPresenter _folders;
+        private readonly TagsPresenter _tags;
+        private readonly MediaPresenter _media;
         private readonly UserContextManager _ucm;
         
         /// <summary>
@@ -45,7 +49,7 @@ namespace Isotope.Areas.Front.Controllers
         [HttpGet, Route("media")]
         public async Task<MediaVM> GetMedia([FromQuery] string key)
         {
-            return null;
+            return await _media.GetMediaAsync(key, await GetUserContextAsync());
         }
 
         /// <summary>
@@ -54,7 +58,7 @@ namespace Isotope.Areas.Front.Controllers
         [HttpGet, Route("tags")]
         public async Task<TagVM[]> GetTags()
         {
-            return null;
+            return await _tags.GetTagsAsync(await GetUserContextAsync());
         }
 
         #region Helpers

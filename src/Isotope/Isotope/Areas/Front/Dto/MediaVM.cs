@@ -1,11 +1,15 @@
+using Isotope.Code.Utils;
+using Isotope.Code.Utils.Date;
+using Isotope.Code.Utils.Helpers;
 using Isotope.Data.Models;
+using Mapster;
 
 namespace Isotope.Areas.Front.Dto
 {
     /// <summary>
     /// Details of a media file.
     /// </summary>
-    public class MediaVM
+    public class MediaVM: IMapped
     {
         /// <summary>
         /// Unique key of the media file.
@@ -41,5 +45,25 @@ namespace Isotope.Areas.Front.Dto
         /// Related tags.
         /// </summary>
         public TagBindingVM[] Tags { get; set; }
+
+        public void Configure(TypeAdapterConfig config)
+        {
+            config.NewConfig<Media, MediaVM>()
+                  .Map(x => x.Key, x => x.Key)
+                  .Map(x => x.Type, x => x.Type)
+                  .Map(x => x.FullPath, x => x.Type == MediaType.Video ? x.Path : MediaHelper.GetSizedMediaPath(x.Path, MediaSize.Large))
+                  .Map(x => x.OriginalPath, x => x.Path)
+                  .Map(x => x.Date, x => TryFormatDate(x.Date))
+                  .Map(x => x.Description, x => x.Description)
+                  .Map(x => x.Tags, x => x.Tags);
+        }
+        
+        /// <summary>
+        /// Displays the date as a readable string if it is entered.
+        /// </summary>
+        private static string TryFormatDate(string date)
+        {
+            return FuzzyDate.TryParse(date)?.ReadableDate;
+        }
     }
 }

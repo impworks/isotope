@@ -12,6 +12,8 @@ namespace Isotope.Code.Config
         {
             // frontend
             services.AddScoped<FolderPresenter>();
+            services.AddScoped<TagsPresenter>();
+            services.AddScoped<MediaPresenter>();
             services.AddScoped<UserContextManager>();
 
             // admin
