@@ -94,20 +94,10 @@ namespace Isotope.Areas.Front.Services
                                   .Include(x => x.Tags)
                                   .GetAsync(x => x.Path == path, $"Folder ({request.Folder})");
 
-            var subfolders = ctx.Link?.IncludeSubfolders != false
-                ? await _db.Folders
-                           .AsNoTracking()
-                           .Where(x => x.Path.StartsWith(path) && x.Depth == folder.Depth + 1)
-                           .OrderBy(x => x.Caption)
-                           .ProjectToType<FolderVM>(_mapper.Config)
-                           .ToArrayAsync()
-                : new FolderVM[0];
-
             var media = await GetMediaByRequest(folder, request, ctx);
 
             return new FolderContentsVM
             {
-                Subfolders = subfolders,
                 Tags = _mapper.Map<TagBindingVM[]>(folder.Tags),
                 Media = _mapper.Map<MediaThumbnailVM[]>(media)
             };

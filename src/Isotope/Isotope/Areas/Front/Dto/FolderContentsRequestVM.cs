@@ -16,6 +16,11 @@ namespace Isotope.Areas.Front.Dto
         public int[] Tags { get; set; }
         
         /// <summary>
+        /// Current search mode to use.
+        /// </summary>
+        public SearchMode? SearchMode { get; set; }
+        
+        /// <summary>
         /// Earliest date in the range.
         /// </summary>
         public string DateFrom { get; set; }
