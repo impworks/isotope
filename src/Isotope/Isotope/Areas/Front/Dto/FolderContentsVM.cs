@@ -14,5 +14,10 @@ namespace Isotope.Areas.Front.Dto
         /// Media in the folder.
         /// </summary>
         public MediaThumbnailVM[] Media { get; set; }
+        
+        /// <summary>
+        /// Folders in current folder (1 level of depth inside).
+        /// </summary>
+        public FolderVM[] Subfolders { get; set; }
     }
 }

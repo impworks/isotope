@@ -41,7 +41,7 @@ namespace Isotope.Areas.Front.Services
             if (ctx.Link != null)
             {
                 // subfolders disallowed: only media immediately inside current folder are available
-                if(!ctx.Link.IncludeSubfolders && media.FolderKey != ctx.Link.Folder.Key)
+                if(ctx.Link.Mode == SearchMode.CurrentFolder && media.FolderKey != ctx.Link.Folder.Key)
                     throw new NotFoundException(errorKey);
                 
                 // inside subfolder

@@ -11,9 +11,9 @@ namespace Isotope.Areas.Front.Dto
         public string Folder { get; set; }
         
         /// <summary>
-        /// List of required tags (or empty to display everything).
+        /// List of comma-separated tag IDs.
         /// </summary>
-        public int[] Tags { get; set; }
+        public string Tags { get; set; }
         
         /// <summary>
         /// Current search mode to use.

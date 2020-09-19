@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Isotope.Areas.Front.Dto;
 
 namespace Isotope.Data.Models
 {
@@ -24,7 +25,7 @@ namespace Isotope.Data.Models
         /// Flag indicating that subfolders are also displayed when viewing this link.
         /// Otherwise, only media immediately inside this folder are available. 
         /// </summary>
-        public bool IncludeSubfolders { get; set; }
+        public SearchMode Mode { get; set; }
         
         /// <summary>
         /// List of tag IDs, comma-separated.

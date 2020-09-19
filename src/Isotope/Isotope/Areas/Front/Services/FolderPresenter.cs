@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Impworks.Utils.Linq;
 using Impworks.Utils.Strings;
@@ -8,7 +10,6 @@ using Isotope.Code.Utils.Date;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
 using Isotope.Data.Models;
-using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,12 +41,12 @@ namespace Isotope.Areas.Front.Services
                            .OrderBy(x => x.Caption)
                            .AsQueryable();
             
-            if (ctx.Link != null)
+            if (ctx.Link is SharedLink link)
             {
-                if(!ctx.Link.IncludeSubfolders)
+                if(link.Mode == SearchMode.CurrentFolder)
                     return new FolderVM[0];
 
-                var folder = ctx.Link.Folder;
+                var folder = link.Folder;
                 query = query.Where(x => x.Path.StartsWith(folder.Path) && x.Depth > folder.Depth); // current folder is root, only include nested ones
             }
 
@@ -87,57 +88,142 @@ namespace Isotope.Areas.Front.Services
         /// </summary>
         public async Task<FolderContentsVM> GetFolderContentsAsync(FolderContentsRequestVM request, UserContext ctx)
         {
-            var path = PathHelper.Combine(ctx.Link?.Folder.Path, request.Folder);
-            
+            var req = CombineRequest(request, ctx);
+            var hasFilter = req.Tags != null || req.DateFrom != null || req.DateTo == null;
+            return hasFilter
+                ? await GetFolderFilteredContentsAsync(req)
+                : await GetFolderSimpleContentsAsync(req, ctx);
+        }
+        
+        /// <summary>
+        /// Creates the actual search request from user input and shared link.
+        /// </summary>
+        private FolderContentsRequestVM CombineRequest(FolderContentsRequestVM request, UserContext ctx)
+        {
+            if (ctx.Link == null)
+                return request;
+
+            var link = ctx.Link;
+            var rootPath = link.Folder.Path;
+            var hasFilter = link.Tags != null || link.DateFrom != null || link.DateTo != null;
+            return new FolderContentsRequestVM
+            {
+                Folder = hasFilter ? rootPath : PathHelper.Combine(rootPath, request.Folder),
+                Tags = link.Tags,
+                DateFrom = link.DateFrom,
+                DateTo = link.DateTo
+            };
+        }
+
+        /// <summary>
+        /// Returns basic contents of a folder: directly nested media, tags, subfolders.
+        /// </summary>
+        private async Task<FolderContentsVM> GetFolderSimpleContentsAsync(FolderContentsRequestVM request, UserContext ctx)
+        {
             var folder = await _db.Folders
                                   .AsNoTracking()
                                   .Include(x => x.Tags)
-                                  .GetAsync(x => x.Path == path, $"Folder ({request.Folder})");
+                                  .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
 
-            var media = await GetMediaByRequest(folder, request, ctx);
+            var canShowSubfolders = ctx.Link == null || ctx.Link.Mode == SearchMode.CurrentFolderAndSubfolders;
+            var subfolders = canShowSubfolders
+                ? await _db.Folders
+                           .AsNoTracking()
+                           .Where(x => x.Path.StartsWith(folder.Path) && x.Depth == folder.Depth + 1)
+                           .OrderBy(x => x.Caption)
+                           .ToArrayAsync()
+                : new Folder[0];
+
+            var media = await _db.Media
+                                 .AsNoTracking()
+                                 .Where(x => x.FolderKey == folder.Key)
+                                 .OrderBy(x => x.Order)
+                                 .ToListAsync();
 
             return new FolderContentsVM
             {
                 Tags = _mapper.Map<TagBindingVM[]>(folder.Tags),
+                Subfolders = _mapper.Map<FolderVM[]>(subfolders),
                 Media = _mapper.Map<MediaThumbnailVM[]>(media)
             };
         }
 
         /// <summary>
-        /// Filters media that matches the requested filter. 
+        /// Returns media by complete search.
         /// </summary>
-        private async Task<IReadOnlyList<Media>> GetMediaByRequest(Folder folder, FolderContentsRequestVM request, UserContext ctx)
+        private async Task<FolderContentsVM> GetFolderFilteredContentsAsync(FolderContentsRequestVM request)
         {
-            var query = _db.Media
-                           .AsNoTracking()
-                           .Where(x => x.Folder.Key == folder.Key);
+            var tagIds = request.Tags.TryParseList<int>(",");
 
-            var tagIds = ctx.Link != null
-                ? ctx.Link.Tags.TryParseList<int>(",")
-                : request.Tags;
+            var mediaCondition = await GetMatchingMediaConditionAsync(request, tagIds);
+            var folderCondition = await GetMatchingFoldersConditionAsync(request, tagIds);
 
-            if (tagIds?.Count > 0)
-                query = query.Where(x => x.Tags.Any(y => tagIds.Contains(y.Tag.Id)));
+            var condition = folderCondition == null ? mediaCondition : ExprHelper.Or(folderCondition, mediaCondition);
 
-            var media = await query.OrderBy(x => x.Order).ToListAsync();
+            var media = await _db.Media
+                                 .AsNoTracking()
+                                 .Where(condition)
+                                 .OrderBy(x => x.Order)
+                                 .ToListAsync();
 
-            var dateFrom = FuzzyDate.TryParse(StringHelper.Coalesce(request.DateFrom, ctx.Link?.DateFrom));
-            var dateTo = FuzzyDate.TryParse(StringHelper.Coalesce(request.DateTo, ctx.Link?.DateTo));
-
-            if (dateTo != null || dateFrom != null)
+            var datedMedia = TryFilterMediaByDate(request, media);
+            
+            return new FolderContentsVM
             {
-                media = media.Select(x => new
-                             {
-                                 Date = FuzzyDate.TryParse(x.Date),
-                                 Media = x
-                             })
-                             .Where(x => x.Date != null)
-                             .Where(x => (dateFrom == null || x.Date >= dateFrom) && (dateTo == null || x.Date <= dateTo))
-                             .Select(x => x.Media)
-                             .ToList();
-            }
+                Media = _mapper.Map<MediaThumbnailVM[]>(datedMedia)
+            };
+        }
 
-            return media;
+        /// <summary>
+        /// Returns a condition that matches media by tags on containing folders.
+        /// </summary>
+        private async Task<Expression<Func<Media, bool>>> GetMatchingFoldersConditionAsync(FolderContentsRequestVM request, IReadOnlyList<int> tagIds)
+        {
+            if (request.SearchMode == SearchMode.CurrentFolder)
+                return null;
+            
+            var query = _db.Folders.AsNoTracking();
+            
+            if (tagIds.Any())
+                query = query.Where(x => x.Tags.Any(y => tagIds.Contains(y.Id)));  
+
+            if (request.SearchMode == SearchMode.CurrentFolderAndSubfolders)
+                query = query.Where(x => x.Path.StartsWith(request.Folder));
+
+            var folderKeys = await query.Select(x => x.Key).ToListAsync();
+            // todo: use all nested subfolders too
+            return x => folderKeys.Contains(x.FolderKey);
+        }
+
+        /// <summary>
+        /// Return a condition that matches media by tags.
+        /// </summary>
+        private async Task<Expression<Func<Media, bool>>> GetMatchingMediaConditionAsync(FolderContentsRequestVM request, IReadOnlyList<int> tagIds)
+        {
+            // todo
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Applies date filtering to the list of media.
+        /// </summary>
+        private IReadOnlyList<Media> TryFilterMediaByDate(FolderContentsRequestVM request, IReadOnlyList<Media> source)
+        {
+            var dateFrom = FuzzyDate.TryParse(request.DateFrom);
+            var dateTo = FuzzyDate.TryParse(request.DateTo);
+
+            if (dateFrom == null && dateTo == null)
+                return source;
+
+            return source.Select(x => new
+                         {
+                             Date = FuzzyDate.TryParse(x.Date),
+                             Media = x
+                         })
+                         .Where(x => x.Date != null)
+                         .Where(x => (dateFrom == null || x.Date >= dateFrom) && (dateTo == null || x.Date <= dateTo))
+                         .Select(x => x.Media)
+                         .ToList();
         }
 
         #endregion
