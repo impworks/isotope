@@ -246,14 +246,15 @@ namespace Isotope.Data.Migrations
                     Slug = table.Column<string>(maxLength: 200, nullable: true),
                     Path = table.Column<string>(maxLength: 500, nullable: true),
                     Depth = table.Column<int>(nullable: false),
-                    MediaCount = table.Column<int>(nullable: false)
+                    MediaCount = table.Column<int>(nullable: false),
+                    ThumbnailKey = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Folders", x => x.Key);
                     table.ForeignKey(
-                        name: "FK_Folders_Media_Key",
-                        column: x => x.Key,
+                        name: "FK_Folders_Media_ThumbnailKey",
+                        column: x => x.ThumbnailKey,
                         principalTable: "Media",
                         principalColumn: "Key",
                         onDelete: ReferentialAction.Restrict);
@@ -387,6 +388,11 @@ namespace Isotope.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Folders_ThumbnailKey",
+                table: "Folders",
+                column: "ThumbnailKey");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FolderTags_FolderKey",
                 table: "FolderTags",
                 column: "FolderKey");
@@ -451,7 +457,7 @@ namespace Isotope.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Folders_Media_Key",
+                name: "FK_Folders_Media_ThumbnailKey",
                 table: "Folders");
 
             migrationBuilder.DropTable(

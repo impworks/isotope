@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Isotope.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200920144814_Initial")]
+    [Migration("20200920181005_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -123,10 +123,15 @@ namespace Isotope.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasMaxLength(200);
 
+                    b.Property<string>("ThumbnailKey")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Key");
 
                     b.HasIndex("Path")
                         .IsUnique();
+
+                    b.HasIndex("ThumbnailKey");
 
                     b.ToTable("Folders");
                 });
@@ -435,7 +440,7 @@ namespace Isotope.Data.Migrations
                 {
                     b.HasOne("Isotope.Data.Models.Media", "Thumbnail")
                         .WithMany()
-                        .HasForeignKey("Key");
+                        .HasForeignKey("ThumbnailKey");
                 });
 
             modelBuilder.Entity("Isotope.Data.Models.FolderTagBinding", b =>

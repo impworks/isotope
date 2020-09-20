@@ -350,6 +350,8 @@ MigrationBackup/
 .ionide/
 
 Isotope.db
+Isotope.db-wal
+Isotope.db-shm
 wwwroot/
 .idea/
 .dist-tmp/

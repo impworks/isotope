@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Impworks.Utils.Format;
@@ -57,7 +58,8 @@ namespace Isotope.Data.Utils
                     Depth = 0,
                     Key = UniqueKey.Get(),
                     Path = "/",
-                    Slug = ""
+                    Slug = "",
+                    Tags = new List<FolderTagBinding>()
                 });
             }
             

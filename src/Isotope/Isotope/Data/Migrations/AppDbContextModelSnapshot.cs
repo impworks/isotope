@@ -121,10 +121,15 @@ namespace Isotope.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasMaxLength(200);
 
+                    b.Property<string>("ThumbnailKey")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Key");
 
                     b.HasIndex("Path")
                         .IsUnique();
+
+                    b.HasIndex("ThumbnailKey");
 
                     b.ToTable("Folders");
                 });
@@ -433,7 +438,7 @@ namespace Isotope.Data.Migrations
                 {
                     b.HasOne("Isotope.Data.Models.Media", "Thumbnail")
                         .WithMany()
-                        .HasForeignKey("Key");
+                        .HasForeignKey("ThumbnailKey");
                 });
 
             modelBuilder.Entity("Isotope.Data.Models.FolderTagBinding", b =>

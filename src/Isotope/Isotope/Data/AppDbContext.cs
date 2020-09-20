@@ -28,7 +28,7 @@ namespace Isotope.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Folder>().HasOne(x => x.Thumbnail).WithMany().IsRequired(false);
+            builder.Entity<Folder>().HasOne(x => x.Thumbnail).WithMany().HasForeignKey(x => x.ThumbnailKey).IsRequired(false);
             builder.Entity<Folder>().HasIndex(x => x.Path).IsUnique(true);
 
             builder.Entity<Media>().HasOne(x => x.Folder).WithMany().HasForeignKey(x => x.FolderKey).IsRequired(true);

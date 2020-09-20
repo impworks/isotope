@@ -47,6 +47,11 @@ namespace Isotope.Data.Models
         /// Media to display as the folder's preview.
         /// </summary>
         public Media Thumbnail { get; set; }
+        
+        /// <summary>
+        /// FK for thumbnail.
+        /// </summary>
+        public string ThumbnailKey { get; set; }
 
         /// <summary>
         /// Tags attributed to this folder.

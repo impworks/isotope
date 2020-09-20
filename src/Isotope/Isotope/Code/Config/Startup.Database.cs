@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
+using Isotope.Code.Services.Config;
 using Isotope.Data;
 using Isotope.Data.Models;
+using Isotope.Data.Seed;
 using Isotope.Data.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -48,8 +50,16 @@ namespace Isotope.Code.Config
         /// </summary>
         private async Task InitDatabaseAsync(AppDbContext db)
         {
+            var demoCfg = Configuration.DemoMode ?? new DemoModeConfig(); // all false
+            
+            if (demoCfg.Enabled && demoCfg.ClearOnStartup)
+                await SeedData.ClearPreviousData();
+            
             await db.EnsureDatabaseCreatedAsync();
             await db.EnsureSystemItemsCreatedAsync();
+
+            if (demoCfg.Enabled && demoCfg.SeedSampleData)
+                await SeedData.SeedSampleDataAsync(db);
         }
     }
 }
