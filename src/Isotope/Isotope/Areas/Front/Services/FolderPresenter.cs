@@ -153,18 +153,28 @@ namespace Isotope.Areas.Front.Services
         /// </summary>
         private async Task<FolderContentsVM> GetFolderFilteredContentsAsync(FolderContentsRequestVM request)
         {
+            var folder = await _db.Folders
+                                  .AsNoTracking()
+                                  .Include(x => x.Tags)
+                                  .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
+            
+            var mediaQuery = _db.Media.AsNoTracking();
+            
             var tagIds = request.Tags.TryParseList<int>(",");
+            if (tagIds.Any())
+            {
+                var mediaCondition = GetMatchingMediaCondition(request, folder, tagIds);
+                var folderCondition = await GetMatchingFoldersConditionAsync(request, tagIds);
 
-            var mediaCondition = await GetMatchingMediaConditionAsync(request, tagIds);
-            var folderCondition = await GetMatchingFoldersConditionAsync(request, tagIds);
+                var condition = folderCondition == null
+                    ? mediaCondition
+                    : ExprHelper.Or(folderCondition, mediaCondition);
 
-            var condition = folderCondition == null ? mediaCondition : ExprHelper.Or(folderCondition, mediaCondition);
+                mediaQuery = mediaQuery.Where(condition);
+            }
 
-            var media = await _db.Media
-                                 .AsNoTracking()
-                                 .Where(condition)
-                                 .OrderBy(x => x.Order)
-                                 .ToListAsync();
+            var media = await mediaQuery.OrderBy(x => x.Order)
+                                        .ToListAsync();
 
             var datedMedia = TryFilterMediaByDate(request, media);
             
@@ -181,27 +191,38 @@ namespace Isotope.Areas.Front.Services
         {
             if (request.SearchMode == SearchMode.CurrentFolder)
                 return null;
-            
-            var query = _db.Folders.AsNoTracking();
-            
-            if (tagIds.Any())
-                query = query.Where(x => x.Tags.Any(y => tagIds.Contains(y.Id)));  
+
+            var query = _db.Folders
+                           .AsNoTracking()
+                           .Where(x => x.Tags.Any(y => tagIds.Contains(y.Tag.Id)));  
 
             if (request.SearchMode == SearchMode.CurrentFolderAndSubfolders)
                 query = query.Where(x => x.Path.StartsWith(request.Folder));
 
-            var folderKeys = await query.Select(x => x.Key).ToListAsync();
-            // todo: use all nested subfolders too
+            var matchedFolderPaths = await query.Select(x => x.Path).ToListAsync();
+            if (!matchedFolderPaths.Any())
+                return null;
+
+            var allSubfolders = await _db.Folders.Select(x => new {x.Key, x.Path}).ToListAsync(); // sic! retrieving all folders and checking on client side
+            var folderKeys = allSubfolders.Where(x => matchedFolderPaths.Any(y => x.Path.StartsWith(y)))
+                                          .Select(x => x.Key)
+                                          .ToList();
             return x => folderKeys.Contains(x.FolderKey);
         }
 
         /// <summary>
         /// Return a condition that matches media by tags.
         /// </summary>
-        private async Task<Expression<Func<Media, bool>>> GetMatchingMediaConditionAsync(FolderContentsRequestVM request, IReadOnlyList<int> tagIds)
+        private Expression<Func<Media, bool>> GetMatchingMediaCondition(FolderContentsRequestVM request, Folder folder, IReadOnlyList<int> tagIds)
         {
-            // todo
-            throw new NotImplementedException();
+            Expression<Func<Media, bool>> condition = x => x.Tags.Any(y => tagIds.Contains(y.Tag.Id));
+
+            if (request.SearchMode == SearchMode.CurrentFolder)
+                condition = ExprHelper.And(condition, x => x.FolderKey == folder.Key);
+            else if (request.SearchMode == SearchMode.CurrentFolderAndSubfolders)
+                condition = ExprHelper.And(condition, x => x.Folder.Path.StartsWith(folder.Path));
+
+            return condition;
         }
 
         /// <summary>
