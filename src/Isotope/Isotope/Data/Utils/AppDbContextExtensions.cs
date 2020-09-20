@@ -2,13 +2,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Impworks.Utils.Format;
 using Isotope.Code.Services.Config;
+using Isotope.Code.Utils;
 using Isotope.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Isotope.Data.Utils
 {
@@ -47,6 +47,18 @@ namespace Isotope.Data.Utils
                     EnumHelper.GetEnumValues<UserRole>()
                               .Select(name => new IdentityRole { Name = name.ToString(), NormalizedName = name.ToString().ToUpper() })
                 );
+            }
+
+            if (!db.Folders.Any())
+            {
+                db.Folders.Add(new Folder
+                {
+                    Caption = "Root",
+                    Depth = 0,
+                    Key = UniqueKey.Get(),
+                    Path = "/",
+                    Slug = ""
+                });
             }
             
             if (!db.DynamicConfig.Any())
