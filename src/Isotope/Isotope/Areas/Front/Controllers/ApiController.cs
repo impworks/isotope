@@ -68,7 +68,7 @@ namespace Isotope.Areas.Front.Controllers
         /// </summary>
         private async Task<UserContext> GetUserContextAsync()
         {
-            return await _ucm.GetUserContextAsync(Request);
+            return await _ucm.GetUserContextAsync(HttpContext);
         }
 
         #endregion

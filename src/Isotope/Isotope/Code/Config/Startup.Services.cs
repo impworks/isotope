@@ -1,4 +1,5 @@
 using Isotope.Areas.Front.Services;
+using Isotope.Code.Services.Config;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Isotope.Code.Config
@@ -11,6 +12,7 @@ namespace Isotope.Code.Config
         private void ConfigureAppServices(IServiceCollection services)
         {
             // frontend
+            services.AddScoped<ConfigService>();
             services.AddScoped<FolderPresenter>();
             services.AddScoped<TagsPresenter>();
             services.AddScoped<MediaPresenter>();

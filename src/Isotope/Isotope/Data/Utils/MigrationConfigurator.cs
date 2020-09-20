@@ -12,6 +12,9 @@ namespace Isotope.Data.Utils
     [UsedImplicitly]
     public class MigrationConfigurator: IDesignTimeDbContextFactory<AppDbContext>
     {
+        /// <summary>
+        /// Configures the data context for EF's migration generator tooling.
+        /// </summary>
         public AppDbContext CreateDbContext(string[] args)
         {
             var config = new ConfigurationBuilder()

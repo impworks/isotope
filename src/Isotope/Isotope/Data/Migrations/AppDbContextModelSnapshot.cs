@@ -222,7 +222,7 @@ namespace Isotope.Data.Migrations
                     b.Property<string>("FolderKey")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IncludeSubfolders")
+                    b.Property<int>("Mode")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Tags")
