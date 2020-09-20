@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Isotope.Data;
 using Isotope.Data.Models;
 using Isotope.Data.Utils;
@@ -39,9 +40,16 @@ namespace Isotope.Code.Config
             var sp = scope.ServiceProvider;
 
             var db = sp.GetService<AppDbContext>();
-            db.EnsureDatabaseCreatedAsync().GetAwaiter().GetResult();
-            
-            // todo: seed default data!
+            InitDatabaseAsync(db).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Performs database seeding.
+        /// </summary>
+        private async Task InitDatabaseAsync(AppDbContext db)
+        {
+            await db.EnsureDatabaseCreatedAsync();
+            await db.EnsureSystemItemsCreatedAsync();
         }
     }
 }
