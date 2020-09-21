@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using Impworks.Utils.Linq;
 using Impworks.Utils.Strings;
@@ -68,13 +69,14 @@ namespace Isotope.Demo
             var targetPath = Path.Combine("@media", folder.Key, key + ".jpg");
 
             var dir = Directory.GetCurrentDirectory();
-            var sourceFullPath = Path.Combine(dir, "Data", "Seed", "Content", path);
+            var sourceFullPath = Path.Combine(dir, "Demo", "Media", path);
             var targetFullPath = Path.Combine(dir, "wwwroot", targetPath);
             Directory.CreateDirectory(Path.GetDirectoryName(targetFullPath));
+
             File.Copy(sourceFullPath, targetFullPath);
-            File.Copy(sourceFullPath, MediaHelper.GetSizedMediaPath(targetFullPath, MediaSize.Small)); // no thumbnails for now
-            File.Copy(sourceFullPath, MediaHelper.GetSizedMediaPath(targetFullPath, MediaSize.Large));
-            
+            SaveThumbnail(sourceFullPath, targetFullPath, MediaSize.Small);
+            SaveThumbnail(sourceFullPath, targetFullPath, MediaSize.Large);
+
             var media = new Media
             {
                 Key = key,
@@ -88,9 +90,20 @@ namespace Isotope.Demo
                 Tags = new List<MediaTagBinding>()
             };
 
+            folder.MediaCount++;
             _db.Media.Add(media);
 
             return media;
+
+            static void SaveThumbnail(string source, string target, MediaSize size)
+            {
+                using var srcImg = Image.FromFile(source);
+                using var destImg = size == MediaSize.Small
+                    ? ImageHelper.ResizeToFill(srcImg, ImageHelper.Sizes[size])
+                    : ImageHelper.ResizeToFit(srcImg, ImageHelper.Sizes[size]);
+                var targetSized = MediaHelper.GetSizedMediaPath(target, size);
+                destImg.Save(targetSized);
+            }
         }
 
         /// <summary>

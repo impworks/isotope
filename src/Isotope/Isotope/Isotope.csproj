@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Front\ClientApp\source\config\" />
-    <Folder Include="Code\Utils\" />
     <Folder Include="Data\Migrations" />
     <Folder Include="Storage\" />
     <Folder Include="wwwroot\" />
@@ -34,6 +33,7 @@
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
     <PropertyGroup>
@@ -61,6 +61,51 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagBindingType.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagType.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\UserInfo.ts" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <None Update="Demo\Media\aby-1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\aby-2.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\aby-3.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\aby-4.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\brit-1.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\brit-2.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\brit-3.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\brit-4.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\brit-5.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\travel-1.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\travel-2.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\travel-3.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\travel-4.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Demo\Media\travel-5.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
