@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Isotope.Code.Services
 {
     /// <summary>
-    /// In-memory page cache service.
+    /// In-memory cache service.
     /// </summary>
     public class CacheService: IDisposable
     {

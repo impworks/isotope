@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Isotope.Data;
 using Isotope.Data.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Isotope.Demo
 {
@@ -13,13 +14,15 @@ namespace Isotope.Demo
         /// <summary>
         /// Creates sample data.
         /// </summary>
-        public static async Task SeedSampleDataAsync(AppDbContext db)
+        public static async Task SeedSampleDataAsync(AppDbContext db, UserManager<AppUser> userMgr)
         {
             var ctx = new SeedContext(db);
 
             SeedCatsFolders(ctx);
             SeedTravelFolders(ctx);
             SeedEdgeCaseFolders(ctx);
+
+            await SeedDefaultUserAsync(userMgr);
 
             await db.SaveChangesAsync();
         }
@@ -88,6 +91,16 @@ namespace Isotope.Demo
             var curr = deepFolder;
             for (var i = 1; i <= 10; i++)
                 curr = ctx.AddFolder("Subfolder " + i, "sub" + i, curr);
+        }
+
+        /// <summary>
+        /// Creates a sample user to test authorization.
+        /// </summary>
+        private static async Task SeedDefaultUserAsync(UserManager<AppUser> userMgr)
+        {
+            var user = new AppUser {UserName = "admin@example.com"};
+            await userMgr.CreateAsync(user, "123456");
+            await userMgr.AddToRoleAsync(user, nameof(UserRole.Admin));
         }
 
         /// <summary>

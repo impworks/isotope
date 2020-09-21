@@ -10,9 +10,6 @@
         }
     })
     export default class MainView extends Vue {
-        get folder(): string {
-            return this.$route.path;
-        }
     }
 </script>
 

@@ -9,6 +9,7 @@ using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
 using Isotope.Data.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Isotope.Demo
 {

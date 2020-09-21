@@ -12,6 +12,9 @@ namespace Isotope.Code.Config
         /// </summary>
         private void ConfigureAppServices(IServiceCollection services)
         {
+            // global
+            services.AddSingleton<CacheService>();
+            
             // frontend
             services.AddScoped<AuthService>();
             services.AddScoped<ConfigService>();

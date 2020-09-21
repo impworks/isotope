@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,7 +41,10 @@ namespace Isotope.Code.Config
                         };
                     });
 
-            services.AddMvc()
+            services.AddMvc(x =>
+                    {
+                        x.Filters.Add(typeof(CommonExceptionFilterAttribute));
+                    })
                     .AddNewtonsoftJson(opts =>
                     {
                         var convs = new List<JsonConverter>

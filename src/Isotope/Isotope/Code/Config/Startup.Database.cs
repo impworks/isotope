@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Isotope.Code.Services.Config;
 using Isotope.Data;
@@ -40,26 +41,27 @@ namespace Isotope.Code.Config
         {
             var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             var sp = scope.ServiceProvider;
-
-            var db = sp.GetService<AppDbContext>();
-            InitDatabaseAsync(db).GetAwaiter().GetResult();
+            InitDatabaseAsync(sp).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Performs database seeding.
         /// </summary>
-        private async Task InitDatabaseAsync(AppDbContext db)
+        private async Task InitDatabaseAsync(IServiceProvider sp)
         {
             var demoCfg = Configuration.DemoMode ?? new DemoModeConfig(); // all false
             
             if (demoCfg.Enabled && demoCfg.ClearOnStartup)
                 await SeedData.ClearPreviousData();
+
+            var db = sp.GetService<AppDbContext>();
+            var userMgr = sp.GetService<UserManager<AppUser>>(); 
             
             await db.EnsureDatabaseCreatedAsync();
             await db.EnsureSystemItemsCreatedAsync();
 
             if (demoCfg.Enabled && demoCfg.SeedSampleData)
-                await SeedData.SeedSampleDataAsync(db);
+                await SeedData.SeedSampleDataAsync(db, userMgr);
         }
     }
 }

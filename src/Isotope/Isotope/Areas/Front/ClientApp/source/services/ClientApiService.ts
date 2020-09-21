@@ -6,6 +6,8 @@ import { FolderContentsRequest } from "../vms/FolderContentsRequest";
 import { FolderContents } from "../vms/FolderContents";
 import { Tag } from "../vms/Tag";
 import { Media } from "../vms/Media";
+import { LoginRequest } from "../vms/LoginRequest";
+import { LoginResponse } from "../vms/LoginResponse";
 
 export class ClientApiService {
     // -----------------------------------
@@ -49,7 +51,15 @@ export class ClientApiService {
     async getMedia(key: string): Promise<Media> {
         return await this.invoke<Media>('media', { key: key });
     }
-    
+
+    /**
+     * Performs authorization.
+     */
+    async authorize(request: LoginRequest): Promise<LoginResponse> {
+        const url = this.getRequestUrl('auth/login');
+        const response = await axios.post<LoginResponse>(url, request);
+        return response.data;
+    }
 
     // -----------------------------------
     // Private helpers
@@ -59,7 +69,7 @@ export class ClientApiService {
      * Sends an API request to the specified method.
      */
     private async invoke<T>(method: string, query?: any): Promise<T> {
-        const url = this.$apiHost + '/@api/' + method + '?' + StaticHelper.getQuery(query, { sh: this.$userState.shareId });
+        const url = this.getRequestUrl(method, query);
         const cfg = this.getRequestConfig();
         const response = await axios.get<T>(url, cfg);
         return response.data;
@@ -73,5 +83,12 @@ export class ClientApiService {
         return user
             ? { headers: { authorization: 'Bearer ' + user.token } }
             : { };
+    }
+
+    /**
+     * Builds the API method URL using name and arguments.
+     */
+    private getRequestUrl(method: string, query?: any) {
+        return this.$apiHost + '/@api/' + method + '?' + StaticHelper.getQuery(query, { sh: this.$userState.shareId });
     }
 }
