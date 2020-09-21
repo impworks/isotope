@@ -45,14 +45,17 @@ namespace Isotope.Code.Config
         public void Configure(IApplicationBuilder app)
         {
             if (Environment.IsDevelopment())
+            {
                 app.UseSerilogRequestLogging();
+                app.UseCors();
+            }
 
             if (Configuration.WebServer.RequireHttps)
                 app.UseHttpsRedirection();
 
             if (Configuration.Debug.DetailedExceptions)
                 app.UseDeveloperExceptionPage();
-            
+
             InitDatabase(app);
             
             app.UseForwardedHeaders(GetforwardedHeadersOptions())

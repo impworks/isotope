@@ -2,6 +2,7 @@
 using Isotope.Code.Utils.Date;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -49,6 +50,16 @@ namespace Isotope.Code.Config
                 {
                     opts.Filters.Add(new RequireHttpsAttribute());
                 });
+            }
+
+            if (Environment.IsDevelopment())
+            {
+                services.AddCors(opts => opts.AddDefaultPolicy(x =>
+                {
+                    x.AllowAnyHeader()
+                     .AllowAnyMethod()
+                     .AllowAnyOrigin();
+                }));
             }
         }
     }
