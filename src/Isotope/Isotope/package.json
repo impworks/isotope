@@ -25,6 +25,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.5.2",
     "jquery": "^3.4.0",
+    "lodash.clonedeep": "^4.5.0",
     "popper.js": "^1.15.0",
     "vue": "^2.6.10",
     "vue-class-component": "^7.1.0",

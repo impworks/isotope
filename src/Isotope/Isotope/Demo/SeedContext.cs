@@ -6,9 +6,10 @@ using Impworks.Utils.Strings;
 using Isotope.Areas.Front.Dto;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
+using Isotope.Data;
 using Isotope.Data.Models;
 
-namespace Isotope.Data.Seed
+namespace Isotope.Demo
 {
     /// <summary>
     /// Helper class for fluently seeding default data.

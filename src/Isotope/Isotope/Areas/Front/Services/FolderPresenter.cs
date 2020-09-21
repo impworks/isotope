@@ -38,6 +38,7 @@ namespace Isotope.Areas.Front.Services
         {
             var query = _db.Folders
                            .AsNoTracking()
+                           .Where(x => x.Depth > 0)
                            .OrderBy(x => x.Caption)
                            .AsQueryable();
             
@@ -63,7 +64,7 @@ namespace Isotope.Areas.Front.Services
                 return new FolderVM[0];
             
             var rootDepth = source.Min(x => x.Depth);
-            return source.Where(x => x.Depth == rootDepth).Select(ProcessFolder).ToArray();
+            return source.Where(x => x.Depth == rootDepth).ToList().Select(ProcessFolder).ToArray();
 
             FolderVM ProcessFolder(Folder folder)
             {

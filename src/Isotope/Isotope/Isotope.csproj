@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Front\ClientApp\source\config\" />
-    <Folder Include="Areas\Front\ClientApp\source\vms\" />
     <Folder Include="Code\Utils\" />
     <Folder Include="Data\Migrations" />
     <Folder Include="Storage\" />
@@ -35,7 +34,6 @@
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.0" />
   </ItemGroup>
 
     <PropertyGroup>
@@ -43,8 +41,26 @@
     </PropertyGroup>
     
   <ItemGroup>
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\config\Injector.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\config\Router.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\front-main.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\ClientApiService.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\UserStateService.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Folder.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContents.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContentsRequest.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\LoginRequest.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\LoginResponse.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Media.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\MediaThumbnail.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\MediaType.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\SearchMode.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Tag.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagBinding.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagBindingLocation.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagBindingType.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagType.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\UserInfo.ts" />
   </ItemGroup>
 
 </Project>

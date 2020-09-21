@@ -1,7 +1,8 @@
 using System.IO;
 using System.Threading.Tasks;
+using Isotope.Data;
 
-namespace Isotope.Data.Seed
+namespace Isotope.Demo
 {
     /// <summary>
     /// Collection of seed methods.
