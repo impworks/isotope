@@ -352,6 +352,7 @@ MigrationBackup/
 Isotope.db
 Isotope.db-wal
 Isotope.db-shm
+Isotope.key
 wwwroot/
 .idea/
 .dist-tmp/

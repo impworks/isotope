@@ -63,7 +63,6 @@ namespace Isotope.Code.Config
                .UseRouting()
                .UseAuthentication()
                .UseAuthorization()
-               .UseSession()
                .UseRequestLocalization(GetRequestLocalizationOptions())
                .UseCookiePolicy()
                .UseEndpoints(x =>

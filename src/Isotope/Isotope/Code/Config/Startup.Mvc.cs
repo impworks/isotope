@@ -1,8 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -17,6 +23,25 @@ namespace Isotope.Code.Config
         {
             services.AddSingleton(p => Configuration);
             services.AddSingleton(p => Log.Logger);
+
+            var jwtKey = JwtHelper.GetKey();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(opts =>
+                    {
+                        opts.RequireHttpsMetadata = false;
+                        opts.SaveToken = true;
+                        opts.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = JwtHelper.Issuer,
+                            ValidAudience = JwtHelper.Audience,
+                            IssuerSigningKey = jwtKey,
+                            ClockSkew = TimeSpan.Zero
+                        };
+                    });
 
             services.AddMvc()
                     .AddNewtonsoftJson(opts =>
@@ -41,8 +66,6 @@ namespace Isotope.Code.Config
                 opts.AppendTrailingSlash = false;
                 opts.LowercaseUrls = false;
             });
-
-            services.AddSession();
 
             if (Configuration.WebServer.RequireHttps)
             {
