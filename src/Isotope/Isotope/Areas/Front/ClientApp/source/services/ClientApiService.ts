@@ -8,6 +8,7 @@ import { Tag } from "../vms/Tag";
 import { Media } from "../vms/Media";
 import { LoginRequest } from "../vms/LoginRequest";
 import { LoginResponse } from "../vms/LoginResponse";
+import { GalleryInfo } from "../vms/GalleryInfo";
 
 export class ClientApiService {
     // -----------------------------------
@@ -23,6 +24,13 @@ export class ClientApiService {
     // -----------------------------------
     // Public methods
     // -----------------------------------
+
+    /**
+     * Returns the information about the gallery.
+     */
+    async getInfo(): Promise<GalleryInfo> {
+        return await this.invoke<GalleryInfo>('info');
+    }
 
     /**
      * Returns the folder tree.

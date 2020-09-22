@@ -22,6 +22,7 @@ namespace Isotope.Code.Config
             services.AddScoped<TagsPresenter>();
             services.AddScoped<MediaPresenter>();
             services.AddScoped<UserContextManager>();
+            services.AddScoped<GalleryInfoPresenter>();
 
             // admin
         }

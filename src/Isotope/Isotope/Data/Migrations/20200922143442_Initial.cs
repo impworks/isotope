@@ -326,7 +326,7 @@ namespace Isotope.Data.Migrations
                 name: "SharedLinks",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 50, nullable: false),
+                    Key = table.Column<string>(maxLength: 50, nullable: false),
                     FolderKey = table.Column<string>(nullable: true),
                     Mode = table.Column<int>(nullable: false),
                     Tags = table.Column<string>(nullable: true),
@@ -335,7 +335,7 @@ namespace Isotope.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SharedLinks", x => x.Id);
+                    table.PrimaryKey("PK_SharedLinks", x => x.Key);
                     table.ForeignKey(
                         name: "FK_SharedLinks_Folders_FolderKey",
                         column: x => x.FolderKey,

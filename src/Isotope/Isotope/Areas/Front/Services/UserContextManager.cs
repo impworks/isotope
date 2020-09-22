@@ -26,17 +26,19 @@ namespace Isotope.Areas.Front.Services
         /// <summary>
         /// Returns the user context from current request.
         /// </summary>
-        public async Task<UserContext> GetUserContextAsync(HttpContext ctx)
+        public async Task<UserContext> GetUserContextAsync(HttpContext ctx, bool checkAuth)
         {
-            var link = await GetSharedLinkAsync(ctx.Request.Query["sh"].ToString());
-            var user = await GetUserAsync(ctx.User.Identity.Name);
-
-            if (_config.GetDynamicConfig().AllowGuests == false && link == null && user == null)
+            var linkId = ctx.Request.Query["sh"].ToString();
+            var link = await GetSharedLinkAsync(linkId, checkAuth);
+            var user = await GetUserAsync(ctx.User?.Identity?.Name);
+            
+            if (checkAuth && _config.GetDynamicConfig().AllowGuests == false && link == null && user == null)
                 throw new NotAllowedException("Unauthorized");
 
             return new UserContext
             {
                 User = user,
+                LinkId = linkId,
                 Link = link
             };
         }
@@ -46,6 +48,9 @@ namespace Isotope.Areas.Front.Services
         /// </summary>
         private async Task<AppUser> GetUserAsync(string username)
         {
+            if (string.IsNullOrEmpty(username))
+                return null;
+            
             return await _db.Users
                             .AsNoTracking()
                             .FirstOrDefaultAsync(x => x.UserName == username);
@@ -54,16 +59,16 @@ namespace Isotope.Areas.Front.Services
         /// <summary>
         /// Finds the link by ID.
         /// </summary>
-        private async Task<SharedLink> GetSharedLinkAsync(string linkKey)
+        private async Task<SharedLink> GetSharedLinkAsync(string linkKey, bool checkAuth)
         {
             if (string.IsNullOrEmpty(linkKey))
                 return null;
 
             var link = await _db.SharedLinks
                                 .AsNoTracking()
-                                .FirstOrDefaultAsync(x => x.Id == linkKey);
+                                .FirstOrDefaultAsync(x => x.Key == linkKey);
             
-            if(link == null)
+            if(checkAuth && link == null)
                 throw new NotAllowedException($"Link ({linkKey}) not found.");
 
             return link;

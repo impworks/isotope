@@ -13,6 +13,11 @@ namespace Isotope.Areas.Front.Dto
         public AppUser User { get; set; }
         
         /// <summary>
+        /// Link ID (may be invalid).
+        /// </summary>
+        public string LinkId { get; set; }
+        
+        /// <summary>
         /// Link associated with the current request.
         /// </summary>
         public SharedLink Link { get; set; }

@@ -173,11 +173,11 @@ namespace Isotope.Demo
         /// <summary>
         /// Adds a new shared link.
         /// </summary>
-        public SharedLink AddSharedLink(Folder folder = null, int[] tagIds = null, SearchMode? mode = null, string dateFrom = null, string dateTo = null)
+        public SharedLink AddSharedLink(Folder folder = null, int[] tagIds = null, SearchMode? mode = null, string dateFrom = null, string dateTo = null, string key = null)
         {
             var link = new SharedLink
             {
-                Id = UniqueKey.Get(),
+                Key = key ?? UniqueKey.Get(),
                 Folder = folder,
                 DateFrom = dateFrom,
                 DateTo = dateTo,

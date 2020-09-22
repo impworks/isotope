@@ -12,18 +12,29 @@ namespace Isotope.Areas.Front.Controllers
     [ApiController]
     public class ApiController: ControllerBase
     {
-        public ApiController(FolderPresenter folders, TagsPresenter tags, MediaPresenter media, UserContextManager ucm)
+        public ApiController(GalleryInfoPresenter info, FolderPresenter folders, TagsPresenter tags, MediaPresenter media, UserContextManager ucm)
         {
+            _info = info;
             _folders = folders;
             _tags = tags;
             _media = media;
             _ucm = ucm;
         }
 
+        private readonly GalleryInfoPresenter _info;
         private readonly FolderPresenter _folders;
         private readonly TagsPresenter _tags;
         private readonly MediaPresenter _media;
         private readonly UserContextManager _ucm;
+
+        /// <summary>
+        /// Returns basic info about the gallery.
+        /// </summary>
+        [HttpGet, Route("info")]
+        public async Task<GalleryInfoVM> GetInfo()
+        {
+            return await _info.GetInfoAsync(await GetUserContextAsync(checkAuth: false));
+        }
         
         /// <summary>
         /// Returns the entire folder tree.
@@ -66,9 +77,9 @@ namespace Isotope.Areas.Front.Controllers
         /// <summary>
         /// Returns the current user context.
         /// </summary>
-        private async Task<UserContext> GetUserContextAsync()
+        private async Task<UserContext> GetUserContextAsync(bool checkAuth = true)
         {
-            return await _ucm.GetUserContextAsync(HttpContext);
+            return await _ucm.GetUserContextAsync(HttpContext, checkAuth);
         }
 
         #endregion

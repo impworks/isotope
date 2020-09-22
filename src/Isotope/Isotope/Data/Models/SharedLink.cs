@@ -13,7 +13,7 @@ namespace Isotope.Data.Models
         /// </summary>
         [Key]
         [StringLength(50)]
-        public string Id { get; set; }
+        public string Key { get; set; }
         
         /// <summary>
         /// Root folder of the shared link.

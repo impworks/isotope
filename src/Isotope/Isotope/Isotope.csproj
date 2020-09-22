@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Front\ClientApp\source\components\mixins" />
     <Folder Include="Areas\Front\ClientApp\source\config\" />
     <Folder Include="Data\Migrations" />
     <Folder Include="Storage\" />
@@ -50,6 +51,7 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Folder.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContents.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContentsRequest.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\GalleryInfo.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\LoginRequest.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\LoginResponse.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Media.ts" />

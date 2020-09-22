@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Isotope.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200920181005_Initial")]
+    [Migration("20200922143442_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -219,7 +219,7 @@ namespace Isotope.Data.Migrations
 
             modelBuilder.Entity("Isotope.Data.Models.SharedLink", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("Key")
                         .HasColumnType("TEXT")
                         .HasMaxLength(50);
 
@@ -238,7 +238,7 @@ namespace Isotope.Data.Migrations
                     b.Property<string>("Tags")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("Key");
 
                     b.HasIndex("FolderKey");
 

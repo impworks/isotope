@@ -217,7 +217,7 @@ namespace Isotope.Data.Migrations
 
             modelBuilder.Entity("Isotope.Data.Models.SharedLink", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("Key")
                         .HasColumnType("TEXT")
                         .HasMaxLength(50);
 
@@ -236,7 +236,7 @@ namespace Isotope.Data.Migrations
                     b.Property<string>("Tags")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("Key");
 
                     b.HasIndex("FolderKey");
 
