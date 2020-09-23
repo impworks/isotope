@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using Impworks.Utils.Linq;
 using Impworks.Utils.Strings;
 using Isotope.Areas.Front.Dto;
@@ -188,6 +189,14 @@ namespace Isotope.Demo
             _db.SharedLinks.Add(link);
             
             return link;
+        }
+
+        /// <summary>
+        /// Commits current changes.
+        /// </summary>
+        public void SaveChanges()
+        {
+            _db.SaveChanges();
         }
     }
 }

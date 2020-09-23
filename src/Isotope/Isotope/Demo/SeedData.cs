@@ -50,6 +50,8 @@ namespace Isotope.Demo
             ctx.TagFolder(catsFolder, catsTag);
 
             ctx.TagPhoto(cat, kittyTag, TagBindingType.Depicted, "0.2,0.2,0.6,0.7");
+
+            ctx.AddSharedLink(catsFolder, key: "all-cats");
         }
 
         /// <summary>
@@ -76,6 +78,10 @@ namespace Isotope.Demo
             ctx.TagPhoto(tp3, sightTag);
             ctx.TagPhoto(tp4, italyTag);
             ctx.TagPhoto(tp5, italyTag);
+            
+            ctx.SaveChanges();
+
+            ctx.AddSharedLink(travelFolder, new[] {greeceTag.Id}, key: "travel-greece");
         }
 
         /// <summary>
