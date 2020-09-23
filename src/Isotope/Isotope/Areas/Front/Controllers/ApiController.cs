@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Isotope.Areas.Front.Dto;
 using Isotope.Areas.Front.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotope.Areas.Front.Controllers
@@ -10,6 +11,7 @@ namespace Isotope.Areas.Front.Controllers
     /// </summary>
     [Route("~/@api")]
     [ApiController]
+    [Authorize]
     public class ApiController: ControllerBase
     {
         public ApiController(GalleryInfoPresenter info, FolderPresenter folders, TagsPresenter tags, MediaPresenter media, UserContextManager ucm)

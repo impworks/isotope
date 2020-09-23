@@ -4,6 +4,7 @@ using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
@@ -26,8 +27,6 @@ namespace Isotope.Code.Config
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(opts =>
                     {
-                        opts.RequireHttpsMetadata = false;
-                        opts.SaveToken = true;
                         opts.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = true,
@@ -44,6 +43,7 @@ namespace Isotope.Code.Config
             services.AddMvc(x =>
                     {
                         x.Filters.Add(typeof(CommonExceptionFilterAttribute));
+                        x.Filters.Add(typeof(TryAuthorizeFilter));
                     })
                     .AddNewtonsoftJson(opts =>
                     {

@@ -1,15 +1,19 @@
 import { UserInfo } from "../vms/UserInfo";
+import { IObservable } from "../utils/Interfaces";
+import { Observable } from "../utils/Observable";
 
 export class UserStateService {
     
     public constructor() {
         this._user = this.getStoredUser();
+        this._onUserChanged = new Observable<UserInfo>();
     }
     
     private static USER_KEY = "isotope-auth-info";
     
     private _user: UserInfo;
     private _shareId: string;
+    private _onUserChanged: IObservable<UserInfo>;
     
     get user(): UserInfo {
         return this._user;
@@ -18,6 +22,7 @@ export class UserStateService {
     set user(value: UserInfo) {
         this._user = value;
         this.setStoredUser(value);
+        this.onUserChanged.notify(value);
     }
     
     get shareId(): string {
@@ -26,6 +31,10 @@ export class UserStateService {
     
     set shareId(value: string) {
         this._shareId = value;
+    }
+    
+    get onUserChanged(): IObservable<UserInfo> {
+        return this._onUserChanged;
     }
 
     /**

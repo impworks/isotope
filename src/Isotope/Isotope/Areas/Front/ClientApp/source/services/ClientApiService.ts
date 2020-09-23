@@ -79,6 +79,7 @@ export class ClientApiService {
     private async invoke<T>(method: string, query?: any): Promise<T> {
         const url = this.getRequestUrl(method, query);
         const cfg = this.getRequestConfig();
+        console.log('invoke config: ', cfg);
         const response = await axios.get<T>(url, cfg);
         return response.data;
     }
@@ -89,7 +90,7 @@ export class ClientApiService {
     private getRequestConfig(): AxiosRequestConfig {
         const user = this.$userState.user;
         return user
-            ? { headers: { authorization: 'Bearer ' + user.token } }
+            ? { headers: { Authorization: 'Bearer ' + user.token } }
             : { };
     }
 
