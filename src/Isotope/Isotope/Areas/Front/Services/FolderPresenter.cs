@@ -41,24 +41,26 @@ namespace Isotope.Areas.Front.Services
                            .Where(x => x.Depth > 0)
                            .OrderBy(x => x.Caption)
                            .AsQueryable();
+
+            Folder baseFolder = null;
             
             if (ctx.Link is SharedLink link)
             {
                 if(link.Mode == SearchMode.CurrentFolder)
                     return new FolderVM[0];
 
-                var folder = link.Folder;
-                query = query.Where(x => x.Path.StartsWith(folder.Path) && x.Depth > folder.Depth); // current folder is root, only include nested ones
+                baseFolder = link.Folder;
+                query = query.Where(x => x.Path.StartsWith(baseFolder.Path) && x.Depth > baseFolder.Depth); // current folder is root, only include nested ones
             }
 
             var folders = await query.ToListAsync();
-            return BuildFolderTree(folders);
+            return BuildFolderTree(folders, baseFolder);
         }
         
         /// <summary>
         /// Combines the folders into a tree.
         /// </summary>
-        private FolderVM[] BuildFolderTree(List<Folder> source)
+        private FolderVM[] BuildFolderTree(List<Folder> source, Folder baseFolder)
         {
             if(source.Count == 0)
                 return new FolderVM[0];
@@ -69,6 +71,8 @@ namespace Isotope.Areas.Front.Services
             FolderVM ProcessFolder(Folder folder)
             {
                 var vm = _mapper.Map<FolderVM>(folder);
+                if (baseFolder != null)
+                    vm.Path = vm.Path.Replace(baseFolder.Path, "");
                 
                 var nested = source.Where(x => x.Path.StartsWith(folder.Path) && x.Depth == folder.Depth + 1).ToList();
                 foreach (var n in nested)

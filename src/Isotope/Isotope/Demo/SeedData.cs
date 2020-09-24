@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using Isotope.Areas.Front.Dto;
 using Isotope.Data;
 using Isotope.Data.Models;
 using Microsoft.AspNetCore.Identity;
@@ -51,7 +52,7 @@ namespace Isotope.Demo
 
             ctx.TagPhoto(cat, kittyTag, TagBindingType.Depicted, "0.2,0.2,0.6,0.7");
 
-            ctx.AddSharedLink(catsFolder, key: "all-cats");
+            ctx.AddSharedLink(catsFolder, key: "all-cats", mode: SearchMode.CurrentFolderAndSubfolders);
         }
 
         /// <summary>

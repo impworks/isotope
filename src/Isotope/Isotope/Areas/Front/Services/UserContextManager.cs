@@ -65,6 +65,7 @@ namespace Isotope.Areas.Front.Services
                 return null;
 
             var link = await _db.SharedLinks
+                                .Include(x => x.Folder)
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(x => x.Key == linkKey);
             
