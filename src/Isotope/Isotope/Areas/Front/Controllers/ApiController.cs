@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Isotope.Areas.Front.Dto;
 using Isotope.Areas.Front.Services;
-using Microsoft.AspNetCore.Authorization;
+using Isotope.Code.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotope.Areas.Front.Controllers
@@ -11,7 +11,7 @@ namespace Isotope.Areas.Front.Controllers
     /// </summary>
     [Route("~/@api")]
     [ApiController]
-    [Authorize]
+    [ServiceFilter(typeof(TryAuthorizeFilter))]
     public class ApiController: ControllerBase
     {
         public ApiController(GalleryInfoPresenter info, FolderPresenter folders, TagsPresenter tags, MediaPresenter media, UserContextManager ucm)

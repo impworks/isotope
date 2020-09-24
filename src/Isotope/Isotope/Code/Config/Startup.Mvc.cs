@@ -22,6 +22,7 @@ namespace Isotope.Code.Config
         {
             services.AddSingleton(p => Configuration);
             services.AddSingleton(p => Log.Logger);
+            services.AddScoped<TryAuthorizeFilter>();
 
             var jwtKey = JwtHelper.GetKey();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -43,7 +44,6 @@ namespace Isotope.Code.Config
             services.AddMvc(x =>
                     {
                         x.Filters.Add(typeof(CommonExceptionFilterAttribute));
-                        x.Filters.Add(typeof(TryAuthorizeFilter));
                     })
                     .AddNewtonsoftJson(opts =>
                     {
