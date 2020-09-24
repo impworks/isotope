@@ -54,7 +54,7 @@ export default class FolderTreeItem extends Vue {
         border-top-color: rgba(0,0,0,0);
     }
 
-    &:hover, &.active {
+    &:hover {
         text-decoration: none;
         background-color: $gray-200;
     }
@@ -80,8 +80,8 @@ export default class FolderTreeItem extends Vue {
         padding: 0 1em;
         flex: 0 1 auto;
     }
-
-    &.opened {
+    
+    &.active {
         color: $white;
         background-color: $primary;
         border-color: $primary;
