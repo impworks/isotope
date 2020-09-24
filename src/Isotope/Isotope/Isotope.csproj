@@ -12,7 +12,6 @@
     <Folder Include="Areas\Front\ClientApp\source\components\mixins" />
     <Folder Include="Areas\Front\ClientApp\source\config\" />
     <Folder Include="Data\Migrations" />
-    <Folder Include="Storage\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -31,6 +30,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing" Version="5.8.64" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />

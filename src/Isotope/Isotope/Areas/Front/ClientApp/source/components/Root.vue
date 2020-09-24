@@ -52,8 +52,6 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
                 </div>
             </div>
         </div>
-        <div v-else>
-            <router-view />
-        </div>
+        <router-view v-else />
     </loading>
-</template>s
+</template>
