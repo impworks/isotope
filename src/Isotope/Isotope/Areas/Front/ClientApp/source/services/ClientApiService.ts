@@ -79,7 +79,6 @@ export class ClientApiService {
     private async invoke<T>(method: string, query?: any): Promise<T> {
         const url = this.getRequestUrl(method, query);
         const cfg = this.getRequestConfig();
-        console.log('invoke config: ', cfg);
         const response = await axios.get<T>(url, cfg);
         return response.data;
     }

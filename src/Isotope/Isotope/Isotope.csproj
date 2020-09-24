@@ -64,6 +64,7 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagBindingType.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagType.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\UserInfo.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\types\vue-fragment.d.ts" />
   </ItemGroup>
     
   <ItemGroup>
