@@ -9,9 +9,7 @@
             Folders
         }
     })
-    export default class Sidebar extends Vue {
-        isFiltersActive: boolean = false;
-    } 
+    export default class Sidebar extends Vue {} 
 </script>
 
 <template>
@@ -23,36 +21,10 @@
             >
                 isotope
             </router-link>
-            <div class="actions">
-                actions
-            </div>
-        </div>
-         <div class="sidebar-navigation">
-            <div class="switch">
-                <button 
-                    class="left"
-                    :class="{ 'active': !isFiltersActive }"
-                    @click="isFiltersActive = false"
-                >
-                    <i class="icon icon-folder"></i> 
-                    Folders
-                </button>
-                <button 
-                    class="right"
-                    :class="{ 'active': isFiltersActive }"
-                    @click="isFiltersActive = true"
-                >
-                    <i class="icon icon-filter"></i> 
-                    Filters
-                </button>
-                <div class="indicator"></div>
-            </div>
         </div>
         <div class="sidebar-content">
-            <transition name="slide-fade-left" mode="out-in">
-                <filters v-if="isFiltersActive"></filters>
-                <folders v-else></folders>
-            </transition>
+            <filters></filters>
+            <folders></folders>
         </div>
     </div>
 </template>
@@ -65,21 +37,22 @@
 
     .sidebar {
         z-index: 1;
+        width: 21rem;
         position: relative;
         background: $white;
-        width: 21rem;
-        box-shadow: $box-shadow-sm;
 
         @include media-breakpoint-down(sm) {
             top: 0;
             width: 100%;
             position: fixed;
+            border-bottom: 1px solid $gray-300;
         }
 
         @include media-breakpoint-up(md) {
             flex: 0 0 auto;
             display: flex;
             flex-direction: column;
+            border-right: 1px solid $gray-300;
         }
 
         .header {
@@ -110,73 +83,54 @@
             }
         }
 
-        &-navigation {
-            background: $gray-100;
+        &-button {
+            display: flex;
+            flex-direction: row;
+            color: $gray-800;
+            background: $gray-200;
+            padding: 0.6rem 1rem;
             border-top: 1px solid $gray-300;
             border-bottom: 1px solid $gray-300;
-            padding: 0.75rem 1rem;
+            transition: all 200ms linear;
 
-            @include media-breakpoint-down(sm) {
-                display: none;
+            &:hover {
+                color: $gray-800;
+                background: $gray-300;
+                border-color: $gray-400;
+                text-decoration: none;
+
+                .sidebar-button__arrow {
+                    color: $gray-700;
+                }
             }
 
-            .switch {
-                display: flex;
-                position: relative;
+            &__icon {
+                flex: 0 1 auto;
 
-                button {
-                    z-index: 2;
-                    flex: 1 1 50%;
-                    display: block;
-                    color: $gray-600;
-                    font-size: 0.9rem;
-                    font-weight: 500;
-                    line-height: 1;
-                    padding: 0.5em 1em;
-                    transition: color 200ms ease;
-                    border: 2px solid $gray-600;
-                    background: none;
+                > * {
+                    $size: 1.5em;
 
-                    &:focus {
-                        outline: none;
-                    }
-
-                    &.active {
-                        color: $white;
-                    }
-
-                    &.left {
-                        border-radius: $border-radius 0 0 $border-radius;
-                        border-right: 0;
-
-                        &.active ~ .indicator {
-                            left: 0;
-                        }
-                    }
-
-                    &.right {
-                        border-radius: 0 $border-radius $border-radius 0;
-                        border-left: 0;
-                        
-                        &.active ~ .indicator {
-                            left: 50%;
-                        }
-                    }
-
-                    .icon {
-                        margin-right: 0.1em;
-                    }
+                    width: $size;
+                    height: $size;
+                    background-position: 0 0;
+                    background-size: auto 100%;
+                    background-repeat: no-repeat;
                 }
+            }
 
-                .indicator {
-                    width: 50%;
-                    height: 100%;
-                    position: absolute;
-                    z-index: 1;
-                    background: $gray-600;
-                    border-radius: $border-radius;
-                    transition: left 200ms cubic-bezier(0.77, 0, 0.175, 1);
-                }
+            &__text {
+                flex: 1 1 auto;
+                padding: 0 1em;
+            }
+
+            &__arrow {
+                color: $gray-600;
+                transition: color 200ms linear,
+                            transform 150ms ease;
+            }
+
+            &.opened &__arrow {
+                transform: rotate(180deg);
             }
         }
 
@@ -191,7 +145,6 @@
                 flex: 1 1 auto;
                 display: flex;
                 flex-direction: column;
-                overflow: hidden;
             }
         }
     }

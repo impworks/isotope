@@ -32,5 +32,8 @@
             min-height: 0;
             overflow: auto;
         }
+
+        .folder {
+        }
     }
 </style>

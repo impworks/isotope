@@ -9,12 +9,16 @@ i.icon {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    &-filter:before {
+    &-arrow-down:before {
         content: "\e900";
+    }
+
+    &-filter:before {
+        content: "\e901";
     }
     
     &-folder:before {
-        content: "\e901";
+        content: "\e902";
     }
 }
   
