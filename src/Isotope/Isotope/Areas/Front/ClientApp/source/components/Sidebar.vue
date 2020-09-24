@@ -144,6 +144,7 @@
             @include media-breakpoint-up(md) {
                 flex: 1 1 auto;
                 display: flex;
+                min-height: 0;
                 flex-direction: column;
             }
         }
