@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="0.1.6" />
-    <PackageReference Include="Impworks.Utils" Version="1.0.44" />
+    <PackageReference Include="Impworks.Utils" Version="1.0.45" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="Mapster" Version="6.5.0" />
     <PackageReference Include="Mapster.EFCore" Version="1.0.0" />
