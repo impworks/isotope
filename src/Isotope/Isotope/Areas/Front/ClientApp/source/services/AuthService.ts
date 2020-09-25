@@ -2,7 +2,7 @@ import { UserInfo } from "../vms/UserInfo";
 import { IObservable } from "../utils/Interfaces";
 import { Observable } from "../utils/Observable";
 
-export class UserStateService {
+export class AuthService {
     
     public constructor() {
         this._user = this.getStoredUser();
@@ -12,7 +12,6 @@ export class UserStateService {
     private static USER_KEY = "isotope-auth-info";
     
     private _user: UserInfo;
-    private _shareId: string;
     private _onUserChanged: IObservable<UserInfo>;
     
     get user(): UserInfo {
@@ -25,14 +24,6 @@ export class UserStateService {
         this.onUserChanged.notify(value);
     }
     
-    get shareId(): string {
-        return this._shareId;
-    }
-    
-    set shareId(value: string) {
-        this._shareId = value;
-    }
-    
     get onUserChanged(): IObservable<UserInfo> {
         return this._onUserChanged;
     }
@@ -42,7 +33,7 @@ export class UserStateService {
      */
     private getStoredUser(): UserInfo {
         const ls = window.localStorage;
-        const raw = ls[UserStateService.USER_KEY];
+        const raw = ls[AuthService.USER_KEY];
         
         if(!raw)
             return null;
@@ -50,7 +41,7 @@ export class UserStateService {
         try {
             return JSON.parse(raw);
         } catch (e) {
-            ls.removeItem(UserStateService.USER_KEY);
+            ls.removeItem(AuthService.USER_KEY);
             return null;
         }
     }
@@ -61,6 +52,6 @@ export class UserStateService {
     private setStoredUser(user: UserInfo) {
         const ls = window.localStorage;
         const raw = JSON.stringify(user);
-        ls.setItem(UserStateService.USER_KEY, raw);
+        ls.setItem(AuthService.USER_KEY, raw);
     }
 }

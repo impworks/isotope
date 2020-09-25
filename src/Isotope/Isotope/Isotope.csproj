@@ -46,8 +46,9 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\config\Injector.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\config\Router.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\front-main.ts" />
-    <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\ClientApiService.ts" />
-    <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\UserStateService.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\ApiService.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\AuthService.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\FilterStateService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Folder.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContents.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContentsRequest.ts" />

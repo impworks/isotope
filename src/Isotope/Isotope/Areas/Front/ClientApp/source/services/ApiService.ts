@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { UserStateService } from "./UserStateService";
+import { AuthService } from "./AuthService";
 import { Folder } from "../vms/Folder";
 import { StaticHelper } from "../utils/StaticHelper";
 import { FolderContentsRequest } from "../vms/FolderContentsRequest";
@@ -9,15 +9,17 @@ import { Media } from "../vms/Media";
 import { LoginRequest } from "../vms/LoginRequest";
 import { LoginResponse } from "../vms/LoginResponse";
 import { GalleryInfo } from "../vms/GalleryInfo";
+import FilterStateService from "./FilterStateService";
 
-export class ClientApiService {
+export class ApiService {
     // -----------------------------------
     // Constructor
     // -----------------------------------
     
     public constructor(
         private $apiHost: string,
-        private $userState: UserStateService
+        private $auth: AuthService,
+        private $filter: FilterStateService
     ) {
     }
 
@@ -87,7 +89,7 @@ export class ClientApiService {
      * Returns the authorization config.
      */
     private getRequestConfig(): AxiosRequestConfig {
-        const user = this.$userState.user;
+        const user = this.$auth.user;
         return user
             ? { headers: { Authorization: 'Bearer ' + user.token } }
             : { };
@@ -97,6 +99,6 @@ export class ClientApiService {
      * Builds the API method URL using name and arguments.
      */
     private getRequestUrl(method: string, query?: any) {
-        return this.$apiHost + '/@api/' + method + '?' + StaticHelper.getQuery(query, { sh: this.$userState.shareId });
+        return this.$apiHost + '/@api/' + method + '?' + StaticHelper.getQuery(query, { sh: this.$filter.shareId });
     }
 }

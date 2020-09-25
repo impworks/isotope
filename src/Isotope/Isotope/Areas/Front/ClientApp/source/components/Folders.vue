@@ -1,15 +1,15 @@
 <script lang="ts">
     import { Component, Mixins } from "vue-property-decorator";
     import { HasAsyncState } from "./mixins/HasAsyncState";
-    import { ClientApiService } from "../services/ClientApiService";
     import { Dep } from "../utils/VueInjectDecorator";
+    import { ApiService } from "../services/ApiService";
     import { Folder } from "../vms/Folder";
     import FolderTreeItem from "./FolderTreeItem.vue";
     @Component({
         components: { FolderTreeItem }
     })
     export default class Folders extends Mixins(HasAsyncState()) {
-        @Dep('$api') $api: ClientApiService;
+        @Dep('$api') $api: ApiService;
         
         folders: Folder[] = null;
         
@@ -20,7 +20,7 @@
                     setTimeout(() => this.scrollToSelected(), 10);
                 })
             } catch (e) {
-                console.log('Failed to get folders.');
+                console.log('Failed to get folders.', e);
             }
         }
         

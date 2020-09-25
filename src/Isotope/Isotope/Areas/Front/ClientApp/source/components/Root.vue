@@ -1,27 +1,24 @@
 ﻿<script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
 import { Dep } from "../utils/VueInjectDecorator";
-import { ClientApiService } from "../services/ClientApiService";
-import { UserStateService } from "../services/UserStateService";
 import { GalleryInfo } from "../vms/GalleryInfo";
 import { HasAsyncState } from "./mixins/HasAsyncState";
 import { HasLifetime } from "./mixins/HasLifetime";
 import LoginForm from "./LoginForm.vue";
+import { ApiService } from "../services/ApiService";
 
 @Component({
     components: { LoginForm }
 })
 export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
-    @Dep('$api') $api: ClientApiService;
-    @Dep('$userState') $userState: UserStateService;
+    @Dep('$api') $api: ApiService;
     
     info: GalleryInfo = null;
     error: string = null;
     authRequired: boolean = true;
     
     async mounted() {
-        this.$userState.shareId = this.$route.query['sh'];
-        
+        this.$route
         try {
             await this.showLoading(async () => {
                 this.info = await this.$api.getInfo();
