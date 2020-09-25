@@ -10,6 +10,7 @@ import { LoginRequest } from "../vms/LoginRequest";
 import { LoginResponse } from "../vms/LoginResponse";
 import { GalleryInfo } from "../vms/GalleryInfo";
 import FilterStateService from "./FilterStateService";
+import { Func, ILookup } from "../utils/Interfaces";
 
 export class ApiService {
     // -----------------------------------
@@ -21,7 +22,10 @@ export class ApiService {
         private $auth: AuthService,
         private $filter: FilterStateService
     ) {
+        this._cache = {};
     }
+    
+    private _cache: ILookup<Promise<any>>;
 
     // -----------------------------------
     // Public methods
@@ -30,36 +34,36 @@ export class ApiService {
     /**
      * Returns the information about the gallery.
      */
-    async getInfo(): Promise<GalleryInfo> {
-        return await this.invoke<GalleryInfo>('info');
+    getInfo(): Promise<GalleryInfo> {
+        return this.invokeCached<GalleryInfo>('info');
     }
 
     /**
      * Returns the folder tree.
      */
-    async getFolderTree(): Promise<Folder[]> {
-        return await this.invoke<Folder[]>('tree');
+    getFolderTree(): Promise<Folder[]> {
+        return this.invokeCached<Folder[]>('tree');
     }
 
     /**
      * Returns the contents of a folder (with or without filtering).
      */
-    async getFolderContents(request: FolderContentsRequest): Promise<FolderContents> {
-        return await this.invoke<FolderContents>('folder', request);
+    getFolderContents(request: FolderContentsRequest): Promise<FolderContents> {
+        return this.invoke<FolderContents>('folder', request);
     }
 
     /**
      * Returns the list of known tags.
      */
-    async getTags(): Promise<Tag[]> {
-        return await this.invoke<Tag[]>('tags');
+    getTags(): Promise<Tag[]> {
+        return this.invokeCached<Tag[]>('tags');
     }
 
     /**
      * Returns the details of a media file.
      */
-    async getMedia(key: string): Promise<Media> {
-        return await this.invoke<Media>('media', { key: key });
+    getMedia(key: string): Promise<Media> {
+        return this.invoke<Media>('media', { key: key });
     }
 
     /**
@@ -100,5 +104,13 @@ export class ApiService {
      */
     private getRequestUrl(method: string, query?: any) {
         return this.$apiHost + '/@api/' + method + '?' + StaticHelper.getQuery(query, { sh: this.$filter.shareId });
+    }
+
+    /**
+     * Memoizes the first call, reusing the existing promise for later calls.
+     */
+    private invokeCached<T>(method: string): Promise<T> {
+        const result = this._cache[method];
+        return result ? result : (this._cache[method] = this.invoke<T>(method));
     }
 }
