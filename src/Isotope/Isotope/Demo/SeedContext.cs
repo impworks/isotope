@@ -87,7 +87,7 @@ namespace Isotope.Demo
                 Folder = folder,
                 FolderKey = folder.Key,
                 Order = order,
-                Path = "/" + targetPath,
+                Path = $"/@media/{folder.Key}/{key}.jpg",
                 Type = MediaType.Photo,
                 Tags = new List<MediaTagBinding>()
             };

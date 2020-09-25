@@ -1,13 +1,69 @@
 <script lang="ts">
-    import { Vue, Component } from "vue-property-decorator";
+import { Vue, Component, Mixins } from "vue-property-decorator";
     import Breadcrumbs from './Breadcrumbs.vue';
+import { HasLifetime } from "./mixins/HasLifetime";
+import { HasAsyncState } from "./mixins/HasAsyncState";
+import FilterStateService, { IFilterState } from "../services/FilterStateService";
+import { FolderContents } from "../vms/FolderContents";
+import { Dep } from "../utils/VueInjectDecorator";
+import { ApiService } from "../services/ApiService";
+import { Folder } from "../vms/Folder";
+import { TagBinding } from "../vms/TagBinding";
+import { MediaThumbnail } from "../vms/MediaThumbnail";
 
     @Component({
         components: { 
             Breadcrumbs
         }
     })
-    export default class Gallery extends Vue {} 
+    export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
+        @Dep('$api') $api: ApiService;
+        @Dep('$filter') $filter: FilterStateService;
+        
+        error: string = null;
+        empty: boolean = false;
+        contents: FolderContents = null;
+        
+        get isEmpty() {
+            return !this.contents?.media?.length
+                && !this.contents?.subfolders?.length;
+        }
+        
+        async mounted() {
+            this.observe(this.$filter.onStateChanged, x => this.refresh(x));
+            await this.refresh(this.$filter.state);
+        }
+        
+        async refresh(state: IFilterState) {
+            this.error = null;
+            
+            try {
+                await this.showLoading(async () => {
+                    this.contents = await this.$api.getFolderContents({
+                        folder: state.folder,
+                        searchMode: state.searchMode,
+                        dateFrom: state.dateFrom,
+                        dateTo: state.dateTo,
+                        tags: state.tags ? state.tags.join(',') : null
+                    });
+                })
+            } catch (e) {
+                this.error = 'Folder not found!';
+            }
+        }
+        
+        showFolder(f: Folder) {
+            this.$filter.update({ folder: f.path })
+        }
+        
+        filterByTag(t: TagBinding) {
+            this.$filter.update({ folder: '/', tags: [t.tag.id] });
+        }
+        
+        showMedia(m: MediaThumbnail) {
+            console.log('showing media: ', m);
+        }
+    } 
 </script>
 
 <template>
@@ -15,53 +71,56 @@
         <div class="gallery__header">
             <breadcrumbs/>
         </div>
-        <perfect-scrollbar class="gallery__content">
-            <div class="gallery__tags">
-                <a href="#" class="badge badge-primary">Primary</a>
-                <a href="#" class="badge badge-success">Success</a>
-                <a href="#" class="badge badge-danger">Danger</a>
-                <a href="#" class="badge badge-warning">Warning</a>
-                <a href="#" class="badge badge-info">Info</a>
-                <a href="#" class="badge badge-dark">Dark</a>
-            </div>
-            <div class="gallery__grid">
-                <div class="gallery__grid__row">
-                    <div
-                        class="gallery__item gallery__item_folder"
-                        v-for="i in 12"
-                        :key="i"
-                    >
-                        <a 
-                            href="#"
-                            class="gallery__item__content"
-                        >
-                            <div class="gallery__item__icon"></div>
-                            <div class="gallery__item__caption">
-                                Folder name
+            <perfect-scrollbar class="gallery__content">
+                <loading :is-loading="asyncState.isLoading" :is-full-page="true">
+                <div v-if="contents">
+                    <div v-if="contents.tags" class="gallery__tags">
+                        <a v-for="t in contents.tags" class="badge badge-primary clickable" @click.prevent="filterByTag(t)">{{t.tag.caption}}</a>
+                    </div>
+                    <div class="gallery__grid">
+                        <div v-if="contents.subfolders && contents.subfolders.length" class="gallery__grid__row">
+                            <div
+                                class="gallery__item gallery__item_folder"
+                                v-for="f in contents.subfolders"
+                                :key="f.path"
+                            >
+                                <a
+                                    class="gallery__item__content clickable"
+                                    @click.prevent="showFolder(f)"
+                                >
+                                    <div class="gallery__item__icon"></div>
+                                    <div class="gallery__item__caption">
+                                        {{f.caption}}
+                                    </div>
+                                </a>
                             </div>
-                        </a>
+                        </div>
+                        <div v-if="contents.media && contents.media.length" class="gallery__grid__row">
+                            <div 
+                                class="gallery__item gallery__item_picture clickable"
+                                v-for="m in contents.media"
+                                :key="m.key"
+                            >
+                                <a
+                                    class="gallery__item__content clickable"
+                                    @click.prevent="showMedia(m)"
+                                >
+                                    <div class="gallery__item__icon">
+                                        <div class="gallery__item__preview" :style="{backgroundImage: 'url(' + m.thumbnailPath + ')'}"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="isEmpty" class="alert alert-info ml-5 mr-5">
+                        This folder is empty.
                     </div>
                 </div>
-                <div class="gallery__grid__row">
-                    <div 
-                        href="#"
-                        class="gallery__item gallery__item_picture"
-                        v-for="i in 45"
-                        :key="i"
-                    >
-                        <a 
-                            href="#"
-                            class="gallery__item__content"
-                        >
-                            <div class="gallery__item__icon">
-                                <div class="gallery__item__preview" v-if="i % 5 == 0" style="background-image:url(../../images/test_image1.jpg)"></div>
-                                <div class="gallery__item__preview" v-else-if="i % 6 == 0" style="background-image:url(../../images/test_image2.jpg)"></div>
-                                <div class="gallery__item__preview" v-else-if="i % 4 == 0" style="background-image:url(../../images/test_image3.jpg)"></div>
-                            </div>
-                        </a>
-                    </div>
+                <div v-if="error" class="alert alert-danger ml-5 mr-5 mt-5">
+                    <strong>Error</strong><br/>
+                    {{error}}
                 </div>
-            </div>
+            </loading>
         </perfect-scrollbar>
     </div>
 </template>

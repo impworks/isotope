@@ -94,7 +94,7 @@ namespace Isotope.Areas.Front.Services
         public async Task<FolderContentsVM> GetFolderContentsAsync(FolderContentsRequestVM request, UserContext ctx)
         {
             var req = CombineRequest(request, ctx);
-            var hasFilter = req.Tags != null || req.DateFrom != null || req.DateTo == null;
+            var hasFilter = req.Tags != null || req.DateFrom != null || req.DateTo != null;
             return hasFilter
                 ? await GetFolderFilteredContentsAsync(req)
                 : await GetFolderSimpleContentsAsync(req, ctx);
@@ -128,6 +128,7 @@ namespace Isotope.Areas.Front.Services
             var folder = await _db.Folders
                                   .AsNoTracking()
                                   .Include(x => x.Tags)
+                                  .ThenInclude(x => x.Tag)
                                   .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
 
             var canShowSubfolders = ctx.Link == null || ctx.Link.Mode == SearchMode.CurrentFolderAndSubfolders;

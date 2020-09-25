@@ -48,7 +48,7 @@
             }
             
             this.crumbs = crumbs;
-            this.currentFolder = scope.find(x => x.path == path).caption;
+            this.currentFolder = scope.find(x => x.path == path)?.caption || 'Not found';
         }
         
         selectFolder(crumb: Crumb) {
