@@ -19,11 +19,15 @@
         
         async mounted() {
             this.currentPath = this.$filter.state.folder;
-            this.observe(this.$filter.onStateChanged, x => this.currentPath = x.folder);
+            this.observe(this.$filter.onStateChanged, x => {
+                this.currentPath = x.folder;
+                if(x.source !== 'tree')
+                    this.scrollToSelected();
+            });
             try {
                 await this.showLoading(async () => {
                     this.folders = await this.$api.getFolderTree();
-                    setTimeout(() => this.scrollToSelected(), 10);
+                    this.scrollToSelected();
                 })
             } catch (e) {
                 console.log('Failed to get folders.', e);
@@ -31,18 +35,20 @@
         }
         
         private scrollToSelected() {
-            const scroll = this.$refs.scroll.$el as HTMLElement;
-            if(scroll.scrollHeight <= scroll.clientHeight)
-                return;
-            
-            const selected = scroll.querySelector('.folder.active');
-            if(!selected)
-                return;
-            
-            let scrollRect = scroll.getBoundingClientRect();
-            let selectedRect = selected.getBoundingClientRect();
-            const top = selectedRect.top - scrollRect.top - selectedRect.height * 2 + 1;
-            scroll.scrollTo({behavior: "smooth", top: top});
+            setTimeout(() => {
+                const scroll = this.$refs.scroll.$el as HTMLElement;
+                if(scroll.scrollHeight <= scroll.clientHeight)
+                    return;
+
+                const selected = scroll.querySelector('.folder-tree-item.active');
+                if(!selected)
+                    return;
+
+                let scrollRect = scroll.getBoundingClientRect();
+                let selectedRect = selected.getBoundingClientRect();
+                const top = selectedRect.top - scrollRect.top - selectedRect.height * 2 + 1;
+                scroll.scrollTo({behavior: "smooth", top: top});
+            }, 10);
         }
     }
 </script>

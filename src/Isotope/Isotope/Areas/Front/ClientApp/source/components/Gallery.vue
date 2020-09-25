@@ -53,11 +53,11 @@ import { MediaThumbnail } from "../vms/MediaThumbnail";
         }
         
         showFolder(f: Folder) {
-            this.$filter.update({ folder: f.path })
+            this.$filter.update('view', { folder: f.path })
         }
         
         filterByTag(t: TagBinding) {
-            this.$filter.update({ folder: '/', tags: [t.tag.id] });
+            this.$filter.update('view', { folder: '/', tags: [t.tag.id] });
         }
         
         showMedia(m: MediaThumbnail) {

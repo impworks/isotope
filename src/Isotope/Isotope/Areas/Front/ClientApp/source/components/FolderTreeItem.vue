@@ -20,7 +20,7 @@ export default class FolderTreeItem extends Vue {
     }
     
     selectFolder() {
-        this.$filter.update({ folder: this.folder.path });
+        this.$filter.update('tree', { folder: this.folder.path });
     }
     
     @Watch('currentPath')

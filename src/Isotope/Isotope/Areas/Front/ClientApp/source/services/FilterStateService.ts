@@ -15,24 +15,28 @@ export interface IFilterState {
     [key: string]: any;
 }
 
+export interface IFilterStateChangedEvent extends IFilterState {
+    source: any;
+}
+
 export default class FilterStateService {
     constructor() {
         this._state = null;
         this._shareId = null;
-        this._onStateChanged = new Observable<IFilterState>();
+        this._onStateChanged = new Observable<IFilterStateChangedEvent>();
         this._onUrlChanged = new Observable<string>();
     }
     
     private _state: IFilterState;
     private _shareId: string;
-    private _onStateChanged: IObservable<IFilterState>;
+    private _onStateChanged: IObservable<IFilterStateChangedEvent>;
     private _onUrlChanged: IObservable<string>;
     
     get shareId(): string {
         return this._shareId;
     }
     
-    get onStateChanged(): IObservable<IFilterState> {
+    get onStateChanged(): IObservable<IFilterStateChangedEvent> {
         return this._onStateChanged;
     }
     
@@ -67,7 +71,7 @@ export default class FilterStateService {
      */
     updateFromRoute(route: Route) {
         this._shareId = getStr('sh');
-        this.update({
+        this.update(null, {
             folder: route.path,
             tags: getVal('tags', x => x.split(',').map(y => parseInt(y)).filter(y => y > 0)),
             dateFrom: getStr('dateFrom'),
@@ -89,9 +93,8 @@ export default class FilterStateService {
     /**
      * Updates the filter state.
      * Omitted values are unchanged, null values are reset.
-     * @param state
      */
-    update(state: Partial<IFilterState>) {
+    update(source: any, state: Partial<IFilterState>) {
         let isChanged = false;
         const isInitial = this._state === null;
         const newState = cloneDeep(this._state || {}) as IFilterState;
@@ -114,7 +117,7 @@ export default class FilterStateService {
 
         this._state = newState;
         if(!isInitial) {
-            this.onStateChanged.notify(cloneDeep(newState));
+            this.onStateChanged.notify({ ...cloneDeep(newState), source: source });
             this.onUrlChanged.notify(this.url);
         }
     }

@@ -52,7 +52,7 @@
         }
         
         selectFolder(crumb: Crumb) {
-            this.$filter.update({folder: crumb.path});
+            this.$filter.update('breadcrumb', {folder: crumb.path});
         }
     } 
     
