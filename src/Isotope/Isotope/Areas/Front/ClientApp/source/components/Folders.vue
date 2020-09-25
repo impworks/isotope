@@ -42,7 +42,7 @@
 </script>
 
 <template>
-    <perfect-scrollbar class="folders" ref="scroll">
+    <perfect-scrollbar class="folder-tree" ref="scroll">
         <loading :is-loading="asyncState.isLoading" :is-full-page="true">
             <FolderTreeItem v-for="f in folders" :folder="f" :key="f.path" :depth="0" />
         </loading>
@@ -50,7 +50,7 @@
 </template>
 
 <style lang="scss">
-.folders {
-    flex: 1 1 auto;
-}
+    .folder-tree {
+        flex: 1 1 auto;
+    }
 </style>

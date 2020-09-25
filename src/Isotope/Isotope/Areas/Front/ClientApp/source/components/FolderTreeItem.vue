@@ -21,12 +21,13 @@ export default class FolderTreeItem extends Vue {
 <template>
     <fragment>
         <a
+            class="folder-tree-item"
             :href="folder.path"
-            :class="{folder: true, active: active}"
+            :class="{active: active}"
             :key="folder.path"
         >
-            <div class="folder-icon" :style="{marginLeft: depth + 'em'}"></div>
-            <div class="folder-name">{{ folder.caption }}</div>
+            <div class="folder-tree-item__icon" :style="{marginLeft: depth + 'em'}"></div>
+            <div class="folder-tree-item__name">{{ folder.caption }}</div>
             <div v-if="folder.subfolders && folder.subfolders.length" class="float-right">
                 <span class="clickable" @click.prevent="expanded = !expanded">{{expanded ? '[V]' : '[^]'}}</span>
             </div>
@@ -42,7 +43,7 @@ export default class FolderTreeItem extends Vue {
 @import "./node_modules/bootstrap/scss/functions";
 @import "./node_modules/bootstrap/scss/variables";
 
-.folder {
+.folder-tree-item {
     display: flex;
     flex-direction: row;
     padding: 0.5em 1em;
@@ -64,7 +65,7 @@ export default class FolderTreeItem extends Vue {
         flex: 0 0 auto;
     }
 
-    &-icon {
+    &__icon {
         $size: 1.5em;
 
         width: $size;
@@ -75,7 +76,7 @@ export default class FolderTreeItem extends Vue {
         background-repeat: no-repeat;
     }
 
-    &-name {
+    &__name {
         flex-grow: 1;
         padding: 0 1em;
         flex: 0 1 auto;
@@ -86,11 +87,11 @@ export default class FolderTreeItem extends Vue {
         background-color: $primary;
         border-color: $primary;
 
-        & + .folder {
+        & + .folder-tree-item {
             border-top-color: rgba(0,0,0,0);
         }
 
-        .folder-icon {
+        .folder-tree-item__icon {
             background-position: 0 100%;
         }
     }
