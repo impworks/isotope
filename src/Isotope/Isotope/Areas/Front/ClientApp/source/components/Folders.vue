@@ -5,15 +5,21 @@
     import { ApiService } from "../services/ApiService";
     import { Folder } from "../vms/Folder";
     import FolderTreeItem from "./FolderTreeItem.vue";
+    import FilterStateService from "../services/FilterStateService";
+    import { HasLifetime } from "./mixins/HasLifetime";
     @Component({
         components: { FolderTreeItem }
     })
-    export default class Folders extends Mixins(HasAsyncState()) {
+    export default class Folders extends Mixins(HasAsyncState(), HasLifetime) {
         @Dep('$api') $api: ApiService;
+        @Dep('$filter') $filter: FilterStateService;
         
+        currentPath: string = null;
         folders: Folder[] = null;
         
         async mounted() {
+            this.currentPath = this.$filter.state.folder;
+            this.observe(this.$filter.onStateChanged, x => this.currentPath = x.folder);
             try {
                 await this.showLoading(async () => {
                     this.folders = await this.$api.getFolderTree();
@@ -44,7 +50,7 @@
 <template>
     <perfect-scrollbar class="folder-tree" ref="scroll">
         <loading :is-loading="asyncState.isLoading" :is-full-page="true">
-            <FolderTreeItem v-for="f in folders" :folder="f" :key="f.path" :depth="0" />
+            <FolderTreeItem v-for="f in folders" :folder="f" :key="f.path" :depth="0" :current-path="currentPath" />
         </loading>
     </perfect-scrollbar>
 </template>

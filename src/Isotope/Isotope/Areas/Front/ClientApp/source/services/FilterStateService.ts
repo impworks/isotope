@@ -40,6 +40,10 @@ export default class FilterStateService {
         return this._onUrlChanged;
     }
     
+    get state(): IFilterState {
+        return cloneDeep(this._state);
+    }
+    
     get url(): string {
         const s = this._state;
         const query = StaticHelper.getQuery({
@@ -50,7 +54,7 @@ export default class FilterStateService {
             sh: this.shareId
         });
         
-        return query ? s + '?' + query : query;
+        return s.folder + (query ? '?' + query : '');
     }
 
     // -----------------------------------
@@ -89,6 +93,7 @@ export default class FilterStateService {
      */
     update(state: Partial<IFilterState>) {
         let isChanged = false;
+        const isInitial = this._state === null;
         const newState = cloneDeep(this._state || {}) as IFilterState;
         
         for(let key in state) {
@@ -108,7 +113,9 @@ export default class FilterStateService {
         }
 
         this._state = newState;
-        this.onStateChanged.notify(cloneDeep(newState));
-        this.onUrlChanged.notify(this.url);
-    }    
+        if(!isInitial) {
+            this.onStateChanged.notify(cloneDeep(newState));
+            this.onUrlChanged.notify(this.url);
+        }
+    }
 }

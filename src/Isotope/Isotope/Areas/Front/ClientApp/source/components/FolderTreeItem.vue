@@ -1,19 +1,32 @@
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import { Folder } from "../vms/Folder";
+import { Dep } from "../utils/VueInjectDecorator";
+import FilterStateService from "../services/FilterStateService";
 
 @Component
 export default class FolderTreeItem extends Vue {
+    @Dep('$filter') $filter: FilterStateService;
+    
     @Prop({ required: true }) folder: Folder;
     @Prop({ required: true }) depth: number;
+    @Prop({ required: true }) currentPath: string;
     
     expanded: boolean = false;
     active: boolean = false;
     
     mounted() {
-        const path = this.$route.path;
-        this.expanded = path.startsWith(this.folder.path);
-        this.active = path === this.folder.path;
+        this.refreshState();
+    }
+    
+    selectFolder() {
+        this.$filter.update({ folder: this.folder.path });
+    }
+    
+    @Watch('currentPath')
+    refreshState() {
+        this.expanded = this.currentPath.startsWith(this.folder.path);
+        this.active = this.currentPath === this.folder.path;
     }
 }
 </script>
@@ -21,10 +34,10 @@ export default class FolderTreeItem extends Vue {
 <template>
     <fragment>
         <a
-            class="folder-tree-item"
-            :href="folder.path"
+            class="folder-tree-item clickable"
             :class="{active: active}"
             :key="folder.path"
+            @click.prevent="selectFolder()"
         >
             <div class="folder-tree-item__icon" :style="{marginLeft: depth + 'em'}"></div>
             <div class="folder-tree-item__name">{{ folder.caption }}</div>
@@ -33,7 +46,7 @@ export default class FolderTreeItem extends Vue {
             </div>
         </a>
         <div v-if="folder.subfolders && folder.subfolders.length && expanded">
-            <FolderTreeItem v-for="s in folder.subfolders" :folder="s" :key="s.path" :depth="depth + 1" />
+            <FolderTreeItem v-for="s in folder.subfolders" :folder="s" :key="s.path" :depth="depth + 1" :current-path="currentPath" />
         </div>
     </fragment>
 </template>
