@@ -10,7 +10,7 @@
 </script>
 
 <template>
-    <fragment>
+    <div>
         <div v-if="isLoading && isFullPage" class="d-flex align-items-center justify-content-center flex-grow-1 overflow-hidden">
             <div class="spinner-border" style="width: 3rem; height: 3rem;"></div>
         </div>
@@ -19,7 +19,7 @@
             <span>{{text}}</span>
         </div>
         <slot v-if="!isLoading"></slot>
-    </fragment>
+    </div>
 </template>
 
 

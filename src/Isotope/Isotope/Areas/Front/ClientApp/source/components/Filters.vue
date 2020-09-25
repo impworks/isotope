@@ -20,7 +20,7 @@
         <a 
             href="#"
             class="sidebar-button"
-            :class="{ 'opened': isOpened }"
+            :class="{ 'sidebar-button_opened': isOpened }"
             @click="isOpened = !isOpened"
         >
             <div class="sidebar-button__icon">

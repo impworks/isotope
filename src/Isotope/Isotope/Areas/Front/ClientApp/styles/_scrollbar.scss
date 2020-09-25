@@ -46,14 +46,14 @@
     &__rail-y:focus,
     &__rail-x#{&}--clicking,
     &__rail-y#{&}--clicking {
-        background-color: $gray-200;
+        background-color: $gray-300;
         opacity: 0.9;
     }
 
     &__thumb-x,
     &__thumb-y {
         position: absolute;
-        background-color: $gray-500;
+        background-color: $gray-600;
         border-radius: 6px;
         transition: width .2s ease-in-out,
                     background-color .2s linear;
@@ -72,14 +72,14 @@
     &__rail-x:hover > &__thumb-x,
     &__rail-x:focus > &__thumb-x,
     &__rail-x#{&}--clicking &__thumb-x {
-        background-color: $gray-600;
+        background-color: $gray-700;
         height: 11px;
     }
 
     &__rail-y:hover > &__thumb-y,
     &__rail-y:focus > &__thumb-y,
     &__rail-y#{&}--clicking &__thumb-y {
-        background-color: $gray-600;
+        background-color: $gray-700;
         width: 11px;
     }
 

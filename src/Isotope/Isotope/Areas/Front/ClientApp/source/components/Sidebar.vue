@@ -14,7 +14,7 @@
 
 <template>
     <div class="sidebar">
-        <div class="header">
+        <div class="sidebar__header">
             <router-link
                 to="/"
                 class="logo"
@@ -22,7 +22,7 @@
                 isotope
             </router-link>
         </div>
-        <div class="sidebar-content">
+        <div class="sidebar__content">
             <filters></filters>
             <folders></folders>
         </div>
@@ -55,7 +55,7 @@
             border-right: 1px solid $gray-300;
         }
 
-        .header {
+        &__header {
             flex: 0 0 auto;
             display: flex;
             flex-direction: row;
@@ -64,7 +64,7 @@
             padding: 1rem;
 
             .logo {
-                $font-size: 1.8rem;
+                $font-size: 1.625rem;
 
                 display: block;
                 color: $gray-900;
@@ -129,12 +129,12 @@
                             transform 150ms ease;
             }
 
-            &.opened &__arrow {
+            &_opened &__arrow {
                 transform: rotate(180deg);
             }
         }
 
-        &-content {
+        &__content {
             position: relative;
 
             @include media-breakpoint-down(sm) {

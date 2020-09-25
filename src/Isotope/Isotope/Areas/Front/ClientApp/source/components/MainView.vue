@@ -27,14 +27,18 @@
     @import "./node_modules/bootstrap/scss/mixins";
 
     .main-view {
-        
+        display: flex;
+        min-height: 0;
+        flex: 1 0 auto;
+
         @include media-breakpoint-down(sm) {
-            padding-top: 3.8rem;
+            padding-top: 3.6875rem;
+            flex-direction: column;
         }
 
         @include media-breakpoint-up(md) {
             height: 100%;
-            display: flex;
+            overflow: hidden;
             flex-direction: row;
         }
     }
