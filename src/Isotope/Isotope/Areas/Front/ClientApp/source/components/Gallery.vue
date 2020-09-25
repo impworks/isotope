@@ -1,31 +1,34 @@
 <script lang="ts">
     import { Vue, Component } from "vue-property-decorator";
+    import Breadcrumbs from './Breadcrumbs.vue';
 
-    @Component
+    @Component({
+        components: { 
+            Breadcrumbs
+        }
+    })
     export default class Gallery extends Vue {} 
 </script>
 
 <template>
     <div class="gallery">
         <div class="gallery__header">
-            <ul class="breadcrumbs">
-                <li class="breadcrumbs__item">
-                    <a href="#">My gallery</a>
-                </li>
-                <li class="breadcrumbs__item">
-                    <a href="#">Subfolder</a>
-                </li>
-                <li class="breadcrumbs__item breadcrumbs__item_active">
-                    Active folder
-                </li>
-            </ul>
+            <breadcrumbs/>
         </div>
         <perfect-scrollbar class="gallery__content">
+            <div class="gallery__tags">
+                <a href="#" class="badge badge-primary">Primary</a>
+                <a href="#" class="badge badge-success">Success</a>
+                <a href="#" class="badge badge-danger">Danger</a>
+                <a href="#" class="badge badge-warning">Warning</a>
+                <a href="#" class="badge badge-info">Info</a>
+                <a href="#" class="badge badge-dark">Dark</a>
+            </div>
             <div class="gallery__grid">
                 <div class="gallery__grid__row">
                     <div
                         class="gallery__item gallery__item_folder"
-                        v-for="i in 13"
+                        v-for="i in 12"
                         :key="i"
                     >
                         <a 
@@ -91,6 +94,10 @@
             background: $gray-200;
         }
 
+        &__tags {
+            padding: 1rem 1rem 0;
+        }
+
         &__grid {
             padding: 0.5rem 0.5rem 1.5rem;
 
@@ -101,27 +108,11 @@
         }
 
         &__item {
-            flex: 0 0 33.3333333333%;
-            max-width: 33.3333333333%;
-
-            @include media-breakpoint-up(sm) {
-                flex: 0 0 25%;
-                max-width: 25%;
-            }
+            flex: 0 0 auto;
+            flex-basis: 9rem;
 
             @include media-breakpoint-up(md) {
-                flex: 0 0 20%;
-                max-width: 20%;
-            }
-            
-            @include media-breakpoint-up(lg) {
-                flex: 0 0 16.6666666667%;
-                max-width: 16.6666666667%;
-            }
-
-            @include media-breakpoint-up(xl) {
-                flex: 0 0 14.2857142857%;
-                max-width: 14.2857142857%;
+                flex-basis: 11.3rem;
             }
 
             &__content {
@@ -159,45 +150,20 @@
             }
 
             &_picture &__icon {
-                height: 5rem;
+                height: 7rem;
                 background-color: $gray-200;
                 background-image: url(../../images/image.svg);
                 background-size: auto 4rem;
+
+                @include media-breakpoint-up(md) {
+                    flex-basis: 9.3rem;
+                }
             }
 
             &_picture &__preview {
                 width: 100%;
                 height: 100%;
                 background-size: cover;
-            }
-        }
-    }
-    
-    .breadcrumbs {
-        list-style-type: none;
-        margin: 0;
-        padding: 1rem;
-        display: flex;
-        flex-direction: row;
-        line-height: 1.625;
-
-        &__item {
-            position: relative;
-            padding: 0 2em 0 0;
-            
-            &:not(:last-child):after {
-                top: 0;
-                right: 0;
-                width: 2em;
-                content: '>';
-                color: $gray-500;
-                position: absolute;
-                text-align: center;
-                display: inline-block;
-            }
-
-            &_active {
-                font-weight: 500;
             }
         }
     }
