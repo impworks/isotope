@@ -140,6 +140,10 @@ namespace Isotope.Areas.Front.Services
                            .ToArrayAsync()
                 : new Folder[0];
 
+            if (ctx.Link?.Folder is Folder root)
+                foreach (var sf in subfolders)
+                    sf.Path = sf.Path.Replace(root.Path, "");
+
             var media = await _db.Media
                                  .AsNoTracking()
                                  .Where(x => x.FolderKey == folder.Key)
