@@ -41,9 +41,6 @@ export default class FolderTreeItem extends Vue {
         >
             <div class="folder-tree-item__icon" :style="{marginLeft: depth + 'em'}"></div>
             <div class="folder-tree-item__name">{{ folder.caption }}</div>
-            <div v-if="folder.subfolders && folder.subfolders.length" class="float-right">
-                <span class="clickable" @click.prevent="expanded = !expanded">{{expanded ? '[V]' : '[^]'}}</span>
-            </div>
         </a>
         <div v-if="folder.subfolders && folder.subfolders.length && expanded">
             <FolderTreeItem v-for="s in folder.subfolders" :folder="s" :key="s.path" :depth="depth + 1" :current-path="currentPath" />

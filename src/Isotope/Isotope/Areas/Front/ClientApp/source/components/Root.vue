@@ -29,6 +29,7 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
         try {
             await this.showLoading(async () => {
                 this.info = await this.$api.getInfo();
+                document.title = this.info.caption;
                 this.authRequired = !this.info.allowGuests && !this.info.isAuthorized;
                 if(this.info.isLinkValid === false) {
                     this.error = 'The specified share link is invalid.';
