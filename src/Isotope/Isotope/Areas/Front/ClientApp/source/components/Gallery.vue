@@ -1,6 +1,6 @@
 <script lang="ts">
-import { Vue, Component, Mixins } from "vue-property-decorator";
-    import Breadcrumbs from './Breadcrumbs.vue';
+import { Component, Mixins } from "vue-property-decorator";
+import Breadcrumbs from './Breadcrumbs.vue';
 import { HasLifetime } from "./mixins/HasLifetime";
 import { HasAsyncState } from "./mixins/HasAsyncState";
 import FilterStateService, { IFilterState } from "../services/FilterStateService";
@@ -10,8 +10,9 @@ import { ApiService } from "../services/ApiService";
 import { Folder } from "../vms/Folder";
 import { TagBinding } from "../vms/TagBinding";
 import { MediaThumbnail } from "../vms/MediaThumbnail";
+import { SearchMode } from "../vms/SearchMode";
 
-    @Component({
+@Component({
         components: { 
             Breadcrumbs
         }
@@ -57,7 +58,7 @@ import { MediaThumbnail } from "../vms/MediaThumbnail";
         }
         
         filterByTag(t: TagBinding) {
-            this.$filter.update('view', { folder: '/', tags: [t.tag.id] });
+            this.$filter.update('view', { folder: '/', searchMode: SearchMode.Everywhere, tags: [t.tag.id] });
         }
         
         showMedia(m: MediaThumbnail) {

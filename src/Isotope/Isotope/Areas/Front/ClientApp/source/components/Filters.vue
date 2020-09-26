@@ -1,27 +1,62 @@
 <script lang="ts">
-    import { Vue, Component } from "vue-property-decorator";
-    import TransitionExpand from './TransitionExpand.vue';
+import { Component, Mixins, Watch } from "vue-property-decorator";
+import TransitionExpand from './TransitionExpand.vue';
+import { HasLifetime } from "./mixins/HasLifetime";
+import { HasAsyncState } from "./mixins/HasAsyncState";
+import { Dep } from "../utils/VueInjectDecorator";
+import { ApiService } from "../services/ApiService";
+import FilterStateService, { IFilterState } from "../services/FilterStateService";
 
     @Component({
         components: { 
             TransitionExpand
         }
     })
-    export default class Filters extends Vue {
-        isOpened: boolean = true;
-
-        selectedTags: string[] = null;
-        tags: string[] = ['tag 1', 'tag 2', 'tag 3', 'tag 4', 'tag 5', 'tag 6'];
+    export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
+        @Dep('$api') $api: ApiService;
+        @Dep('$filter') $filter: FilterStateService;
+        
+        isOpen: boolean = false;
+        filter: IFilterState = {};
+        tags: string[] = null;
+        
+        async mounted() {
+            this.observe(this.$filter.onStateChanged, x => {
+                this.filter = { tags: x.tags, searchMode: x.searchMode, dateFrom: x.dateFrom, dateTo: x.dateTo };
+                if(!this.isOpen) {
+                    if(x.tags?.length || x.dateTo || x.dateFrom)
+                        this.isOpen = true;
+                }
+            });
+            
+            try {
+                await this.showLoading(async () => {
+                    this.tags = await this.$api.getTags();
+                });
+            } catch (e) {
+                console.log('Failed to load tags', e);
+            }
+        }
+        
+        @Watch('filter', { deep: true })
+        onFilterChanged() {
+            this.$filter.update('filters', { ...this.filter });
+        }
+        
+        toggleOpen() {
+            if(this.isOpen)
+                this.filter = { tags: null, dateFrom: null, dateTo: null, searchMode: null };
+            this.isOpen = !this.isOpen;
+        }
     } 
 </script>
 
 <template>
     <div class="filters">
         <a 
-            href="#"
-            class="sidebar-button"
-            :class="{ 'sidebar-button_opened': isOpened }"
-            @click="isOpened = !isOpened"
+            class="sidebar-button clickable"
+            :class="{ 'sidebar-button_opened': isOpen }"
+            @click.prevent="toggleOpen()"
         >
             <div class="sidebar-button__icon">
                 <div class="filter-icon"></div>
@@ -34,41 +69,41 @@
             </div>
         </a>
         <transition-expand>
-            <div v-if="isOpened">
+            <div v-if="isOpen">
                 <div class="filters__filter">
                     <h6>Search in</h6>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-                        <label class="form-check-label" for="exampleRadios1">
+                        <input class="form-check-input" type="radio" id="sm-current-folder" v-model="filter.searchMode" :value="1">
+                        <label class="form-check-label" for="sm-current-folder">
                             Current folder
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-                        <label class="form-check-label" for="exampleRadios2">
+                        <input class="form-check-input" type="radio" id="sm-current-folder-nested" v-model="filter.searchMode" :value="2">
+                        <label class="form-check-label" for="sm-current-folder-nested">
                             Current folder and subfolders
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3">
-                        <label class="form-check-label" for="exampleRadios3">
+                        <input class="form-check-input" type="radio" id="sm-everywhere" v-model="filter.searchMode" :value="3">
+                        <label class="form-check-label" for="sm-everywhere">
                             Everywhere
                         </label>
                     </div>
                 </div>
                 <div class="filters__filter">
                     <h6>Tags</h6>
-                    <v-select multiple v-model="selectedTags" :options="tags" />
+                    <v-select multiple v-model="filter.tags" :options="tags" label="caption" :reduce="x => x.id" />
                 </div>
                 <div class="filters__filter">
                     <h6>Date range</h6>
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <datepicker class="date"></datepicker>
+                            <datepicker class="date" v-model="filter.dateFrom" />
                         </div>
                         <div class="px-1">—</div>
                         <div>
-                            <datepicker class="date"></datepicker>
+                            <datepicker class="date" v-model="filter.dateTo" />
                         </div>
                     </div>
                 </div>
