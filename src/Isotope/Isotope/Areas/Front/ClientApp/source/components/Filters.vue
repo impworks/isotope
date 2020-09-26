@@ -6,8 +6,9 @@ import { HasAsyncState } from "./mixins/HasAsyncState";
 import { Dep } from "../utils/VueInjectDecorator";
 import { ApiService } from "../services/ApiService";
 import FilterStateService, { IFilterState } from "../services/FilterStateService";
+import { SearchMode } from "../vms/SearchMode";
 
-    @Component({
+@Component({
         components: { 
             TransitionExpand
         }
@@ -17,16 +18,14 @@ import FilterStateService, { IFilterState } from "../services/FilterStateService
         @Dep('$filter') $filter: FilterStateService;
         
         isOpen: boolean = false;
-        filter: IFilterState = {};
+        filter: IFilterState = { searchMode: SearchMode.CurrentFolderAndSubfolders };
         tags: string[] = null;
         
         async mounted() {
             this.observe(this.$filter.onStateChanged, x => {
-                this.filter = { tags: x.tags, searchMode: x.searchMode, dateFrom: x.dateFrom, dateTo: x.dateTo };
-                if(!this.isOpen) {
-                    if(x.tags?.length || x.dateTo || x.dateFrom)
-                        this.isOpen = true;
-                }
+                this.filter = { tags: x.tags, searchMode: x.searchMode || SearchMode.CurrentFolderAndSubfolders, dateFrom: x.dateFrom, dateTo: x.dateTo };
+                if(!this.isOpen && this.isNotEmpty(this.filter))
+                    this.isOpen = true;
             });
             
             try {
@@ -40,13 +39,18 @@ import FilterStateService, { IFilterState } from "../services/FilterStateService
         
         @Watch('filter', { deep: true })
         onFilterChanged() {
-            this.$filter.update('filters', { ...this.filter });
+            const notEmpty = this.isNotEmpty(this.filter);
+            this.$filter.update('filters', { ...this.filter, searchMode: notEmpty ? this.filter.searchMode : null });
         }
         
         toggleOpen() {
             if(this.isOpen)
                 this.filter = { tags: null, dateFrom: null, dateTo: null, searchMode: null };
             this.isOpen = !this.isOpen;
+        }
+        
+        isNotEmpty(s: IFilterState) {
+            return s.tags?.length || s.dateTo || s.dateFrom;
         }
     } 
 </script>
@@ -140,7 +144,6 @@ import FilterStateService, { IFilterState } from "../services/FilterStateService
             h6 {
                 color: $gray-900;
                 margin-bottom: 0.5rem;
-                
             }
 
             .vdp-datepicker input {
