@@ -1,9 +1,9 @@
 namespace Isotope.Data.Models
 {
     /// <summary>
-    /// Location of the tagged element on the photo.
+    /// Rectangle in relative coordinates.
     /// </summary>
-    public class MediaTagBindingLocation
+    public class Rect
     {
         /// <summary>
         /// X coordinate of the left top corner (in 0..1 coordinate space).

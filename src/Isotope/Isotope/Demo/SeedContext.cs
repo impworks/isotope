@@ -76,8 +76,9 @@ namespace Isotope.Demo
             Directory.CreateDirectory(Path.GetDirectoryName(targetFullPath));
 
             File.Copy(sourceFullPath, targetFullPath);
-            SaveThumbnail(sourceFullPath, targetFullPath, MediaSize.Small);
-            SaveThumbnail(sourceFullPath, targetFullPath, MediaSize.Large);
+            using var srcImg = Image.FromFile(sourceFullPath);
+            SaveThumbnail(srcImg, targetFullPath, MediaSize.Small);
+            SaveThumbnail(srcImg, targetFullPath, MediaSize.Large);
 
             var media = new Media
             {
@@ -88,6 +89,7 @@ namespace Isotope.Demo
                 FolderKey = folder.Key,
                 Order = order,
                 Path = $"/@media/{folder.Key}/{key}.jpg",
+                ThumbnailRect = GetThumbnailRect(srcImg),
                 Type = MediaType.Photo,
                 Tags = new List<MediaTagBinding>()
             };
@@ -97,14 +99,28 @@ namespace Isotope.Demo
 
             return media;
 
-            static void SaveThumbnail(string source, string target, MediaSize size)
+            static void SaveThumbnail(Image img, string target, MediaSize size)
             {
-                using var srcImg = Image.FromFile(source);
                 using var destImg = size == MediaSize.Small
-                    ? ImageHelper.ResizeToFill(srcImg, ImageHelper.Sizes[size])
-                    : ImageHelper.ResizeToFit(srcImg, ImageHelper.Sizes[size]);
+                    ? ImageHelper.ResizeToFill(img, ImageHelper.Sizes[size])
+                    : ImageHelper.ResizeToFit(img, ImageHelper.Sizes[size]);
                 var targetSized = MediaHelper.GetSizedMediaPath(target, size);
                 destImg.Save(targetSized);
+            }
+
+            static Rect GetThumbnailRect(Image img)
+            {
+                var size = ImageHelper.Sizes[MediaSize.Small];
+                var rect = ImageHelper.GetFillRectangle(img.Size, size);
+                var w = 1.0 / img.Width;
+                var h = 1.0 / img.Height;
+                return new Rect
+                {
+                    X = rect.X * w,
+                    Y = rect.Y * h,
+                    Width = rect.Width * w,
+                    Height = rect.Height * h,
+                };
             }
         }
 
@@ -143,7 +159,7 @@ namespace Isotope.Demo
                 if(parts.Count != 4)
                     throw new ArgumentException("Invalid location syntax: expected 4 floats separated by commas.");
 
-                bind.Location = new MediaTagBindingLocation
+                bind.Location = new Rect
                 {
                     X = parts[0],
                     Y = parts[1],

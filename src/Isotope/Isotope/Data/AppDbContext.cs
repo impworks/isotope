@@ -32,6 +32,7 @@ namespace Isotope.Data
             builder.Entity<Folder>().HasIndex(x => x.Path).IsUnique(true);
 
             builder.Entity<Media>().HasOne(x => x.Folder).WithMany().HasForeignKey(x => x.FolderKey).IsRequired(true);
+            builder.Entity<Media>().OwnsOne(x => x.ThumbnailRect);
 
             builder.Entity<SharedLink>().HasOne(x => x.Folder).WithMany().IsRequired(false);
 

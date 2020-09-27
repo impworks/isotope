@@ -31,7 +31,7 @@ namespace Isotope.Areas.Front.Dto
 
         public void Configure(TypeAdapterConfig config)
         {
-            config.NewConfig<MediaTagBindingLocation, TagBindingLocationVM>()
+            config.NewConfig<Rect, TagBindingLocationVM>()
                   .Map(x => x.X, x => x.X)
                   .Map(x => x.Y, x => x.Y)
                   .Map(x => x.Width, x => x.Width)

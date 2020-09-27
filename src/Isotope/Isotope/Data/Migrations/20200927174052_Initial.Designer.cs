@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Isotope.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200922143442_Initial")]
+    [Migration("20200927174052_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -463,6 +463,31 @@ namespace Isotope.Data.Migrations
                         .HasForeignKey("FolderKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsOne("Isotope.Data.Models.Rect", "ThumbnailRect", b1 =>
+                        {
+                            b1.Property<string>("MediaKey")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<double>("Height")
+                                .HasColumnType("REAL");
+
+                            b1.Property<double>("Width")
+                                .HasColumnType("REAL");
+
+                            b1.Property<double>("X")
+                                .HasColumnType("REAL");
+
+                            b1.Property<double>("Y")
+                                .HasColumnType("REAL");
+
+                            b1.HasKey("MediaKey");
+
+                            b1.ToTable("Media");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MediaKey");
+                        });
                 });
 
             modelBuilder.Entity("Isotope.Data.Models.MediaTagBinding", b =>
@@ -477,7 +502,7 @@ namespace Isotope.Data.Migrations
                         .WithMany()
                         .HasForeignKey("TagId");
 
-                    b.OwnsOne("Isotope.Data.Models.MediaTagBindingLocation", "Location", b1 =>
+                    b.OwnsOne("Isotope.Data.Models.Rect", "Location", b1 =>
                         {
                             b1.Property<int>("MediaTagBindingId")
                                 .HasColumnType("INTEGER");
@@ -529,7 +554,7 @@ namespace Isotope.Data.Migrations
                         .WithMany()
                         .HasForeignKey("TagId");
 
-                    b.OwnsOne("Isotope.Data.Models.MediaTagBindingLocation", "Location", b1 =>
+                    b.OwnsOne("Isotope.Data.Models.Rect", "Location", b1 =>
                         {
                             b1.Property<int>("TagSuggestionId")
                                 .HasColumnType("INTEGER");

@@ -230,7 +230,11 @@ namespace Isotope.Data.Migrations
                     Type = table.Column<int>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     Date = table.Column<string>(maxLength: 10, nullable: true),
-                    Order = table.Column<int>(nullable: false)
+                    Order = table.Column<int>(nullable: false),
+                    ThumbnailRect_X = table.Column<double>(nullable: true),
+                    ThumbnailRect_Y = table.Column<double>(nullable: true),
+                    ThumbnailRect_Width = table.Column<double>(nullable: true),
+                    ThumbnailRect_Height = table.Column<double>(nullable: true)
                 },
                 constraints: table =>
                 {

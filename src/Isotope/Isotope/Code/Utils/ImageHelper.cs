@@ -70,7 +70,7 @@ namespace Isotope.Code.Utils
         /// <summary>
         /// Calculates the rectangle into which the image thumbnail will be inscribed.
         /// </summary>
-        private static Size GetInscribeSize(Size size, Size maxSize)
+        public static Size GetInscribeSize(Size size, Size maxSize)
         {
             // do not upscale small images
             if (size.Width < maxSize.Width && size.Height < maxSize.Height)
@@ -85,7 +85,7 @@ namespace Isotope.Code.Utils
         /// <summary>
         /// Returns the rectangle that best fills the given size (from center).
         /// </summary>
-        private static Rectangle GetFillRectangle(Size size, Size maxSize)
+        public static Rectangle GetFillRectangle(Size size, Size maxSize)
         {
             var xRatio = (double)maxSize.Width / size.Width;
             var yRatio = (double)maxSize.Height / size.Height;

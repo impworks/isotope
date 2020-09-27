@@ -18,7 +18,7 @@ namespace Isotope.Data.Models
         /// <summary>
         /// Location of the recognized face on the photo.
         /// </summary>
-        public MediaTagBindingLocation Location { get; set; }
+        public Rect Location { get; set; }
         
         /// <summary>
         /// Related photo.

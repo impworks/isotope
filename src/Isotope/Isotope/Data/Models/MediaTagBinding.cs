@@ -8,7 +8,7 @@
         /// <summary>
         /// Location of the tagged entity on the media.
         /// </summary>
-        public MediaTagBindingLocation Location { get; set; }
+        public Rect Location { get; set; }
 
         /// <summary>
         /// Related media file.

@@ -48,6 +48,11 @@ namespace Isotope.Data.Models
         /// Order of the media in parent folder, starting from 0.
         /// </summary>
         public int Order { get; set; }
+        
+        /// <summary>
+        /// Rectangle of the image portion used for a thumbnail.
+        /// </summary>
+        public Rect ThumbnailRect { get; set; }
 
         /// <summary>
         /// List of entities tagged on this image.
