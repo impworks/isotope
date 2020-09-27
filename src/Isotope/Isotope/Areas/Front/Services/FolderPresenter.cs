@@ -152,7 +152,7 @@ namespace Isotope.Areas.Front.Services
 
             return new FolderContentsVM
             {
-                Tags = _mapper.Map<TagBindingVM[]>(folder.Tags),
+                Tags = ctx.Link == null ? _mapper.Map<TagBindingVM[]>(folder.Tags) : null,
                 Subfolders = _mapper.Map<FolderVM[]>(subfolders),
                 Media = _mapper.Map<MediaThumbnailVM[]>(media)
             };

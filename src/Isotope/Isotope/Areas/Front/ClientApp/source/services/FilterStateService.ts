@@ -99,6 +99,10 @@ export default class FilterStateService {
         const isInitial = this._state === null;
         const newState = cloneDeep(this._state || {}) as IFilterState;
         
+        if(this._shareId) {
+            state = { folder: state.folder };
+        }
+        
         for(let key in state) {
             if(!state.hasOwnProperty(key))
                 continue;

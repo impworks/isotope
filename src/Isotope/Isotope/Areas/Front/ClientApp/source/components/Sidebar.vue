@@ -2,6 +2,8 @@
     import { Vue, Component } from "vue-property-decorator";
     import Filters from './Filters.vue';
     import Folders from './Folders.vue';
+    import { Dep } from "../utils/VueInjectDecorator";
+    import FilterStateService from "../services/FilterStateService";
 
     @Component({
         components: { 
@@ -9,21 +11,31 @@
             Folders
         }
     })
-    export default class Sidebar extends Vue {} 
+    export default class Sidebar extends Vue {
+        @Dep('$filter') $filter: FilterStateService;
+        
+        get isFilterShown() {
+            return !this.$filter.shareId;
+        }
+        
+        goToRoot() {
+            this.$filter.update('logo', { folder: '/' });
+        }
+    } 
 </script>
 
 <template>
     <div class="sidebar">
         <div class="sidebar__header">
-            <router-link
-                to="/"
-                class="logo"
+            <a
+                class="clickable logo"
+                @click.prevent="goToRoot()"
             >
                 isotope
-            </router-link>
+            </a>
         </div>
         <div class="sidebar__content">
-            <filters></filters>
+            <filters v-if="isFilterShown"></filters>
             <folders></folders>
         </div>
     </div>
