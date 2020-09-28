@@ -124,7 +124,20 @@ import { SearchMode } from "../vms/SearchMode";
                 </div>
                 <div class="filters__filter">
                     <h6>Tags</h6>
-                    <v-select multiple v-model="filter.tags" :options="tags" label="caption" :reduce="x => x.id" />
+                    <v-select 
+                        multiple 
+                        v-model="filter.tags" 
+                        :options="tags" 
+                        :reduce="x => x.id"
+                        label="caption"
+                    >
+                        <template #open-indicator="{ attributes }">
+                            <i 
+                                class="icon icon-arrow-down"
+                                v-bind="attributes"
+                            ></i>
+                        </template>
+                    </v-select>
                 </div>
                 <div class="filters__filter">
                     <h6>Date range</h6>
