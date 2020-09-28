@@ -143,11 +143,19 @@ import { SearchMode } from "../vms/SearchMode";
                     <h6>Date range</h6>
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <datepicker class="date" v-model="filter.dateFrom" />
+                            <datepicker 
+                                v-model="filter.dateFrom"
+                                :typeable="true" 
+                                :bootstrap-styling="true" 
+                            />
                         </div>
                         <div class="px-1">—</div>
                         <div>
-                            <datepicker class="date" v-model="filter.dateTo" />
+                            <datepicker 
+                                v-model="filter.dateFrom"
+                                :typeable="true" 
+                                :bootstrap-styling="true" 
+                            />
                         </div>
                     </div>
                 </div>
@@ -184,10 +192,6 @@ import { SearchMode } from "../vms/SearchMode";
             h6 {
                 color: $gray-900;
                 margin-bottom: 0.5rem;
-            }
-
-            .vdp-datepicker input {
-                width: 140px;
             }
         }
     }
