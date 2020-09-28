@@ -186,8 +186,8 @@ import { SearchMode } from "../vms/SearchMode";
                 transition: all 150ms ease;
 
                 &:hover {
-                    border-color: $gray-500;
-                    box-shadow: $box-shadow;
+                    border-color: $gray-400;
+                    box-shadow: $box-shadow-sm;
                 }
             }
 
