@@ -3,7 +3,7 @@ import { Component, Mixins } from "vue-property-decorator";
 import Breadcrumbs from './Breadcrumbs.vue';
 import { HasLifetime } from "./mixins/HasLifetime";
 import { HasAsyncState } from "./mixins/HasAsyncState";
-import FilterStateService, { IFilterState } from "../services/FilterStateService";
+import { FilterStateService, IFilterState } from "../services/FilterStateService";
 import { FolderContents } from "../vms/FolderContents";
 import { Dep } from "../utils/VueInjectDecorator";
 import { ApiService } from "../services/ApiService";
@@ -11,9 +11,13 @@ import { Folder } from "../vms/Folder";
 import { TagBinding } from "../vms/TagBinding";
 import { MediaThumbnail } from "../vms/MediaThumbnail";
 import { SearchMode } from "../vms/SearchMode";
+import { IObservable } from "../utils/Interfaces";
+import { Observable } from "../utils/Observable";
+import MediaViewer from "./MediaViewer.vue";
 
-@Component({
-        components: { 
+    @Component({
+        components: {
+            MediaViewer, 
             Breadcrumbs
         }
     })
@@ -24,6 +28,8 @@ import { SearchMode } from "../vms/SearchMode";
         error: string = null;
         empty: boolean = false;
         contents: FolderContents = null;
+        
+        indexFeed: IObservable<number> = new Observable<number>();
         
         get isEmpty() {
             return !this.contents?.media?.length
@@ -61,8 +67,8 @@ import { SearchMode } from "../vms/SearchMode";
             this.$filter.update('view', { folder: '/', searchMode: SearchMode.Everywhere, tags: [t.tag.id] });
         }
         
-        showMedia(m: MediaThumbnail) {
-            console.log('showing media: ', m);
+        showMedia(idx: number) {
+            this.indexFeed.notify(idx);
         }
     } 
 </script>
@@ -99,12 +105,12 @@ import { SearchMode } from "../vms/SearchMode";
                         <div v-if="contents.media && contents.media.length" class="gallery__grid__row">
                             <div 
                                 class="gallery__item gallery__item_picture clickable"
-                                v-for="m in contents.media"
+                                v-for="(m, i) in contents.media"
                                 :key="m.key"
                             >
                                 <a
                                     class="gallery__item__content clickable"
-                                    @click.prevent="showMedia(m)"
+                                    @click.prevent="showMedia(i)"
                                 >
                                     <div class="gallery__item__icon">
                                         <div class="gallery__item__preview" :style="{backgroundImage: 'url(' + m.thumbnailPath + ')'}"></div>
@@ -123,6 +129,7 @@ import { SearchMode } from "../vms/SearchMode";
                 </div>
             </loading>
         </perfect-scrollbar>
+        <MediaViewer :index-feed="indexFeed" :source="contents.media" v-if="contents && contents.media && contents.media.length"></MediaViewer>
     </div>
 </template>
 

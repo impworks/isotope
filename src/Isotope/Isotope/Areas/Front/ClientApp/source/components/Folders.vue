@@ -5,7 +5,7 @@
     import { ApiService } from "../services/ApiService";
     import { Folder } from "../vms/Folder";
     import FolderTreeItem from "./FolderTreeItem.vue";
-    import FilterStateService from "../services/FilterStateService";
+    import { FilterStateService } from "../services/FilterStateService";
     import { HasLifetime } from "./mixins/HasLifetime";
     @Component({
         components: { FolderTreeItem }

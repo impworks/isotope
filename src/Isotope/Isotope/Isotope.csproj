@@ -66,6 +66,7 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagType.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\UserInfo.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\types\vue-fragment.d.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\types\vue-global-events.d.ts" />
   </ItemGroup>
     
   <ItemGroup>

@@ -19,7 +19,7 @@ export interface IFilterStateChangedEvent extends IFilterState {
     source: any;
 }
 
-export default class FilterStateService {
+export class FilterStateService {
     constructor() {
         this._state = null;
         this._shareId = null;

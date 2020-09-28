@@ -3,7 +3,7 @@
     import Filters from './Filters.vue';
     import Folders from './Folders.vue';
     import { Dep } from "../utils/VueInjectDecorator";
-    import FilterStateService from "../services/FilterStateService";
+    import { FilterStateService } from "../services/FilterStateService";
 
     @Component({
         components: { 

@@ -2,7 +2,7 @@ import injector from "vue-inject";
 import { Vue } from "vue-property-decorator";
 import { ApiService } from "../services/ApiService";
 import { AuthService } from "../services/AuthService";
-import FilterStateService from "../services/FilterStateService";
+import { FilterStateService } from "../services/FilterStateService";
 
 Vue.use(injector);
 

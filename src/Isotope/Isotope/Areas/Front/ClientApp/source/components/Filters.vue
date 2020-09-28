@@ -5,7 +5,7 @@ import { HasLifetime } from "./mixins/HasLifetime";
 import { HasAsyncState } from "./mixins/HasAsyncState";
 import { Dep } from "../utils/VueInjectDecorator";
 import { ApiService } from "../services/ApiService";
-import FilterStateService, { IFilterState } from "../services/FilterStateService";
+import { FilterStateService, IFilterState } from "../services/FilterStateService";
 import { SearchMode } from "../vms/SearchMode";
 
 @Component({

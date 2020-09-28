@@ -3,6 +3,12 @@ import Vue from 'vue';
 import { Plugin } from 'vue-fragment';
 Vue.use(Plugin);
 
+import PortalVue from 'portal-vue';
+Vue.use(PortalVue);
+
+import GlobalEvents from 'vue-global-events';
+Vue.component('GlobalEvents', GlobalEvents);
+
 import Loading from "../components/utils/Loading.vue";
 Vue.component("loading", Loading);
 

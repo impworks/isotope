@@ -9,8 +9,8 @@ import { Media } from "../vms/Media";
 import { LoginRequest } from "../vms/LoginRequest";
 import { LoginResponse } from "../vms/LoginResponse";
 import { GalleryInfo } from "../vms/GalleryInfo";
-import FilterStateService from "./FilterStateService";
-import { Func, ILookup } from "../utils/Interfaces";
+import { FilterStateService } from "./FilterStateService";
+import { ILookup } from "../utils/Interfaces";
 
 export class ApiService {
     // -----------------------------------

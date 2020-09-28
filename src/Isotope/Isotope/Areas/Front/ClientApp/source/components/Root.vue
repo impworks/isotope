@@ -6,7 +6,7 @@ import { HasAsyncState } from "./mixins/HasAsyncState";
 import { HasLifetime } from "./mixins/HasLifetime";
 import LoginForm from "./LoginForm.vue";
 import { ApiService } from "../services/ApiService";
-import FilterStateService from "../services/FilterStateService";
+import { FilterStateService } from "../services/FilterStateService";
 import { AuthService } from "../services/AuthService";
 
 @Component({
@@ -61,7 +61,8 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
             </div>
             <LoginForm v-if="!error && authRequired" />
         </div>
-        <router-view v-else />
+        <router-view v-else></router-view>
+        <portal-target name="overlay"></portal-target>
     </loading>
 </template>
 
