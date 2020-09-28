@@ -222,7 +222,7 @@ import MediaViewer from "./MediaViewer.vue";
             }
 
             &_picture &__icon {
-                height: 7rem;
+                height: 9rem;
                 background-color: $gray-200;
                 background-image: url(../../images/image.svg);
                 background-size: auto 4rem;

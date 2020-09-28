@@ -152,7 +152,7 @@ import { SearchMode } from "../vms/SearchMode";
                         <div class="px-1">—</div>
                         <div>
                             <datepicker 
-                                v-model="filter.dateFrom"
+                                v-model="filter.dateTo"
                                 :typeable="true" 
                                 :bootstrap-styling="true" 
                             />
