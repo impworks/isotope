@@ -1,0 +1,18 @@
+.logotype {
+    $font-size: 1.625rem;
+
+    display: block;
+    color: $gray-900;
+    line-height: 1;
+    font-weight: bold;
+    font-size: $font-size;
+    background-image: url(../images/logo.svg);
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    padding-left: $font-size * 1.85;
+    padding-right: 1rem;
+
+    &:hover {
+        text-decoration: none;
+    }
+}

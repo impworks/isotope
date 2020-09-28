@@ -49,7 +49,7 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
         :is-full-page="true"
     >
         <div 
-            class="m-auto p-3" 
+            class="root__centered-content" 
             v-if="error || authRequired"
         >
             <div 
@@ -66,9 +66,25 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
 </template>
 
 <style lang="scss">
+    @import "../../styles/variables";
+    @import "./node_modules/bootstrap/scss/functions";
+    @import "./node_modules/bootstrap/scss/variables";
+    @import "./node_modules/bootstrap/scss/mixins";
+
     .root {
         height: 100%;
         display: flex;
         flex-direction: column;
+
+        &__centered-content {
+            margin: auto 0;
+            padding: 1rem;
+            min-width: 300px;
+
+            @include media-breakpoint-up(sm) {
+                width: 23rem;
+                margin: auto;
+            }
+        }
     }
 </style>

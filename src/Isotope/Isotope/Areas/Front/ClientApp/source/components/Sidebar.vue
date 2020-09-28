@@ -28,7 +28,7 @@
     <div class="sidebar">
         <div class="sidebar__header">
             <a
-                class="clickable logo"
+                class="logotype clickable"
                 @click.prevent="goToRoot()"
             >
                 isotope
@@ -74,25 +74,6 @@
             justify-content: space-between;
             align-items: center;
             padding: 1rem;
-
-            .logo {
-                $font-size: 1.625rem;
-
-                display: block;
-                color: $gray-900;
-                line-height: 1;
-                font-weight: bold;
-                font-size: $font-size;
-                background-image: url(../../images/logo.svg);
-                background-size: auto 100%;
-                background-repeat: no-repeat;
-                padding-left: $font-size * 1.85;
-                padding-right: 1rem;
-
-                &:hover {
-                    text-decoration: none;
-                }
-            }
         }
 
         &-button {

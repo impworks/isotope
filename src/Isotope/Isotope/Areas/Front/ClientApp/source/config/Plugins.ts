@@ -14,3 +14,6 @@ Vue.component('v-select', vSelect);
 
 import Datepicker from 'vuejs-datepicker';
 Vue.component('datepicker', Datepicker);
+
+import Autofocus from "../components/utils/Autofocus";
+Vue.directive('autofocus', Autofocus);

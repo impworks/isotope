@@ -17,7 +17,7 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
     get canSignIn(): boolean {
         return !!this.username && !!this.password;
     }
-    
+
     async signIn() {
         if(!this.canSignIn)
             return;
@@ -41,26 +41,51 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
 
 <template>
     <form @submit.prevent="signIn()">
-        <div class="card">
-            <div class="card-header">Sign in required</div>
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <div class="logotype">isotope</div>
+            </div>
             <div class="card-body">
                 <div class="form-group">
-                    <input type="text" v-model="username" placeholder="Username" class="form-control" :disabled="asyncState.isLoading" />
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        placeholder="Username" 
+                        v-model="username" 
+                        :disabled="asyncState.isLoading"
+                        v-autofocus
+                    />
                 </div>
                 <div class="form-group">
-                    <input type="password" v-model="password" placeholder="Password" class="form-control" :disabled="asyncState.isLoading" />
+                    <input 
+                        type="password" 
+                        v-model="password" 
+                        placeholder="Password" 
+                        class="form-control" 
+                        :disabled="asyncState.isLoading" 
+                    />
+                </div>
+                <div 
+                    class="alert alert-danger m-0" 
+                    v-if="error"
+                >
+                    {{error}}
                 </div>
             </div>
-            <div class="card-footer">
-                <div class="float-right">
-                    <button type="submit" class="btn btn-primary" :disabled="!canSignIn || asyncState.isLoading">
-                        <span v-if="asyncState.isLoading">Working...</span>
-                        <span v-if="!asyncState.isLoading">Log in</span>
-                    </button>
-                </div>
-                <div class="clearfix"></div>
+            <div class="card-footer bg-white">
+                <button 
+                    type="submit" 
+                    class="btn btn-primary btn-block" 
+                    :disabled="!canSignIn || asyncState.isLoading"
+                >
+                    <loading 
+                        :is-loading="asyncState.isLoading" 
+                        :text="'Working…'"
+                    >
+                        Log in
+                    </loading>
+                </button>
             </div>
         </div>
-        <div class="alert alert-danger mt-2" v-if="error">{{error}}</div>
     </form>
 </template>

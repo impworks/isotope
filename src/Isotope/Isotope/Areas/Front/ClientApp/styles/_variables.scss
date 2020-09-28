@@ -1,13 +1,13 @@
 $white:    #fff;
-$gray-100: #f8f9fb;
-$gray-200: #eef1f5;
-$gray-300: #dde2ea;
-$gray-400: #ccd4e0;
-$gray-500: #bbc5d5;
-$gray-600: #8c94a0;
-$gray-700: #5e636b;
-$gray-800: #2f3135;
-$gray-900: #1c1e20;
+$gray-100: #fafbfe;
+$gray-200: #eff2f7;
+$gray-300: #e2e8f0;
+$gray-400: #cbd5e0;
+$gray-500: #a0aec0;
+$gray-600: #718096;
+$gray-700: #4a5568;
+$gray-800: #2d3748;
+$gray-900: #273444;
 $black:    #000;
 
 $primary:       #00aeee;
@@ -15,7 +15,7 @@ $secondary:     #e4e6ef;
 $success:       #2cca8c;
 $info:          #8950fc;
 $warning:       #ffbe3e;
-$danger:        #e63757;
+$danger:        #f25767;
 $light:         #edf2f9;
 $dark:          $gray-900;
 
@@ -26,3 +26,22 @@ $box-shadow-lg: 0 1rem 2rem 1rem rgba(0, 0, 0, 0.1);
 $border-radius: 0.2rem;
 
 $grid-gutter-width:  2rem;
+
+$card-cap-bg:       $gray-200;
+$card-border-color: $gray-300;
+$card-spacer-y:     1rem;
+$card-spacer-x:     1rem;
+
+$alert-padding-y:     0.5rem;
+$alert-padding-x:     1rem;
+$alert-border-width:  0;
+$alert-bg-level:      0;
+$alert-border-level:  0;
+$alert-color-level:   -10;
+
+$input-btn-padding-y: 0.5rem;
+$input-btn-padding-x: 1rem;
+
+$input-btn-focus-box-shadow: none;
+
+$input-focus-border-color: $primary;
