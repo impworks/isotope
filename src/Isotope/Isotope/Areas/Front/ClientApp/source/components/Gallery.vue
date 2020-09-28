@@ -22,6 +22,7 @@ import MediaViewer from "./MediaViewer.vue";
         }
     })
     export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
+        @Dep('$host') $host: string;
         @Dep('$api') $api: ApiService;
         @Dep('$filter') $filter: FilterStateService;
         
@@ -70,6 +71,10 @@ import MediaViewer from "./MediaViewer.vue";
         showMedia(idx: number) {
             this.indexFeed.notify(idx);
         }
+        
+        getThumbnailPath(m: MediaThumbnail) {
+            return 'url(' + this.$host + m.thumbnailPath + ')';
+        }
     } 
 </script>
 
@@ -113,7 +118,7 @@ import MediaViewer from "./MediaViewer.vue";
                                     @click.prevent="showMedia(i)"
                                 >
                                     <div class="gallery__item__icon">
-                                        <div class="gallery__item__preview" :style="{backgroundImage: 'url(' + m.thumbnailPath + ')'}"></div>
+                                        <div class="gallery__item__preview" :style="{backgroundImage: getThumbnailPath(m)}"></div>
                                     </div>
                                 </a>
                             </div>

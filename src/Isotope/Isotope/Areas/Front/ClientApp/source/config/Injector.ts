@@ -6,8 +6,8 @@ import { FilterStateService } from "../services/FilterStateService";
 
 Vue.use(injector);
 
-injector.constant('$apiHost', process.env.API_HOST);
+injector.constant('$host', process.env.API_HOST || null);
 
 injector.service('$auth', AuthService);
 injector.service('$filter', FilterStateService);
-injector.service('$api', ['$apiHost', '$auth', '$filter'], ApiService);
+injector.service('$api', ['$host', '$auth', '$filter'], ApiService);

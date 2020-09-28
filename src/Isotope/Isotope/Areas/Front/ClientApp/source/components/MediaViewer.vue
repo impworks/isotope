@@ -11,6 +11,7 @@ import { Dep } from "../utils/VueInjectDecorator";
 
 @Component
 export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
+    @Dep('$host') $host: string;
     @Dep('$api') $api: ApiService;
     @Dep('$filter') $filter: FilterStateService;
 
@@ -52,6 +53,10 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
         
         await this.show(idx);
     }
+    
+    getAbsolutePath(path: string) {
+        return this.$host + path;
+    }
 }
 </script>
 
@@ -65,7 +70,7 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
                     <div class="card-body">
                         <loading :is-loading="asyncState.isLoading">
                             <div v-if="media">
-                                <img :src="media.fullPath" :alt="media.description"/>
+                                <img :src="getAbsolutePath(media.fullPath)" :alt="media.description"/>
                             </div>
                         </loading>
                     </div>

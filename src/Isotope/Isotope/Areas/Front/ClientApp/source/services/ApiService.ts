@@ -18,7 +18,7 @@ export class ApiService {
     // -----------------------------------
     
     public constructor(
-        private $apiHost: string,
+        private $host: string,
         private $auth: AuthService,
         private $filter: FilterStateService
     ) {
@@ -103,7 +103,7 @@ export class ApiService {
      * Builds the API method URL using name and arguments.
      */
     private getRequestUrl(method: string, query?: any) {
-        return this.$apiHost + '/@api/' + method + '?' + StaticHelper.getQuery(query, { sh: this.$filter.shareId });
+        return this.$host + '/@api/' + method + '?' + StaticHelper.getQuery(query, { sh: this.$filter.shareId });
     }
 
     /**
