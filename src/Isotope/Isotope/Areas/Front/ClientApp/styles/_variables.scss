@@ -44,3 +44,17 @@ $input-btn-padding-x: 1rem;
 $input-btn-focus-box-shadow: none;
 
 $input-focus-border-color: $primary;
+
+
+/* vue-select */
+
+$vs-colors: (
+        lightest: $gray-400,
+        light: $gray-500,
+        dark: $gray-800,
+        darkest: rgba(0, 0, 0, .15),
+);
+
+$vs-component-line-height: 1.5;
+$vs-state-active-bg: $primary;
+$vs-dropdown-box-shadow: none;
