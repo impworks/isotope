@@ -75,7 +75,7 @@ import { SearchMode } from "../vms/SearchMode";
             <perfect-scrollbar class="gallery__content">
                 <loading :is-loading="asyncState.isLoading" :is-full-page="true">
                 <div v-if="contents">
-                    <div v-if="contents.tags" class="gallery__tags">
+                    <div v-if="contents.tags && contents.tags.length" class="gallery__tags">
                         <a v-for="t in contents.tags" class="badge badge-primary clickable" @click.prevent="filterByTag(t)">{{t.tag.caption}}</a>
                     </div>
                     <div class="gallery__grid">

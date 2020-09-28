@@ -79,12 +79,14 @@
         &-button {
             display: flex;
             flex-direction: row;
+            position: relative;
             color: $gray-800;
             background: $gray-200;
             padding: 0.6rem 1rem;
             border-top: 1px solid $gray-300;
             border-bottom: 1px solid $gray-300;
             transition: all 200ms linear;
+            box-sizing: border-box;
 
             &:hover {
                 color: $gray-800;
@@ -92,9 +94,23 @@
                 border-color: $gray-400;
                 text-decoration: none;
 
+                &:after {
+                    background: $gray-400;
+                }
+
                 .sidebar-button__arrow {
                     color: $gray-700;
                 }
+            }
+
+            &:after {
+                top: -1px;
+                right: -1px;
+                content: "";
+                width: 1px;
+                height: calc(100% + 2px);
+                position: absolute;
+                background: $gray-300;
             }
 
             &__icon {
