@@ -39,7 +39,7 @@ export default class FolderTreeItem extends Vue {
             :key="folder.path"
             @click.prevent="selectFolder()"
         >
-            <div class="folder-tree-item__icon" :style="{marginLeft: depth + 'em'}"></div>
+            <div class="folder-tree-item__icon" :style="{marginLeft: depth * 0.7 + 'em'}"></div>
             <div class="folder-tree-item__name">{{ folder.caption }}</div>
         </a>
         <div v-if="folder.subfolders && folder.subfolders.length && expanded">
@@ -57,7 +57,6 @@ export default class FolderTreeItem extends Vue {
     display: flex;
     flex-direction: row;
     padding: 0.5em 1em;
-    line-height: 1.5;
     color: $gray-800;
     border-top: 1px solid $gray-200;
 
@@ -66,6 +65,7 @@ export default class FolderTreeItem extends Vue {
     }
 
     &:hover {
+        color: $gray-800;
         text-decoration: none;
         background-color: $gray-200;
     }
@@ -76,7 +76,7 @@ export default class FolderTreeItem extends Vue {
     }
 
     &__icon {
-        $size: 1.5em;
+        $size: 1.4em;
 
         width: $size;
         height: $size;

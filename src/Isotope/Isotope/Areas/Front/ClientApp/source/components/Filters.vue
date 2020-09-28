@@ -76,21 +76,48 @@ import { SearchMode } from "../vms/SearchMode";
             <div v-if="isOpen">
                 <div class="filters__filter">
                     <h6>Search in</h6>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="sm-current-folder" v-model="filter.searchMode" :value="1">
-                        <label class="form-check-label" for="sm-current-folder">
+                    <div class="custom-control custom-radio">
+                        <input 
+                            type="radio"
+                            id="sm-current-folder"
+                            class="custom-control-input" 
+                            v-model="filter.searchMode" 
+                            :value="1"
+                        >
+                        <label 
+                            class="custom-control-label" 
+                            for="sm-current-folder"
+                        >
                             Current folder
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="sm-current-folder-nested" v-model="filter.searchMode" :value="2">
-                        <label class="form-check-label" for="sm-current-folder-nested">
+                    <div class="custom-control custom-radio">
+                        <input 
+                            type="radio"
+                            id="sm-current-folder-nested"
+                            class="custom-control-input"
+                            v-model="filter.searchMode" 
+                            :value="2"
+                        >
+                        <label 
+                            class="custom-control-label" 
+                            for="sm-current-folder-nested"
+                        >
                             Current folder and subfolders
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="sm-everywhere" v-model="filter.searchMode" :value="3">
-                        <label class="form-check-label" for="sm-everywhere">
+                    <div class="custom-control custom-radio">
+                        <input 
+                            id="sm-everywhere" 
+                            type="radio"  
+                            class="custom-control-input" 
+                            v-model="filter.searchMode" 
+                            :value="3"
+                        >
+                        <label 
+                            class="custom-control-label" 
+                            for="sm-everywhere"
+                        >
                             Everywhere
                         </label>
                     </div>

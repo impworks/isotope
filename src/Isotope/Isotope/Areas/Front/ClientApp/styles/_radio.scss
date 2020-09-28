@@ -1,0 +1,68 @@
+.custom-radio {
+    padding-left: 0;
+
+    .custom-control-label {
+        position: relative;
+        padding-left: 1.5rem;
+
+        &::before, 
+        &::after {
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            border-radius: 50%;
+        }
+
+        &::before {
+            left: 0.25rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            transform: scale(0);
+            transition: transform 150ms ease-in-out;
+        }
+
+        &::after {
+            left: 0;
+            width: 1rem;
+            height: 1rem;
+            transition: border 150ms linear;
+            border: 2px solid $gray-500;
+        }
+    }
+
+    .custom-control-input {
+
+        &:checked ~ .custom-control-label {
+        
+            &::before {
+                -ms-transform: scale(1);
+                transform: scale(1);
+            }
+    
+            &::after {
+                border-color: $primary;
+                background-image: none;
+            }
+        }
+
+        &[disabled] ~ .custom-control-label {
+            &::before , 
+            &::after {
+                border-color: $gray-300;
+            }
+        }
+
+        &:not(:disabled):active ~ .custom-control-label::before {
+            border: none;
+            background-color: $primary;
+        }
+
+        &:not(:disabled):not(:checked)~ .custom-control-label:hover{
+            cursor: pointer;
+            
+            &::after {
+                border-color: $gray-600;
+            }
+        }
+    }
+}

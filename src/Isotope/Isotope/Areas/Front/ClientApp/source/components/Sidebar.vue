@@ -82,11 +82,10 @@
             position: relative;
             color: $gray-800;
             background: $gray-200;
-            padding: 0.6rem 1rem;
+            padding: 0.5em 1em;
             border-top: 1px solid $gray-300;
             border-bottom: 1px solid $gray-300;
             transition: all 200ms linear;
-            box-sizing: border-box;
 
             &:hover {
                 color: $gray-800;
@@ -103,6 +102,10 @@
                 }
             }
 
+            &:active {
+                background: $gray-400;
+            }
+
             &:after {
                 top: -1px;
                 right: -1px;
@@ -117,7 +120,7 @@
                 flex: 0 1 auto;
 
                 > * {
-                    $size: 1.5em;
+                    $size: 1.4em;
 
                     width: $size;
                     height: $size;

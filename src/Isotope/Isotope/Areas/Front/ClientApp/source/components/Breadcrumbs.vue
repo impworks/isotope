@@ -78,13 +78,14 @@
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";
-    
+
     .breadcrumbs {
         list-style-type: none;
         margin: 0;
         padding: 1rem;
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
         line-height: 1.625;
 
         &__item {
