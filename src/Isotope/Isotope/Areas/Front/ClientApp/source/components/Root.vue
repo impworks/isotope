@@ -4,10 +4,10 @@ import { Dep } from "../utils/VueInjectDecorator";
 import { GalleryInfo } from "../vms/GalleryInfo";
 import { HasAsyncState } from "./mixins/HasAsyncState";
 import { HasLifetime } from "./mixins/HasLifetime";
-import LoginForm from "./LoginForm.vue";
 import { ApiService } from "../services/ApiService";
 import { FilterStateService } from "../services/FilterStateService";
 import { AuthService } from "../services/AuthService";
+import LoginForm from "./LoginForm.vue";
 
 @Component({
     components: { LoginForm }

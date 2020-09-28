@@ -1,65 +1,65 @@
 <script lang="ts">
-    import { Component, Mixins } from "vue-property-decorator";
-    import { Dep } from "../utils/VueInjectDecorator";
-    import { ApiService } from "../services/ApiService";
-    import { FilterStateService } from "../services/FilterStateService";
-    import { HasLifetime } from "./mixins/HasLifetime";
-    import { Folder } from "../vms/Folder";
-    import { GalleryInfo } from "../vms/GalleryInfo";
+import { Component, Mixins } from "vue-property-decorator";
+import { Dep } from "../utils/VueInjectDecorator";
+import { ApiService } from "../services/ApiService";
+import { FilterStateService } from "../services/FilterStateService";
+import { HasLifetime } from "./mixins/HasLifetime";
+import { Folder } from "../vms/Folder";
+import { GalleryInfo } from "../vms/GalleryInfo";
 
-    @Component
-    export default class Breadcrumbs extends Mixins(HasLifetime) {
-        @Dep('$api') $api: ApiService;
-        @Dep('$filter') $filter: FilterStateService;
-        
-        info: GalleryInfo = null;
-        folderTree: Folder[] = [];
-        crumbs: Crumb[] = [];
-        currentFolder: string = null;
-        
-        async mounted() {
-            try {
-                this.info = await this.$api.getInfo();
-                this.folderTree = await this.$api.getFolderTree();
-            } catch (e) {
-            }
-            
-            this.observe(this.$filter.onStateChanged, x => this.update(x.folder))
-            this.update(this.$filter.state.folder);            
-        }
-        
-        update(path: string) {
-            if(path === '/' || !path) {
-                this.crumbs = [];
-                this.currentFolder = this.info.caption;
-                return;
-            }
-            
-            const parts = path.split('/');
-            const crumbs: Crumb[] = [{ caption: this.info.caption, path: '/' }];
-            let scope = this.folderTree;
-            let tmpPath = '';
-            for(let i = 1; i < parts.length - 1; i++) {
-                tmpPath += '/' + parts[i];
-                const sub = scope.find(x => x.path === tmpPath);
-                if(!sub) return;
-                crumbs.push({ caption: sub.caption, path: sub.path });
-                scope = sub.subfolders || [];
-            }
-            
-            this.crumbs = crumbs;
-            this.currentFolder = scope.find(x => x.path == path)?.caption || 'Not found';
-        }
-        
-        selectFolder(crumb: Crumb) {
-            this.$filter.update('breadcrumb', {folder: crumb.path});
-        }
-    } 
+@Component
+export default class Breadcrumbs extends Mixins(HasLifetime) {
+    @Dep('$api') $api: ApiService;
+    @Dep('$filter') $filter: FilterStateService;
     
-    interface Crumb {
-        caption: string;
-        path: string;
+    info: GalleryInfo = null;
+    folderTree: Folder[] = [];
+    crumbs: Crumb[] = [];
+    currentFolder: string = null;
+    
+    async mounted() {
+        try {
+            this.info = await this.$api.getInfo();
+            this.folderTree = await this.$api.getFolderTree();
+        } catch (e) {
+        }
+        
+        this.observe(this.$filter.onStateChanged, x => this.update(x.folder))
+        this.update(this.$filter.state.folder);            
     }
+    
+    update(path: string) {
+        if(path === '/' || !path) {
+            this.crumbs = [];
+            this.currentFolder = this.info.caption;
+            return;
+        }
+        
+        const parts = path.split('/');
+        const crumbs: Crumb[] = [{ caption: this.info.caption, path: '/' }];
+        let scope = this.folderTree;
+        let tmpPath = '';
+        for(let i = 1; i < parts.length - 1; i++) {
+            tmpPath += '/' + parts[i];
+            const sub = scope.find(x => x.path === tmpPath);
+            if(!sub) return;
+            crumbs.push({ caption: sub.caption, path: sub.path });
+            scope = sub.subfolders || [];
+        }
+        
+        this.crumbs = crumbs;
+        this.currentFolder = scope.find(x => x.path == path)?.caption || 'Not found';
+    }
+    
+    selectFolder(crumb: Crumb) {
+        this.$filter.update('breadcrumb', {folder: crumb.path});
+    }
+} 
+
+interface Crumb {
+    caption: string;
+    path: string;
+}
 </script>
 
 <template>

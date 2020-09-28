@@ -1,6 +1,5 @@
 <script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
-import Breadcrumbs from './Breadcrumbs.vue';
 import { HasLifetime } from "./mixins/HasLifetime";
 import { HasAsyncState } from "./mixins/HasAsyncState";
 import { FilterStateService, IFilterState } from "../services/FilterStateService";
@@ -13,69 +12,67 @@ import { MediaThumbnail } from "../vms/MediaThumbnail";
 import { SearchMode } from "../vms/SearchMode";
 import { IObservable } from "../utils/Interfaces";
 import { Observable } from "../utils/Observable";
+import Breadcrumbs from './Breadcrumbs.vue';
 import MediaViewer from "./MediaViewer.vue";
 
-    @Component({
-        components: {
-            MediaViewer, 
-            Breadcrumbs
+@Component({
+    components: { MediaViewer, Breadcrumbs }
+})
+export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
+    @Dep('$host') $host: string;
+    @Dep('$api') $api: ApiService;
+    @Dep('$filter') $filter: FilterStateService;
+    
+    error: string = null;
+    empty: boolean = false;
+    contents: FolderContents = null;
+    
+    indexFeed: IObservable<number> = new Observable<number>();
+    
+    get isEmpty() {
+        return !this.contents?.media?.length
+            && !this.contents?.subfolders?.length;
+    }
+    
+    async mounted() {
+        this.observe(this.$filter.onStateChanged, x => this.refresh(x));
+        await this.refresh(this.$filter.state);
+    }
+    
+    async refresh(state: IFilterState) {
+        this.error = null;
+        
+        try {
+            await this.showLoading(async () => {
+                this.contents = await this.$api.getFolderContents({
+                    folder: state.folder,
+                    searchMode: state.searchMode,
+                    dateFrom: state.dateFrom,
+                    dateTo: state.dateTo,
+                    tags: state.tags ? state.tags.join(',') : null
+                });
+            })
+        } catch (e) {
+            this.error = 'Folder not found!';
         }
-    })
-    export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
-        @Dep('$host') $host: string;
-        @Dep('$api') $api: ApiService;
-        @Dep('$filter') $filter: FilterStateService;
-        
-        error: string = null;
-        empty: boolean = false;
-        contents: FolderContents = null;
-        
-        indexFeed: IObservable<number> = new Observable<number>();
-        
-        get isEmpty() {
-            return !this.contents?.media?.length
-                && !this.contents?.subfolders?.length;
-        }
-        
-        async mounted() {
-            this.observe(this.$filter.onStateChanged, x => this.refresh(x));
-            await this.refresh(this.$filter.state);
-        }
-        
-        async refresh(state: IFilterState) {
-            this.error = null;
-            
-            try {
-                await this.showLoading(async () => {
-                    this.contents = await this.$api.getFolderContents({
-                        folder: state.folder,
-                        searchMode: state.searchMode,
-                        dateFrom: state.dateFrom,
-                        dateTo: state.dateTo,
-                        tags: state.tags ? state.tags.join(',') : null
-                    });
-                })
-            } catch (e) {
-                this.error = 'Folder not found!';
-            }
-        }
-        
-        showFolder(f: Folder) {
-            this.$filter.update('view', { folder: f.path })
-        }
-        
-        filterByTag(t: TagBinding) {
-            this.$filter.update('view', { folder: '/', searchMode: SearchMode.Everywhere, tags: [t.tag.id] });
-        }
-        
-        showMedia(idx: number) {
-            this.indexFeed.notify(idx);
-        }
-        
-        getThumbnailPath(m: MediaThumbnail) {
-            return 'url(' + this.$host + m.thumbnailPath + ')';
-        }
-    } 
+    }
+    
+    showFolder(f: Folder) {
+        this.$filter.update('view', { folder: f.path })
+    }
+    
+    filterByTag(t: TagBinding) {
+        this.$filter.update('view', { folder: '/', searchMode: SearchMode.Everywhere, tags: [t.tag.id] });
+    }
+    
+    showMedia(idx: number) {
+        this.indexFeed.notify(idx);
+    }
+    
+    getThumbnailPath(m: MediaThumbnail) {
+        return 'url(' + this.$host + m.thumbnailPath + ')';
+    }
+} 
 </script>
 
 <template>

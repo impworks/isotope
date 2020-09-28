@@ -1,57 +1,55 @@
 <script lang="ts">
-    import { Vue, Component } from "vue-property-decorator";
+import { Vue, Component } from "vue-property-decorator";
 
-    @Component
-    export default class TransitionExpand extends Vue {
+@Component
+export default class TransitionExpand extends Vue {
+    enter(element) {
+        const width = getComputedStyle(element).width;
 
-        enter(element) {
-            console.log(element)
-            const width = getComputedStyle(element).width;
+        element.style.width = width;
+        element.style.position = 'absolute';
+        element.style.visibility = 'hidden';
+        element.style.height = 'auto';
 
-            element.style.width = width;
-            element.style.position = 'absolute';
-            element.style.visibility = 'hidden';
-            element.style.height = 'auto';
+        const height = getComputedStyle(element).height;
 
-            const height = getComputedStyle(element).height;
+        element.style.width = null;
+        element.style.position = null;
+        element.style.visibility = null;
+        element.style.height = 0;
 
-            element.style.width = null;
-            element.style.position = null;
-            element.style.visibility = null;
-            element.style.height = 0;
+        // Force repaint to make sure the
+        // animation is triggered correctly.
+        getComputedStyle(element).height;
 
-            // Force repaint to make sure the
-            // animation is triggered correctly.
-            getComputedStyle(element).height;
-
-            // Trigger the animation.
-            // We use `requestAnimationFrame` because we need
-            // to make sure the browser has finished
-            // painting after setting the `height`
-            // to `0` in the line above.
-            requestAnimationFrame(() => {
-                element.style.height = height;
-            });
-        } 
-
-        afterEnter(element) {
-            element.style.height = 'auto';
-        }
-
-        leave(element) {
-            const height = getComputedStyle(element).height;
-            
+        // Trigger the animation.
+        // We use `requestAnimationFrame` because we need
+        // to make sure the browser has finished
+        // painting after setting the `height`
+        // to `0` in the line above.
+        requestAnimationFrame(() => {
             element.style.height = height;
+        });
+    } 
 
-            // Force repaint to make sure the
-            // animation is triggered correctly.
-            getComputedStyle(element).height;
-
-            requestAnimationFrame(() => {
-                element.style.height = 0;
-            });
-        }
+    afterEnter(element) {
+        element.style.height = 'auto';
     }
+
+    leave(element) {
+        const height = getComputedStyle(element).height;
+        
+        element.style.height = height;
+
+        // Force repaint to make sure the
+        // animation is triggered correctly.
+        getComputedStyle(element).height;
+
+        requestAnimationFrame(() => {
+            element.style.height = 0;
+        });
+    }
+}
 </script>
 
 <template>

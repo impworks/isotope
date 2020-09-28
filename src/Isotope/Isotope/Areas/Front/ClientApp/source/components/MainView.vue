@@ -1,16 +1,13 @@
 <script lang="ts">
-    import { Component, Vue } from "vue-property-decorator";
-    import Gallery from './Gallery.vue';
-    import Sidebar from './Sidebar.vue';
+import { Component, Vue } from "vue-property-decorator";
+import Gallery from './Gallery.vue';
+import Sidebar from './Sidebar.vue';
 
-    @Component({
-        components: { 
-            Gallery,
-            Sidebar
-        }
-    })
-    export default class MainView extends Vue {
-    }
+@Component({
+    components: { Gallery, Sidebar }
+})
+export default class MainView extends Vue {
+}
 </script>
 
 <template>

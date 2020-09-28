@@ -76,7 +76,7 @@ export class FilterStateService {
             tags: getVal('tags', x => x.split(',').map(y => parseInt(y)).filter(y => y > 0)),
             dateFrom: getStr('dateFrom'),
             dateTo: getStr('dateTo'),
-            searchMode: getVal('mode', x => parseInt(x))
+            searchMode: getVal('searchMode', x => parseInt(x))
         });
         
         function getStr(key: string): string {

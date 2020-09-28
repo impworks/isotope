@@ -9,50 +9,59 @@ import { FilterStateService, IFilterState } from "../services/FilterStateService
 import { SearchMode } from "../vms/SearchMode";
 
 @Component({
-        components: { 
-            TransitionExpand
-        }
-    })
-    export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
-        @Dep('$api') $api: ApiService;
-        @Dep('$filter') $filter: FilterStateService;
+    components: { 
+        TransitionExpand
+    }
+})
+export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
+    @Dep('$api') $api: ApiService;
+    @Dep('$filter') $filter: FilterStateService;
+    
+    isOpen: boolean = false;
+    filter: IFilterState = { searchMode: SearchMode.CurrentFolderAndSubfolders };
+    tags: string[] = null;
+    
+    async mounted() {
+        this.observe(this.$filter.onStateChanged, x => this.updateFromState(x));
+        this.updateFromState(this.$filter.state);
         
-        isOpen: boolean = false;
-        filter: IFilterState = { searchMode: SearchMode.CurrentFolderAndSubfolders };
-        tags: string[] = null;
-        
-        async mounted() {
-            this.observe(this.$filter.onStateChanged, x => {
-                this.filter = { tags: x.tags, searchMode: x.searchMode || SearchMode.CurrentFolderAndSubfolders, dateFrom: x.dateFrom, dateTo: x.dateTo };
-                if(!this.isOpen && this.isNotEmpty(this.filter))
-                    this.isOpen = true;
+        try {
+            await this.showLoading(async () => {
+                this.tags = await this.$api.getTags();
             });
-            
-            try {
-                await this.showLoading(async () => {
-                    this.tags = await this.$api.getTags();
-                });
-            } catch (e) {
-                console.log('Failed to load tags', e);
-            }
+        } catch (e) {
+            console.log('Failed to load tags', e);
         }
-        
-        @Watch('filter', { deep: true })
-        onFilterChanged() {
-            const notEmpty = this.isNotEmpty(this.filter);
-            this.$filter.update('filters', { ...this.filter, searchMode: notEmpty ? this.filter.searchMode : null });
-        }
-        
-        toggleOpen() {
-            if(this.isOpen)
-                this.filter = { tags: null, dateFrom: null, dateTo: null, searchMode: null };
-            this.isOpen = !this.isOpen;
-        }
-        
-        isNotEmpty(s: IFilterState) {
-            return s.tags?.length || s.dateTo || s.dateFrom;
-        }
-    } 
+    }
+    
+    @Watch('filter', { deep: true })
+    onFilterChanged() {
+        const notEmpty = this.isNotEmpty(this.filter);
+        this.$filter.update('filters', { ...this.filter, searchMode: notEmpty ? this.filter.searchMode : null });
+    }
+
+    updateFromState(state: IFilterState) {
+        this.filter = {
+            tags: state.tags,
+            searchMode: state.searchMode || SearchMode.CurrentFolderAndSubfolders,
+            dateFrom: state.dateFrom,
+            dateTo: state.dateTo
+        };
+
+        if(!this.isOpen && this.isNotEmpty(this.filter))
+            this.isOpen = true;
+    }
+    
+    toggleOpen() {
+        if(this.isOpen)
+            this.filter = { tags: null, dateFrom: null, dateTo: null, searchMode: null };
+        this.isOpen = !this.isOpen;
+    }
+    
+    isNotEmpty(s: IFilterState) {
+        return s.tags?.length || s.dateTo || s.dateFrom;
+    }
+}
 </script>
 
 <template>
@@ -125,7 +134,8 @@ import { SearchMode } from "../vms/SearchMode";
                 <div class="filters__filter">
                     <h6>Tags</h6>
                     <v-select 
-                        multiple 
+                        multiple
+                        v-if="tags"
                         v-model="filter.tags" 
                         :options="tags" 
                         :reduce="x => x.id"

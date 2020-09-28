@@ -39,7 +39,6 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
         try {
             await this.showLoading(async () => {
                 this.media = await this.$api.getMedia(this.source[this.index].key);
-                console.log(this.media);
             })
         } catch (e) {
             console.log('failed to load media', e);
