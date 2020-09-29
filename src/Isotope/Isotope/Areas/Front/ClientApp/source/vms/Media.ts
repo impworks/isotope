@@ -1,5 +1,5 @@
 import { MediaType } from "./MediaType";
-import { TagBinding } from "./TagBinding";
+import { TagBindingWithLocation, TagBindingWithType } from "./TagBinding";
 
 export interface Media {
     key: string;
@@ -8,5 +8,6 @@ export interface Media {
     originalPath: string;
     date: string;
     description: string;
-    tags: TagBinding[];
+    overlayTags: TagBindingWithLocation[];
+    extraTags: TagBindingWithType[];
 }

@@ -168,23 +168,18 @@ namespace Isotope.Areas.Front.Services
                                   .Include(x => x.Tags)
                                   .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
             
-            var mediaQuery = _db.Media.AsNoTracking();
+            var query = _db.Media.AsNoTracking();
+
+            foreach (var tagId in request.Tags.TryParseList<int>(","))
+                query = query.Where(x => x.Tags.Any(y => y.Tag.Id == tagId));
             
-            var tagIds = request.Tags.TryParseList<int>(",");
-            if (tagIds.Any())
-            {
-                var mediaCondition = GetMatchingMediaCondition(request, folder, tagIds);
-                var folderCondition = await GetMatchingFoldersConditionAsync(request, tagIds);
+            if (request.SearchMode == SearchMode.CurrentFolder)
+                query = query.Where(x => x.FolderKey == folder.Key);
+            else if (request.SearchMode == SearchMode.CurrentFolderAndSubfolders)
+                query = query.Where(x => x.Folder.Path.StartsWith(folder.Path));
 
-                var condition = folderCondition == null
-                    ? mediaCondition
-                    : ExprHelper.Or(folderCondition, mediaCondition);
-
-                mediaQuery = mediaQuery.Where(condition);
-            }
-
-            var media = await mediaQuery.OrderBy(x => x.Order)
-                                        .ToListAsync();
+            var media = await query.OrderBy(x => x.Order)
+                                   .ToListAsync();
 
             var datedMedia = TryFilterMediaByDate(request, media);
             
@@ -192,47 +187,6 @@ namespace Isotope.Areas.Front.Services
             {
                 Media = _mapper.Map<MediaThumbnailVM[]>(datedMedia)
             };
-        }
-
-        /// <summary>
-        /// Returns a condition that matches media by tags on containing folders.
-        /// </summary>
-        private async Task<Expression<Func<Media, bool>>> GetMatchingFoldersConditionAsync(FolderContentsRequestVM request, IReadOnlyList<int> tagIds)
-        {
-            if (request.SearchMode == SearchMode.CurrentFolder)
-                return null;
-
-            var query = _db.Folders
-                           .AsNoTracking()
-                           .Where(x => x.Tags.Any(y => tagIds.Contains(y.Tag.Id)));  
-
-            if (request.SearchMode == SearchMode.CurrentFolderAndSubfolders)
-                query = query.Where(x => x.Path.StartsWith(request.Folder));
-
-            var matchedFolderPaths = await query.Select(x => x.Path).ToListAsync();
-            if (!matchedFolderPaths.Any())
-                return null;
-
-            var allSubfolders = await _db.Folders.Select(x => new {x.Key, x.Path}).ToListAsync(); // sic! retrieving all folders and checking on client side
-            var folderKeys = allSubfolders.Where(x => matchedFolderPaths.Any(y => x.Path.StartsWith(y)))
-                                          .Select(x => x.Key)
-                                          .ToList();
-            return x => folderKeys.Contains(x.FolderKey);
-        }
-
-        /// <summary>
-        /// Return a condition that matches media by tags.
-        /// </summary>
-        private Expression<Func<Media, bool>> GetMatchingMediaCondition(FolderContentsRequestVM request, Folder folder, IReadOnlyList<int> tagIds)
-        {
-            Expression<Func<Media, bool>> condition = x => x.Tags.Any(y => tagIds.Contains(y.Tag.Id));
-
-            if (request.SearchMode == SearchMode.CurrentFolder)
-                condition = ExprHelper.And(condition, x => x.FolderKey == folder.Key);
-            else if (request.SearchMode == SearchMode.CurrentFolderAndSubfolders)
-                condition = ExprHelper.And(condition, x => x.Folder.Path.StartsWith(folder.Path));
-
-            return condition;
         }
 
         /// <summary>

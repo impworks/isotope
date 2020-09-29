@@ -16,6 +16,11 @@
         public Media Media { get; set; }
         
         /// <summary>
+        /// FK of the media.
+        /// </summary>
+        public string MediaKey { get; set; }
+        
+        /// <summary>
         /// Type of the binding.
         /// </summary>
         public TagBindingType Type { get; set; }

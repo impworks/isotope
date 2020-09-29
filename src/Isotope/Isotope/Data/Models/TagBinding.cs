@@ -19,5 +19,10 @@ namespace Isotope.Data.Models
         /// Related tag.
         /// </summary>
         public Tag Tag { get; set; }
+        
+        /// <summary>
+        /// FK of the tag.
+        /// </summary>
+        public int TagId { get; set; }
     }
 }

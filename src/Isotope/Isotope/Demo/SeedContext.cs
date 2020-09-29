@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Impworks.Utils.Linq;
 using Impworks.Utils.Strings;
@@ -11,6 +12,7 @@ using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
 using Isotope.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isotope.Demo
 {
@@ -212,6 +214,46 @@ namespace Isotope.Demo
         /// </summary>
         public void SaveChanges()
         {
+            _db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Creates all media tags inherited from folders.
+        /// </summary>
+        public void ApplyInheritedTags()
+        {
+            _db.SaveChanges();
+            
+            var folders = _db.Folders
+                             .AsNoTracking()
+                             .Include(x => x.Tags)
+                             .Where(x => x.Depth != 0)
+                             .ToLookup(x => x.Depth, x => x);
+
+            var media = _db.Media
+                           .Select(x => new {x.Folder, x.Key})
+                           .ToList();
+
+            foreach (var m in media)
+            {
+                var tagIds = new HashSet<int>();
+                var f = m.Folder;
+                while (f != null)
+                {
+                    tagIds.AddRange(f.Tags.Select(x => x.Id));
+                    f = f.Depth > 1
+                        ? folders[f.Depth - 1].FirstOrDefault(x => f.Path.StartsWith(x.Path))
+                        : null;
+                }
+
+                _db.MediaTags.AddRange(tagIds.Select(x => new MediaTagBinding
+                {
+                    TagId = x,
+                    MediaKey = m.Key,
+                    Type = TagBindingType.Inherited
+                }));
+            }
+            
             _db.SaveChanges();
         }
     }

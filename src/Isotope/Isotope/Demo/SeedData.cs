@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Isotope.Areas.Front.Dto;
 using Isotope.Data;
@@ -22,6 +23,8 @@ namespace Isotope.Demo
             SeedCatsFolders(ctx);
             SeedTravelFolders(ctx);
             SeedEdgeCaseFolders(ctx);
+            
+            ctx.ApplyInheritedTags();
 
             await SeedDefaultUserAsync(userMgr);
 

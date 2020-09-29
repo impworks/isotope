@@ -1,3 +1,4 @@
+using System.Linq;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
 using Isotope.Code.Utils.Helpers;
@@ -42,9 +43,14 @@ namespace Isotope.Areas.Front.Dto
         public string Description { get; set; }
         
         /// <summary>
-        /// Related tags.
+        /// Tags to be displayed over the image.
         /// </summary>
-        public TagBindingVM[] Tags { get; set; }
+        public TagBindingVM[] OverlayTags { get; set; }
+        
+        /// <summary>
+        /// All other tags.
+        /// </summary>
+        public TagBindingVM[] ExtraTags { get; set; }
 
         public void Configure(TypeAdapterConfig config)
         {
@@ -55,7 +61,8 @@ namespace Isotope.Areas.Front.Dto
                   .Map(x => x.OriginalPath, x => x.Path)
                   .Map(x => x.Date, x => TryFormatDate(x.Date))
                   .Map(x => x.Description, x => x.Description)
-                  .Map(x => x.Tags, x => x.Tags);
+                  .Map(x => x.OverlayTags, x => x.Tags.Where(y => y.Location != null))
+                  .Map(x => x.ExtraTags, x => x.Tags.Where(y => y.Location == null && y.Type != TagBindingType.Inherited));
         }
         
         /// <summary>

@@ -7,6 +7,7 @@
     {
         Custom = 1,
         Depicted = 2,
-        Author = 3
+        Author = 3,
+        Inherited = 4
     }
 }

@@ -4,6 +4,12 @@ import { TagBindingLocation } from "./TagBindingLocation";
 
 export interface TagBinding {
     tag: Tag;
-    location: TagBindingLocation;
+}
+
+export interface TagBindingWithType extends TagBinding {
     type: TagBindingType;
+}
+
+export interface TagBindingWithLocation extends TagBindingWithType {
+    location: TagBindingLocation;
 }

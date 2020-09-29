@@ -37,8 +37,10 @@ namespace Isotope.Data
             builder.Entity<SharedLink>().HasOne(x => x.Folder).WithMany().IsRequired(false);
 
             builder.Entity<FolderTagBinding>().HasOne(x => x.Folder).WithMany(x => x.Tags).IsRequired(true);
+            builder.Entity<FolderTagBinding>().HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).IsRequired(true);
 
-            builder.Entity<MediaTagBinding>().HasOne(x => x.Media).WithMany(x => x.Tags).IsRequired(true);
+            builder.Entity<MediaTagBinding>().HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).IsRequired(true);
+            builder.Entity<MediaTagBinding>().HasOne(x => x.Media).WithMany(x => x.Tags).HasForeignKey(x => x.MediaKey).IsRequired(true);
             builder.Entity<MediaTagBinding>().OwnsOne(x => x.Location);
 
             builder.Entity<TagSuggestion>().HasOne(x => x.Media).WithMany().IsRequired(true);
