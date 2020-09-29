@@ -79,7 +79,7 @@ export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
                 Filters
             </div>
             <div class="sidebar-button__arrow">
-                <i class="icon icon-arrow-down"></i>
+                <i class="icon icon-arrow"></i>
             </div>
         </a>
         <transition-expand>
@@ -144,7 +144,7 @@ export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
                     >
                         <template #open-indicator="{ attributes }">
                             <i 
-                                class="icon icon-arrow-down"
+                                class="icon icon-arrow"
                                 v-bind="attributes"
                             ></i>
                         </template>

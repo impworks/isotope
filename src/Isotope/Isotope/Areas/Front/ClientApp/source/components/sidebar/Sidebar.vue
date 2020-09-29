@@ -30,6 +30,26 @@ export default class Sidebar extends Vue {
             >
                 isotope
             </a>
+            <div class="sidebar__header__actions">
+                <a href="#" class="sidebar__action sidebar__action_user" data-toggle="dropdown">
+                    <div class="sidebar__action__content">
+                        <i 
+                            class="icon icon-user"
+                            v-if="!avatar" 
+                        ></i>
+                        <div 
+                            class="avatar"
+                            v-else 
+                            style="background-image: url('../../../images/avatar.jpg')"
+                        ></div>
+                    </div>
+                </a>
+                <a href="#" class="sidebar__action  sidebar__action_filter">
+                    <div class="sidebar__action__content">
+                        <i class="icon icon-filter"></i>
+                    </div>
+                </a>
+            </div>
         </div>
         <div class="sidebar__content">
             <filters v-if="isFilterShown"></filters>
@@ -74,8 +94,69 @@ export default class Sidebar extends Vue {
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem;
+            padding-left: 1rem;
+
+            &__actions {
+                display: flex;
+            }
         }
+
+        &__action {
+            display: block;
+            padding: 0.75rem 0.5rem;
+            color: $gray-700;
+            transition: color 150ms linear;
+
+            &_filter {
+                padding-right: 1rem;
+
+                @include media-breakpoint-up(md) {
+                    display: none;
+                }
+            }
+
+            &_user {
+                
+                @include media-breakpoint-up(md) {
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                }
+            }
+
+            &:hover {
+                color: $primary;
+            }
+
+            &__content {
+                width: 2.125rem;
+                height: 2.125rem;
+                position: relative;
+                border-radius: 50%;
+                box-sizing: border-box;
+                background-color: $gray-200;
+
+                .icon,
+                .avatar {
+                    top: 0;
+                    left: 0;
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .icon {
+                    text-align: center;
+                    font-size: 1.3rem;
+                    line-height: 2rem;
+                }
+
+                .avatar {
+                    border-radius: 50%;
+                    background-size: cover;
+                }
+            }
+        }
+        
 
         &-button {
             display: flex;

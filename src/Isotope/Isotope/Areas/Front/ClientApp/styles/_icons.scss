@@ -9,7 +9,7 @@ i.icon {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    &-arrow-down:before {
+    &-arrow:before {
         content: "\e900";
     }
 
@@ -17,7 +17,7 @@ i.icon {
         content: "\e901";
     }
     
-    &-folder:before {
+    &-user:before {
         content: "\e902";
     }
 }
