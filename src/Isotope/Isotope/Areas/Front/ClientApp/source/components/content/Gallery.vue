@@ -291,6 +291,10 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 background-image: url(../../../images/folder.svg);
                 background-size: auto 200%;
                 background-position: center 0;
+
+                @include media-breakpoint-down(sm) {
+                    height: 3rem;
+                }
             }
 
             &_picture &__icon {
@@ -298,6 +302,10 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 background-color: $gray-200;
                 background-image: url(../../../images/image.svg);
                 background-size: auto 3rem;
+
+                @include media-breakpoint-up(md) {
+                    background-size: auto 4rem;
+                }
 
                 @each $screen-size, $content-size in $content-sizes {
                     @media only screen and (min-width: $screen-size) {
