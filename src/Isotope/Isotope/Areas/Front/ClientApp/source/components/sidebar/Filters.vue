@@ -55,7 +55,7 @@ export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
     
     toggleOpen() {
         if(this.isOpen)
-            this.filter = { tags: null, dateFrom: null, dateTo: null, searchMode: null };
+            this.filter = { tags: null, dateFrom: null, dateTo: null, searchMode: SearchMode.CurrentFolderAndSubfolders };
         this.isOpen = !this.isOpen;
     }
     
