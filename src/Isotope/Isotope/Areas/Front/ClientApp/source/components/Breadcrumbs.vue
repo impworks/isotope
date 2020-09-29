@@ -92,12 +92,20 @@ interface Crumb {
             position: relative;
             padding: 0 2em 0 0;
             
+            a {
+                color: $gray-700;
+
+                &:hover {
+                    color: $gray-800;
+                }
+            }
+            
             &:not(:last-child):after {
                 top: 0;
                 right: 0;
                 width: 2em;
                 content: '>';
-                color: $gray-500;
+                color: $gray-400;
                 position: absolute;
                 text-align: center;
                 display: inline-block;

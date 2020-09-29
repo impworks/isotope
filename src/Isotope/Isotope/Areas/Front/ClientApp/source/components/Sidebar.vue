@@ -46,7 +46,7 @@ export default class Sidebar extends Vue {
 
     .sidebar {
         z-index: 1;
-        width: 21rem;
+        width: 18.5rem;
         position: relative;
         background: $white;
 
@@ -62,6 +62,10 @@ export default class Sidebar extends Vue {
             display: flex;
             flex-direction: column;
             border-right: 1px solid $gray-300;
+        }
+
+        @include media-breakpoint-up(lg) {
+            width: 21rem;
         }
 
         &__header {

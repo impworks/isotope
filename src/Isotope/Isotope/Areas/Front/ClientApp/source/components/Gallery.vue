@@ -81,10 +81,23 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             <breadcrumbs/>
         </div>
             <perfect-scrollbar class="gallery__content">
-                <loading :is-loading="asyncState.isLoading" :is-full-page="true">
+                <loading 
+                    :is-full-page="true"
+                    :is-loading="asyncState.isLoading"
+                >
                 <div v-if="contents">
-                    <div v-if="contents.tags && contents.tags.length" class="gallery__tags">
-                        <a v-for="t in contents.tags" class="badge badge-primary clickable" @click.prevent="filterByTag(t)">{{t.tag.caption}}</a>
+                    <div 
+                        class="gallery__tags"
+                        v-if="contents.tags && contents.tags.length"
+                    >
+                        <a 
+                            class="gallery__tags__item clickable" 
+                            v-for="t in contents.tags" 
+                            :key="t"
+                            @click.prevent="filterByTag(t)"
+                        >
+                            {{t.tag.caption}}
+                        </a>
                     </div>
                     <div class="gallery__grid">
                         <div v-if="contents.subfolders && contents.subfolders.length" class="gallery__grid__row">
@@ -106,7 +119,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                         </div>
                         <div v-if="contents.media && contents.media.length" class="gallery__grid__row">
                             <div 
-                                class="gallery__item gallery__item_picture clickable"
+                                class="gallery__item gallery__item_picture"
                                 v-for="(m, i) in contents.media"
                                 :key="m.key"
                             >
@@ -115,7 +128,10 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                                     @click.prevent="showMedia(i)"
                                 >
                                     <div class="gallery__item__icon">
-                                        <div class="gallery__item__preview" :style="{backgroundImage: getThumbnailPath(m)}"></div>
+                                        <div 
+                                            class="gallery__item__preview" 
+                                            :style="{backgroundImage: getThumbnailPath(m)}"
+                                        ></div>
                                     </div>
                                 </a>
                             </div>
@@ -151,7 +167,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             background: $white;
             border-bottom: 1px solid $gray-300;
 
-            @include media-breakpoint-down(md) {
+            @include media-breakpoint-down(sm) {
                 display: none;
             }
         }
@@ -164,7 +180,29 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
         }
 
         &__tags {
-            padding: 1rem 1rem 0;
+            font-size: 0;
+            line-height: 1;
+            padding: 0.5rem 1rem;
+
+            &__item {
+                color: $white;
+                font-size: 1rem;
+                padding: 0.3rem 0.5rem;
+                margin: 0.5rem 0.5rem 0 0;
+                display: inline-block;
+                border-radius: $border-radius;
+                background-color: $primary;
+
+                &:hover {
+                    color: $white;
+                    text-decoration: none;
+                    background-color: darken($primary, 3%);
+                }
+            }
+
+            & + .gallery__grid {
+                padding-top: 0;
+            }
         }
 
         &__grid {
@@ -178,21 +216,52 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
 
         &__item {
             flex: 0 0 auto;
-            flex-basis: 9rem;
 
-            @include media-breakpoint-up(md) {
-                flex-basis: 11.3rem;
-            }
+            $content-sizes:
+                375px  5.7291666667rem,
+                414px  6.1666666667rem,
+                438px  6.6666666667rem,
+                504px  8.0416666667rem,
+                507px  5.546875rem,
+                551px  6.234375rem,
+                568px  6.5rem,
+                639px  7.609375rem,
+                667px  6.0125rem,
+                678px  6.15rem,
+                694px  6.35rem,
+                736px  5.375rem,
+                768px  7.375rem,
+                800px  8.0416666667rem,
+                834px  8.75rem,
+                981px  8.328125rem,
+                992px  8.5rem,
+                1024px 8.375rem,
+                1112px 7.375rem,
+                1280px 7.5416666667rem,
+                1366px 8.4375rem,
+                1440px 9.2083333333rem;
 
             &__content {
                 display: block;
                 margin: 0.5rem;
-                padding: 0.5rem;
+                padding: 0.3rem;
                 color: $gray-800;
                 border-radius: $border-radius;
                 border: 1px solid $gray-300;
                 background: $white;
-                transition: all 150ms ease;
+                transition: border 150ms ease;
+                width:  4.5833333333rem;
+                box-sizing: content-box;
+
+                @media only screen and (min-width: 414px) {
+                    padding: 0.5rem;
+                }
+
+                @each $screen-size, $content-size in $content-sizes {
+                    @media only screen and (min-width: $screen-size) {
+                        width: $content-size;
+                    }
+                }
 
                 &:hover {
                     border-color: $gray-400;
@@ -201,10 +270,16 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             }
 
             &__caption {
+                padding-top: 0.5rem;
                 text-align: center;
+
+                @include media-breakpoint-down(sm) {
+                    font-size: 0.8rem;
+                }
             }
 
             &__icon {
+                width: 100%;
                 position: relative;
                 background-repeat: no-repeat;
                 background-size: auto 100%;
@@ -219,13 +294,15 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             }
 
             &_picture &__icon {
-                height: 9rem;
+                height: 4.5458333333rem;
                 background-color: $gray-200;
                 background-image: url(../../images/image.svg);
-                background-size: auto 4rem;
+                background-size: auto 3rem;
 
-                @include media-breakpoint-up(md) {
-                    flex-basis: 9.3rem;
+                @each $screen-size, $content-size in $content-sizes {
+                    @media only screen and (min-width: $screen-size) {
+                        height: $content-size;
+                    }
                 }
             }
 
