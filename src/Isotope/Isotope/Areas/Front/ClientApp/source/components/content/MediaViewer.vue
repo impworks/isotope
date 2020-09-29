@@ -21,6 +21,7 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
     shown: boolean = false;
     index: number = null;
     media: Media = null;
+    cache: Promise<ICachedMedia>[] = [];
 
     mounted() {
         this.observe(this.indexFeed, x => this.show(x));
@@ -31,18 +32,23 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
         this.shown = false;
         this.index = null;
         this.media = null;
+        this.clearCache();
     }
 
     async show(i: number) {
+        if(i < 0 || i >= this.source.length)
+            return;
+        
         this.shown = true;
         this.index = i;
         try {
-            await this.showLoading(async () => {
-                this.media = await this.$api.getMedia(this.source[this.index].key);
-            })
+            const getter = this.cache[i] || (this.cache[i] = this.preloadMedia(i));
+            await this.showLoading(async () => this.media = (await getter).media);
         } catch (e) {
             console.log('failed to load media', e);
         }
+
+        this.updateCache(i); // sic! no awaiting
     }
     
     async nav(pos: number) {
@@ -51,11 +57,50 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
             return;
         
         await this.show(idx);
+        this.updateCache(idx); // sic! no awaiting
     }
     
     getAbsolutePath(path: string) {
         return this.$host + path;
     }
+    
+    private async updateCache(idx: number) {
+        const back = 1;
+        const forward = 3;
+        
+        for(let i = idx - back; i < idx + forward; i++) {
+            if(i < 0 || i >= this.source.length || this.cache[i] != null)
+                continue;
+            
+            this.cache[i] = this.preloadMedia(i);
+        }
+    }
+    
+    private async preloadMedia(idx: number): Promise<ICachedMedia> {
+        const key = this.source[idx].key;
+        const media = await this.$api.getMedia(key);        
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.className = 'preload-image';
+            img.onload = () => resolve({ media: media, img: img });
+            img.onerror = () => reject();
+            img.src = this.$host + media.fullPath;
+            document.body.appendChild(img);
+        });
+    }
+    
+    private async clearCache() {
+        for(let elem of this.cache) {
+            const img = (await elem).img;
+            img.parentElement.removeChild(img);
+        }
+        this.cache = [];
+    }
+}
+
+interface ICachedMedia {
+    media: Media;
+    img: HTMLImageElement;
 }
 </script>
 

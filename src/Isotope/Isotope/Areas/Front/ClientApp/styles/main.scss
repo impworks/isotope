@@ -23,3 +23,12 @@ html, body {
 .badge-warning {
     color: $white;
 }
+
+.preload-image {
+    width: 1px;
+    height: 1px;
+    opacity: 0.01;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
