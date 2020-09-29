@@ -49,7 +49,7 @@ export default class FolderTreeItem extends Vue {
 </template>
 
 <style lang="scss">
-@import "../../styles/variables";
+@import "../../../styles/variables";
 @import "./node_modules/bootstrap/scss/functions";
 @import "./node_modules/bootstrap/scss/variables";
 
@@ -80,7 +80,7 @@ export default class FolderTreeItem extends Vue {
 
         width: $size;
         height: $size;
-        background-image: url(../../images/folder.svg);
+        background-image: url(../../../images/folder.svg);
         background-position: 0 0;
         background-size: auto 200%;
         background-repeat: no-repeat;

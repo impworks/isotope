@@ -6,7 +6,8 @@ import { Dep } from "../../utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService, IFilterState } from "../../services/FilterStateService";
 import { SearchMode } from "../../vms/SearchMode";
-import TransitionExpand from './TransitionExpand.vue';
+import { Tag } from "../../vms/Tag";
+import TransitionExpand from '../utils/TransitionExpand.vue';
 
 @Component({
     components: { 
@@ -18,8 +19,8 @@ export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
     
     isOpen: boolean = false;
-    filter: IFilterState = { searchMode: SearchMode.CurrentFolderAndSubfolders };
-    tags: string[] = null;
+    filter: Partial<IFilterState> = { searchMode: SearchMode.CurrentFolderAndSubfolders };
+    tags: Tag[] = null;
     
     async mounted() {
         this.observe(this.$filter.onStateChanged, x => this.updateFromState(x));
@@ -58,7 +59,7 @@ export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
         this.isOpen = !this.isOpen;
     }
     
-    isNotEmpty(s: IFilterState) {
+    isNotEmpty(s: Partial<IFilterState>) {
         return s.tags?.length || s.dateTo || s.dateFrom;
     }
 }
@@ -175,7 +176,7 @@ export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
 </template>
 
 <style lang="scss">
-    @import "../../styles/variables";
+    @import "../../../styles/variables";
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
 
@@ -185,7 +186,7 @@ export default class Filters extends Mixins(HasAsyncState(), HasLifetime) {
         z-index: 3;
 
         .filter-icon {
-            background-image: url(../../images/filter.svg);
+            background-image: url(../../../images/filter.svg);
         }
 
         &__filter {

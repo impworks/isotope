@@ -93,7 +93,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                         <a 
                             class="gallery__tags__item clickable" 
                             v-for="t in contents.tags" 
-                            :key="t"
+                            :key="t.tag.id"
                             @click.prevent="filterByTag(t)"
                         >
                             {{t.tag.caption}}
@@ -152,7 +152,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
 </template>
 
 <style lang="scss">
-    @import "../../styles/variables";
+    @import "../../../styles/variables";
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";
@@ -288,7 +288,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
 
             &_folder &__icon {
                 height: 4rem;
-                background-image: url(../../images/folder.svg);
+                background-image: url(../../../images/folder.svg);
                 background-size: auto 200%;
                 background-position: center 0;
             }
@@ -296,7 +296,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             &_picture &__icon {
                 height: 4.5458333333rem;
                 background-color: $gray-200;
-                background-image: url(../../images/image.svg);
+                background-image: url(../../../images/image.svg);
                 background-size: auto 3rem;
 
                 @each $screen-size, $content-size in $content-sizes {
