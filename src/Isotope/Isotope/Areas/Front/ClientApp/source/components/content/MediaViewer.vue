@@ -1,13 +1,13 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from "vue-property-decorator";
-import { MediaThumbnail } from "../vms/MediaThumbnail";
-import { IObservable } from "../utils/Interfaces";
-import { Media } from "../vms/Media";
-import { HasLifetime } from "./mixins/HasLifetime";
-import { HasAsyncState } from "./mixins/HasAsyncState";
-import { ApiService } from "../services/ApiService";
-import { FilterStateService } from "../services/FilterStateService";
-import { Dep } from "../utils/VueInjectDecorator";
+import { MediaThumbnail } from "../../vms/MediaThumbnail";
+import { IObservable } from "../../utils/Interfaces";
+import { Media } from "../../vms/Media";
+import { HasLifetime } from "../mixins/HasLifetime";
+import { HasAsyncState } from "../mixins/HasAsyncState";
+import { ApiService } from "../../services/ApiService";
+import { FilterStateService } from "../../services/FilterStateService";
+import { Dep } from "../../utils/VueInjectDecorator";
 
 @Component
 export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {

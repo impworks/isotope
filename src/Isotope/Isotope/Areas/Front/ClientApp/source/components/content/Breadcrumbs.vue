@@ -1,11 +1,11 @@
 <script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
-import { Dep } from "../utils/VueInjectDecorator";
-import { ApiService } from "../services/ApiService";
-import { FilterStateService } from "../services/FilterStateService";
-import { HasLifetime } from "./mixins/HasLifetime";
-import { Folder } from "../vms/Folder";
-import { GalleryInfo } from "../vms/GalleryInfo";
+import { Dep } from "../../utils/VueInjectDecorator";
+import { ApiService } from "../../services/ApiService";
+import { FilterStateService } from "../../services/FilterStateService";
+import { HasLifetime } from "../mixins/HasLifetime";
+import { Folder } from "../../vms/Folder";
+import { GalleryInfo } from "../../vms/GalleryInfo";
 
 @Component
 export default class Breadcrumbs extends Mixins(HasLifetime) {

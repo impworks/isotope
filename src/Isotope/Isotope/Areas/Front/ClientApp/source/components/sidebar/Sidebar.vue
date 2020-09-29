@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import { Dep } from "../utils/VueInjectDecorator";
-import { FilterStateService } from "../services/FilterStateService";
+import { Dep } from "../../utils/VueInjectDecorator";
+import { FilterStateService } from "../../services/FilterStateService";
 import Filters from './Filters.vue';
 import Folders from './Folders.vue';
 

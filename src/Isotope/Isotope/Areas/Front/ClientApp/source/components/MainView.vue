@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Gallery from './Gallery.vue';
-import Sidebar from './Sidebar.vue';
+import Gallery from './content/Gallery.vue';
+import Sidebar from './sidebar/Sidebar.vue';
 
 @Component({
     components: { Gallery, Sidebar }

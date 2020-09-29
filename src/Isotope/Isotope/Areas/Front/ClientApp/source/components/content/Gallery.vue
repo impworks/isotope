@@ -1,17 +1,17 @@
 <script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
-import { HasLifetime } from "./mixins/HasLifetime";
-import { HasAsyncState } from "./mixins/HasAsyncState";
-import { FilterStateService, IFilterState } from "../services/FilterStateService";
-import { FolderContents } from "../vms/FolderContents";
-import { Dep } from "../utils/VueInjectDecorator";
-import { ApiService } from "../services/ApiService";
-import { Folder } from "../vms/Folder";
-import { TagBinding } from "../vms/TagBinding";
-import { MediaThumbnail } from "../vms/MediaThumbnail";
-import { SearchMode } from "../vms/SearchMode";
-import { IObservable } from "../utils/Interfaces";
-import { Observable } from "../utils/Observable";
+import { HasLifetime } from "../mixins/HasLifetime";
+import { HasAsyncState } from "../mixins/HasAsyncState";
+import { FilterStateService, IFilterState } from "../../services/FilterStateService";
+import { FolderContents } from "../../vms/FolderContents";
+import { Dep } from "../../utils/VueInjectDecorator";
+import { ApiService } from "../../services/ApiService";
+import { Folder } from "../../vms/Folder";
+import { TagBinding } from "../../vms/TagBinding";
+import { MediaThumbnail } from "../../vms/MediaThumbnail";
+import { SearchMode } from "../../vms/SearchMode";
+import { IObservable } from "../../utils/Interfaces";
+import { Observable } from "../../utils/Observable";
 import Breadcrumbs from './Breadcrumbs.vue';
 import MediaViewer from "./MediaViewer.vue";
 

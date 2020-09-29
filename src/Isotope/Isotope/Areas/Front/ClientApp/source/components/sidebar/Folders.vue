@@ -1,11 +1,11 @@
 <script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
-import { HasAsyncState } from "./mixins/HasAsyncState";
-import { Dep } from "../utils/VueInjectDecorator";
-import { ApiService } from "../services/ApiService";
-import { Folder } from "../vms/Folder";
-import { FilterStateService } from "../services/FilterStateService";
-import { HasLifetime } from "./mixins/HasLifetime";
+import { HasAsyncState } from "../mixins/HasAsyncState";
+import { Dep } from "../../utils/VueInjectDecorator";
+import { ApiService } from "../../services/ApiService";
+import { Folder } from "../../vms/Folder";
+import { FilterStateService } from "../../services/FilterStateService";
+import { HasLifetime } from "../mixins/HasLifetime";
 import FolderTreeItem from "./FolderTreeItem.vue";
 
 @Component({

@@ -1,8 +1,8 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import { Folder } from "../vms/Folder";
-import { Dep } from "../utils/VueInjectDecorator";
-import { FilterStateService } from "../services/FilterStateService";
+import { Folder } from "../../vms/Folder";
+import { Dep } from "../../utils/VueInjectDecorator";
+import { FilterStateService } from "../../services/FilterStateService";
 
 @Component
 export default class FolderTreeItem extends Vue {
