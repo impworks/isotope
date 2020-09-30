@@ -80,7 +80,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
         <div class="gallery__header">
             <breadcrumbs/>
         </div>
-            <perfect-scrollbar class="gallery__content">
+            <simplebar class="gallery__content">
                 <loading 
                     :is-full-page="true"
                     :is-loading="asyncState.isLoading"
@@ -146,7 +146,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                     {{error}}
                 </div>
             </loading>
-        </perfect-scrollbar>
+        </simplebar>
         <MediaViewer :index-feed="indexFeed" :source="contents.media" v-if="contents && contents.media && contents.media.length"></MediaViewer>
     </div>
 </template>
@@ -177,6 +177,10 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             flex: 1 1 auto;
             display: block;
             background: $gray-200;
+
+            @include media-breakpoint-up(md) {
+                height: 0;
+            }
         }
 
         &__tags {

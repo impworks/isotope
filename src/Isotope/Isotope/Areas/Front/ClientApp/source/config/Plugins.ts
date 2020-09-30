@@ -13,8 +13,9 @@ Vue.use(PortalVue);
 import GlobalEvents from 'vue-global-events';
 Vue.component('GlobalEvents', GlobalEvents);
 
-import PerfectScrollbar from 'vue2-perfect-scrollbar';
-Vue.use(PerfectScrollbar);
+import simplebar from 'simplebar-vue';
+import 'simplebar/dist/simplebar.min.css';
+Vue.component("simplebar", simplebar);
 
 import vSelect from 'vue-select';
 Vue.component('v-select', vSelect);

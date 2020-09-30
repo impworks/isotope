@@ -4,7 +4,6 @@
 @import "mixins";
 @import "fonts";
 @import "icons";
-@import "scrollbar";
 @import "logotype";
 @import "radio";
 @import "vue-select";
@@ -14,6 +13,10 @@ html, body {
     color: $gray-800;
     font-family: "Rubik";
     background: $gray-200;
+}
+
+.simplebar-scrollbar:before {
+  background: $dark;
 }
 
 .clickable {

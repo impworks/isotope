@@ -37,7 +37,7 @@ export default class Folders extends Mixins(HasAsyncState(), HasLifetime) {
     
     private scrollToSelected() {
         setTimeout(() => {
-            const scroll = this.$refs.scroll.$el as HTMLElement;
+            const scroll = this.$refs.scroll.scrollElement as HTMLElement;
             if(scroll.scrollHeight <= scroll.clientHeight)
                 return;
 
@@ -55,15 +55,16 @@ export default class Folders extends Mixins(HasAsyncState(), HasLifetime) {
 </script>
 
 <template>
-    <perfect-scrollbar class="folder-tree" ref="scroll">
+    <simplebar class="folder-tree" ref="scroll">
         <loading :is-loading="asyncState.isLoading" :is-full-page="true">
             <FolderTreeItem v-for="f in folders" :folder="f" :key="f.path" :depth="0" :current-path="currentPath" />
         </loading>
-    </perfect-scrollbar>
+    </simplebar>
 </template>
 
 <style lang="scss">
     .folder-tree {
+        height: 0;
         flex: 1 1 auto;
     }
 </style>
