@@ -10,6 +10,11 @@ namespace Isotope.Areas.Front.Dto
     public class TagBindingVM: IMapped
     {
         /// <summary>
+        /// Unique ID of the binding.
+        /// </summary>
+        public int Id { get; set; }
+        
+        /// <summary>
         /// Related tag.
         /// </summary>
         public TagVM Tag { get; set; }
@@ -27,11 +32,13 @@ namespace Isotope.Areas.Front.Dto
         public void Configure(TypeAdapterConfig config)
         {
             config.NewConfig<MediaTagBinding, TagBindingVM>()
+                  .Map(x => x.Id, x => x.Id)
                   .Map(x => x.Tag, x => x.Tag)
                   .Map(x => x.Location, x => x.Location)
                   .Map(x => x.Type, x => x.Type);
 
             config.NewConfig<FolderTagBinding, TagBindingVM>()
+                  .Map(x => x.Id, x => x.Id)
                   .Map(x => x.Tag, x => x.Tag)
                   .Map(x => x.Type, x => TagBindingType.Custom)
                   .Ignore(x => x.Location);

@@ -24,6 +24,7 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
     index: number = null;
     media: Media = null;
     cache: Promise<ICachedMedia>[] = [];
+    showOverlay: boolean = false;
 
     mounted() {
         this.observe(this.indexFeed, x => this.show(x));
@@ -112,7 +113,7 @@ interface ICachedMedia {
         <portal to="overlay">
             <div v-if="shown" class="viewer">
                 <GlobalEvents @keydown.left="nav(-1)" @keydown.right="nav(1)" @keydown.esc="hide()"></GlobalEvents>
-                <div class="overlay" @click="hide()"></div>
+                <div class="overlay" @click="hide()" @mouseenter="showOverlay = false" @mouseleave="showOverlay = true"></div>
                 <div class="viewer-wrapper">
                     <div class="viewer-body card">
                         <div class="card-body">
@@ -120,7 +121,11 @@ interface ICachedMedia {
                                 <div v-if="media" class="media-wrapper">
                                     <img :src="getAbsolutePath(media.fullPath)"
                                          :alt="media.description" />
-                                    <OverlayTag v-for="t in media.overlayTags" :value="t"></OverlayTag>
+                                    <template v-if="showOverlay">
+                                        <a class="navigation-arrow left clickable" @click.prevent="nav(-1)" v-if="index > 0">&lt;</a>
+                                        <a class="navigation-arrow right clickable" @click.prevent="nav(1)" v-if="index < source.length - 1">&gt;</a>
+                                        <OverlayTag v-for="t in media.overlayTags" :value="t" :show="true"></OverlayTag>
+                                    </template>
                                 </div>
                             </loading>
                         </div>
@@ -138,7 +143,7 @@ interface ICachedMedia {
     right: 0;
     top: 0;
     bottom: 0;
-    z-index: 999;
+    z-index: 100;
     
     display: flex;
     justify-content: center;
@@ -154,7 +159,7 @@ interface ICachedMedia {
     
     .viewer-wrapper {
         position: absolute;
-        z-index: 1000;
+        z-index: 101;
         
         .viewer-body {
             margin: auto 0;
@@ -164,6 +169,32 @@ interface ICachedMedia {
             .media-wrapper {
                 position: relative;
                 width: 100%;
+                
+                .navigation-arrow {
+                    color: #FFFFFF;
+                    text-decoration: none;
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    width: 64px;
+                    font-size: 72px;
+                    opacity: 0.4;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    
+                    &:hover {
+                        opacity: 1;
+                    }
+                    
+                    &.left {
+                        left: 0;
+                    }
+                    
+                    &.right {
+                        right: 0;
+                    }
+                }
                 
                 img {
                     width: 100%;

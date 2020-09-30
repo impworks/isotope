@@ -35,6 +35,7 @@ namespace Isotope.Areas.Front.Services
             var media = await _db.Media
                                  .AsNoTracking()
                                  .Include(x => x.Tags)
+                                 .ThenInclude(x => x.Tag)
                                  .Include(x => x.Folder)
                                  .GetAsync(x => x.Key == key, errorKey);
 

@@ -3,6 +3,7 @@ import { TagBindingType } from "./TagBindingType";
 import { TagBindingLocation } from "./TagBindingLocation";
 
 export interface TagBinding {
+    id: number;
     tag: Tag;
 }
 
