@@ -2,7 +2,7 @@
 import { Component, Mixins } from "vue-property-decorator";
 import { HasLifetime } from "../mixins/HasLifetime";
 import { HasAsyncState } from "../mixins/HasAsyncState";
-import { FilterStateService, IFilterState } from "../../services/FilterStateService";
+import { FilterStateService, IFilterState, IFilterStateChangedEvent } from "../../services/FilterStateService";
 import { FolderContents } from "../../vms/FolderContents";
 import { Dep } from "../../utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
@@ -39,7 +39,10 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
         await this.refresh(this.$filter.state);
     }
     
-    async refresh(state: IFilterState) {
+    async refresh(state: IFilterStateChangedEvent) {
+        if(state.source === 'viewer')
+            return;
+        
         this.error = null;
         
         try {
@@ -51,18 +54,24 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                     dateTo: state.dateTo,
                     tags: state.tags ? state.tags.join(',') : null
                 });
-            })
+            });
+            
+            if(state.mediaKey) {
+                const idx = this.contents.media.findIndex(x => x.key == state.mediaKey);
+                if(idx !== -1)
+                    this.showMedia(idx);
+            }
         } catch (e) {
             this.error = 'Folder not found!';
         }
     }
     
     showFolder(f: Folder) {
-        this.$filter.update('view', { folder: f.path })
+        this.$filter.update('list', { folder: f.path })
     }
     
     filterByTag(t: TagBinding) {
-        this.$filter.update('view', { folder: '/', searchMode: SearchMode.Everywhere, tags: [t.tag.id] });
+        this.$filter.update('list', { folder: '/', searchMode: SearchMode.Everywhere, tags: [t.tag.id] });
     }
     
     showMedia(idx: number) {

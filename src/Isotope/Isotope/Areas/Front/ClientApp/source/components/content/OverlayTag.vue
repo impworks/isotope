@@ -34,12 +34,13 @@ export default class OverlayTag extends Vue {
     
     filterByTag() {
         this.$filter.update(
-            'viewer', 
+            'tag', 
             {
                 folder: '/',
                 tags: [ this.value.tag.id ],
                 dateFrom: null,
                 dateTo: null,
+                mediaKey: null,
                 searchMode: SearchMode.CurrentFolderAndSubfolders
             }
         );

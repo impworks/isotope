@@ -28,7 +28,7 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
 
     mounted() {
         this.observe(this.indexFeed, x => this.show(x));
-        this.observe(this.$filter.onStateChanged, () => this.hide());
+        this.observe(this.$filter.onStateChanged, x => x.source === 'viewer' || this.hide());
     }
 
     hide() {
@@ -36,6 +36,7 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
         this.index = null;
         this.media = null;
         this.clearCache();
+        this.$filter.update('viewer', { mediaKey: null });
     }
 
     async show(i: number) {
@@ -47,11 +48,12 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
         try {
             const getter = this.cache[i] || (this.cache[i] = this.preloadMedia(i));
             await this.showLoading(async () => this.media = (await getter).media);
+            
+            this.$filter.update('viewer', { mediaKey: this.media.key });
+            this.updateCache(i); // sic! no awaiting
         } catch (e) {
             console.log('failed to load media', e);
         }
-
-        this.updateCache(i); // sic! no awaiting
     }
     
     async nav(pos: number) {
@@ -80,7 +82,6 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
     }
     
     private async preloadMedia(idx: number): Promise<ICachedMedia> {
-        console.log('preload: ' + idx);
         const key = this.source[idx].key;
         const media = await this.$api.getMedia(key);        
         return new Promise((resolve, reject) => {

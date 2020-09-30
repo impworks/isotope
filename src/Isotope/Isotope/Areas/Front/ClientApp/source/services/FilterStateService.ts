@@ -11,6 +11,7 @@ export interface IFilterState {
     dateFrom: string;
     dateTo: string;
     searchMode: SearchMode;
+    mediaKey: string;
     
     [key: string]: any;
 }
@@ -58,7 +59,7 @@ export class FilterStateService {
             sh: this.shareId
         });
         
-        return s.folder + (query ? '?' + query : '');
+        return s.folder + (query ? '?' + query : '') + (s.mediaKey ? '#m:' + s.mediaKey : '');
     }
 
     // -----------------------------------
@@ -76,7 +77,8 @@ export class FilterStateService {
             tags: getVal('tags', x => x.split(',').map(y => parseInt(y)).filter(y => y > 0)),
             dateFrom: getStr('dateFrom'),
             dateTo: getStr('dateTo'),
-            searchMode: getVal('searchMode', x => parseInt(x))
+            searchMode: getVal('searchMode', x => parseInt(x)),
+            mediaKey: route.hash?.startsWith('#m:') ? route.hash.substr(3) : null
         });
         
         function getStr(key: string): string {
