@@ -8,8 +8,10 @@ import { HasAsyncState } from "../mixins/HasAsyncState";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
-
-@Component
+import OverlayTag from "./OverlayTag.vue";
+@Component({
+    components: { OverlayTag }
+})
 export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
     @Dep('$host') $host: string;
     @Dep('$api') $api: ApiService;
@@ -77,6 +79,7 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
     }
     
     private async preloadMedia(idx: number): Promise<ICachedMedia> {
+        console.log('preload: ' + idx);
         const key = this.source[idx].key;
         const media = await this.$api.getMedia(key);        
         return new Promise((resolve, reject) => {
@@ -105,23 +108,27 @@ interface ICachedMedia {
 </script>
 
 <template>
-    <portal to="overlay">
-        <div v-if="shown" class="viewer">
-            <GlobalEvents @keydown.left="nav(-1)" @keydown.right="nav(1)" @keydown.esc="hide()"></GlobalEvents>
-            <div class="overlay" @click="hide()"></div>
-            <div class="viewer-wrapper">
-                <div class="viewer-body card">
-                    <div class="card-body">
-                        <loading :is-loading="asyncState.isLoading">
-                            <div v-if="media">
-                                <img :src="getAbsolutePath(media.fullPath)" :alt="media.description"/>
-                            </div>
-                        </loading>
+    <div>
+        <portal to="overlay">
+            <div v-if="shown" class="viewer">
+                <GlobalEvents @keydown.left="nav(-1)" @keydown.right="nav(1)" @keydown.esc="hide()"></GlobalEvents>
+                <div class="overlay" @click="hide()"></div>
+                <div class="viewer-wrapper">
+                    <div class="viewer-body card">
+                        <div class="card-body">
+                            <loading :is-loading="asyncState.isLoading">
+                                <div v-if="media" class="media-wrapper">
+                                    <img :src="getAbsolutePath(media.fullPath)"
+                                         :alt="media.description" />
+                                    <OverlayTag v-for="t in media.overlayTags" :value="t"></OverlayTag>
+                                </div>
+                            </loading>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </portal>
+        </portal>
+    </div>
 </template>
 
 <style lang="scss" scoped>
@@ -153,9 +160,14 @@ interface ICachedMedia {
             margin: auto 0;
             padding: 1rem;
             min-width: 300px;
-
-            img {
+            
+            .media-wrapper {
+                position: relative;
                 width: 100%;
+                
+                img {
+                    width: 100%;
+                }
             }
         }
     }
