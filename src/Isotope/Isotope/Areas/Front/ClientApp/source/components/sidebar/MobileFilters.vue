@@ -145,6 +145,11 @@ export default class MobileFilters extends Vue {
 
     .mobile-filters-open {
         overflow: hidden;
+        padding-right: 15px;
+
+        .sidebar__header {
+            padding-right: 15px;
+        }
     }
 
     .mobile-header {
