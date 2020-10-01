@@ -2,12 +2,12 @@
 import { Vue, Component } from "vue-property-decorator";
 import { Dep } from "../../utils/VueInjectDecorator";
 import { FilterStateService } from "../../services/FilterStateService";
-import Filters from './Filters.vue';
+import DesktopFiltersWrapper from "./DesktopFiltersWrapper.vue";
+import MobileFiltersWrapper from "./MobileFiltersWrapper.vue";
 import Folders from './Folders.vue';
-import MobileFilters from './MobileFilters.vue';
 
 @Component({
-    components: { Filters, Folders, MobileFilters }
+    components: { DesktopFiltersWrapper, Folders, MobileFiltersWrapper }
 })
 export default class Sidebar extends Vue {
     @Dep('$filter') $filter: FilterStateService;
@@ -56,14 +56,14 @@ export default class Sidebar extends Vue {
                     <div class="btn-header__content">
                         <i class="icon icon-filter"></i>
                         <div class="btn-header__content__badge">8</div>
-                        <mobile-filters v-model="isMobileFiltersVisible"></mobile-filters>
+                        <MobileFiltersWrapper v-model="isMobileFiltersVisible"></MobileFiltersWrapper>
                     </div>
                 </a>
             </div>
         </div>
         <div class="sidebar__content">
-            <filters v-if="isFilterShown"></filters>
-            <folders></folders>
+            <DesktopFiltersWrapper v-if="isFilterShown"></DesktopFiltersWrapper>
+            <Folders></Folders>
         </div>
     </div>
 </template>

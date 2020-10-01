@@ -1,11 +1,14 @@
 <script lang="ts">
 import { Component, Model, Vue, Watch } from "vue-property-decorator";
+import { FilterStateService } from "../../services/FilterStateService";
+import { Dep } from "../../utils/VueInjectDecorator";
 import Filters from './Filters.vue';
 
 @Component({
     components: { Filters }
 })
-export default class MobileFilters extends Vue {
+export default class MobileFiltersWrapper extends Vue {
+    @Dep('$filter') $filter: FilterStateService;
     @Model() model: boolean;
 
     isVisible: boolean = false;
@@ -26,6 +29,11 @@ export default class MobileFilters extends Vue {
     @Watch('isVisible')
     onVisibilityChanged(value: boolean) {
         this.$emit('model', value);
+    }
+    
+    reset() {
+        this.$filter.clear('filters');
+        this.close();
     }
 }
 </script>
@@ -60,12 +68,10 @@ export default class MobileFilters extends Vue {
                         </div>
                     </div>
                     <simplebar class="mobile-filters__content">
-                        <div v-for="i in 100">
-                            scrollable filters
-                        </div>
+                        <Filters></Filters>
                     </simplebar>
                     <div class="mobile-filters__actions">
-                        <button type="button" class="btn btn-block btn-primary">Reset?</button>
+                        <button type="button" class="btn btn-block btn-primary" @click.prevent="reset">Reset?</button>
                     </div>
                 </div>
             </transition>

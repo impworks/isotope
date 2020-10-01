@@ -55,7 +55,7 @@ export class FilterStateService {
             tags: s.tags && s.tags.length ? s.tags.join(',') : null,
             dateFrom: s.dateFrom,
             dateTo: s.dateTo,
-            searchMode: s.searchMode,
+            searchMode: this.isEmpty(s) ? null : s.searchMode,
             sh: this.shareId
         });
         
@@ -126,5 +126,20 @@ export class FilterStateService {
             this.onStateChanged.notify({ ...cloneDeep(newState), source: source });
             this.onUrlChanged.notify(this.url);
         }
+    }
+
+    /**
+     * Clears the filter form.
+     */
+    clear(source: string) {
+        this.update(source, { tags: null, dateFrom: null, dateTo: null, searchMode: SearchMode.CurrentFolderAndSubfolders });
+    }
+
+    /**
+     * Checks if the filter is defined.
+     * @param f
+     */
+    isEmpty(f: Partial<IFilterState>) {
+        return !(f.dateTo || f.dateFrom || f.tags?.length);
     }
 }
