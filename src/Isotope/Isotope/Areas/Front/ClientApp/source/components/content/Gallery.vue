@@ -226,6 +226,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
 
         &__item {
             flex: 0 0 auto;
+            display: flex;
 
             $content-sizes:
                 375px  5.7291666667rem,
