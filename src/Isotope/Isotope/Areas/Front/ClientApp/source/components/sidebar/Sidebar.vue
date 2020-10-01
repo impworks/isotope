@@ -35,8 +35,8 @@ export default class Sidebar extends Vue {
                 isotope
             </a>
             <div class="sidebar__header__actions">
-                <a href="#" class="sidebar__action sidebar__action_user" data-toggle="dropdown">
-                    <div class="sidebar__action__content">
+                <a href="#" class="btn-header">
+                    <div class="btn-header__content">
                         <i 
                             class="icon icon-user"
                             v-if="!avatar" 
@@ -50,11 +50,12 @@ export default class Sidebar extends Vue {
                 </a>
                 <a 
                     href="#" 
-                    class="sidebar__action  sidebar__action_filter"
+                    class="sidebar__filter-button btn-header"
                     @click.prevent="isMobileFiltersVisible = !isMobileFiltersVisible"
                 >
-                    <div class="sidebar__action__content">
+                    <div class="btn-header__content">
                         <i class="icon icon-filter"></i>
+                        <div class="btn-header__content__badge">8</div>
                         <mobile-filters v-model="isMobileFiltersVisible"></mobile-filters>
                     </div>
                 </a>
@@ -110,62 +111,19 @@ export default class Sidebar extends Vue {
             }
         }
 
-        &__action {
-            display: block;
-            padding: 0.75rem 0.5rem;
-            color: $gray-700;
-            transition: color 150ms linear;
-
-            &_filter {
+        .btn-header {
+            @include media-breakpoint-up(md) {
                 padding-right: 1rem;
-
-                @include media-breakpoint-up(md) {
-                    display: none;
-                }
-            }
-
-            &_user {
-                
-                @include media-breakpoint-up(md) {
-                    padding-left: 1rem;
-                    padding-right: 1rem;
-                }
-            }
-
-            &:hover {
-                color: $primary;
-            }
-
-            &__content {
-                width: 2.125rem;
-                height: 2.125rem;
-                position: relative;
-                border-radius: 50%;
-                box-sizing: border-box;
-                background-color: $gray-200;
-
-                .icon,
-                .avatar {
-                    top: 0;
-                    left: 0;
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-
-                .icon {
-                    text-align: center;
-                    font-size: 1.3rem;
-                    line-height: 2rem;
-                }
-
-                .avatar {
-                    border-radius: 50%;
-                    background-size: cover;
-                }
             }
         }
-        
+
+        &__filter-button.btn-header {
+            padding-right: 1rem;
+
+            @include media-breakpoint-up(md) {
+                display: none;
+            }
+        }
 
         &-button {
             display: flex;

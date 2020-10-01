@@ -1,0 +1,59 @@
+.btn-header {
+    display: block;
+    padding: 0.75rem 0.5rem;
+    color: $gray-700;
+    transition: color 150ms linear;
+
+    &:hover {
+        color: $primary;
+    }
+
+    &__content {
+        width: 2.125rem;
+        height: 2.125rem;
+        position: relative;
+        border-radius: 50%;
+        box-sizing: border-box;
+        background-color: $gray-200;
+
+        @mixin absolute() {
+            top: 0;
+            position: absolute;
+        }
+
+        &__badge {
+            @include absolute();
+            z-index: 2;
+            left: 60%;
+            top: -0.3rem;
+            color: $white;
+            border-radius: 0.5rem;
+            line-height: 0.5rem;
+            padding: 0.2rem 0.3rem;
+            font-size: 0.5rem;;
+            background-color: $success;
+        }
+
+        .icon,
+        .avatar {
+            @include absolute();
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .icon {
+            left: 1px;
+            display: block;
+            text-align: center;
+            font-size: 1.3rem;
+            line-height: 2rem;
+        }
+
+        .avatar {
+            left: 0;
+            border-radius: 50%;
+            background-size: cover;
+        }
+    }
+}
