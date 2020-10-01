@@ -25,15 +25,7 @@ export default class MobileFilters extends Vue {
 
     @Watch('isVisible')
     onVisibilityChanged(value: boolean) {
-        const bodyClass = "mobile-filters-open";
-
         this.$emit('model', value);
-
-        if (value) {
-            document.body.classList.add(bodyClass);
-        } else {
-            document.body.classList.remove(bodyClass);
-        }
     }
 }
 </script>
@@ -140,15 +132,6 @@ export default class MobileFilters extends Vue {
             &-leave-to {
                 opacity: 0;
             }
-        }
-    }
-
-    .mobile-filters-open {
-        overflow: hidden;
-        padding-right: 15px;
-
-        .sidebar__header {
-            padding-right: 15px;
         }
     }
 

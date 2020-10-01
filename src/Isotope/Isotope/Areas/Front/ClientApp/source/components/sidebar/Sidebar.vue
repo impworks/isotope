@@ -79,18 +79,16 @@ export default class Sidebar extends Vue {
         width: 18.5rem;
         position: relative;
         background: $white;
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
 
         @include media-breakpoint-down(sm) {
-            top: 0;
             width: 100%;
-            position: fixed;
             border-bottom: 1px solid $gray-300;
         }
 
         @include media-breakpoint-up(md) {
-            flex: 0 0 auto;
-            display: flex;
-            flex-direction: column;
             border-right: 1px solid $gray-300;
         }
 
