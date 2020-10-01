@@ -4,12 +4,16 @@ import { Dep } from "../../utils/VueInjectDecorator";
 import { FilterStateService } from "../../services/FilterStateService";
 import Filters from './Filters.vue';
 import Folders from './Folders.vue';
+import MobileFilters from './MobileFilters.vue';
 
 @Component({
-    components: { Filters, Folders }
+    components: { Filters, Folders, MobileFilters }
 })
 export default class Sidebar extends Vue {
     @Dep('$filter') $filter: FilterStateService;
+
+    avatar: string = null;
+    isMobileFiltersVisible: boolean = false;
     
     get isFilterShown() {
         return !this.$filter.shareId;
@@ -44,9 +48,14 @@ export default class Sidebar extends Vue {
                         ></div>
                     </div>
                 </a>
-                <a href="#" class="sidebar__action  sidebar__action_filter">
+                <a 
+                    href="#" 
+                    class="sidebar__action  sidebar__action_filter"
+                    @click.prevent="isMobileFiltersVisible = !isMobileFiltersVisible"
+                >
                     <div class="sidebar__action__content">
                         <i class="icon icon-filter"></i>
+                        <mobile-filters v-model="isMobileFiltersVisible"></mobile-filters>
                     </div>
                 </a>
             </div>
