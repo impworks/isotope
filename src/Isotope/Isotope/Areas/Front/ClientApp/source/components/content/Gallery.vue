@@ -2,7 +2,7 @@
 import { Component, Mixins } from "vue-property-decorator";
 import { HasLifetime } from "../mixins/HasLifetime";
 import { HasAsyncState } from "../mixins/HasAsyncState";
-import { FilterStateService, IFilterState, IFilterStateChangedEvent } from "../../services/FilterStateService";
+import { FilterStateService, IFilterStateChangedEvent } from "../../services/FilterStateService";
 import { FolderContents } from "../../vms/FolderContents";
 import { Dep } from "../../utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
@@ -26,6 +26,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
     error: string = null;
     empty: boolean = false;
     contents: FolderContents = null;
+    isFilterActive: boolean = false;
     
     indexFeed: IObservable<number> = new Observable<number>();
     
@@ -36,7 +37,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
     
     async mounted() {
         this.observe(this.$filter.onStateChanged, x => this.refresh(x));
-        await this.refresh(this.$filter.state);
+        await this.refresh({ ...this.$filter.state, source: null });
     }
     
     async refresh(state: IFilterStateChangedEvent) {
@@ -44,6 +45,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             return;
         
         this.error = null;
+        this.isFilterActive = !this.$filter.isEmpty(state);
         
         try {
             await this.showLoading(async () => {
@@ -147,7 +149,8 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                         </div>
                     </div>
                     <div v-if="isEmpty" class="alert alert-info ml-5 mr-5">
-                        This folder is empty.
+                        <span v-if="isFilterActive">No matching media found.</span>
+                        <span v-else>This folder is empty.</span>
                     </div>
                 </div>
                 <div v-if="error" class="alert alert-danger ml-5 mr-5 mt-5">
