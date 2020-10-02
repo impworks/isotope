@@ -27,7 +27,8 @@ namespace Isotope.Areas.Front.Services
             {
                 Caption = cfg.Title,
                 AllowGuests = cfg.AllowGuests,
-                IsAuthorized = ctx.User != null
+                IsAuthorized = ctx.User != null,
+                IsAdmin = ctx.User?.IsAdmin
             };
             
             if (!string.IsNullOrEmpty(ctx.LinkId))

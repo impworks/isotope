@@ -21,6 +21,11 @@ namespace Isotope.Areas.Front.Dto
         public bool IsAuthorized { get; set; }
         
         /// <summary>
+        /// Flag indicating that current user has administrator privileges.
+        /// </summary>
+        public bool? IsAdmin { get; set; }
+        
+        /// <summary>
         /// Flag indicating that the share link is valid or not (if specified in request).
         /// </summary>
         public bool? IsLinkValid { get; set; }
