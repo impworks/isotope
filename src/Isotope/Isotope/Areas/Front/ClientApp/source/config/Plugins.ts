@@ -21,7 +21,14 @@ import vSelect from 'vue-select';
 Vue.component('v-select', vSelect);
 
 import Datepicker from 'vuejs-datepicker';
-Vue.component('datepicker', Datepicker);
+Vue.component('datepicker', {
+    extends: Datepicker,
+    props: {
+        format: {
+            default: 'yyyy.MM.dd'
+        }
+    }
+});
 
 import { PopoverPlugin } from 'bootstrap-vue';
 Vue.use(PopoverPlugin);

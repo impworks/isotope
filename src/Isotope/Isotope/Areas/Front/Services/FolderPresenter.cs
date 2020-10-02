@@ -194,8 +194,8 @@ namespace Isotope.Areas.Front.Services
         /// </summary>
         private IReadOnlyList<Media> TryFilterMediaByDate(FolderContentsRequestVM request, IReadOnlyList<Media> source)
         {
-            var dateFrom = FuzzyDate.TryParse(request.DateFrom);
-            var dateTo = FuzzyDate.TryParse(request.DateTo);
+            var dateFrom = TryParse(request.DateFrom);
+            var dateTo = TryParse(request.DateTo);
 
             if (dateFrom == null && dateTo == null)
                 return source;
@@ -209,6 +209,12 @@ namespace Isotope.Areas.Front.Services
                          .Where(x => (dateFrom == null || x.Date >= dateFrom) && (dateTo == null || x.Date <= dateTo))
                          .Select(x => x.Media)
                          .ToList();
+
+            FuzzyDate? TryParse(string value)
+            {
+                var date = value?.TryParse<DateTime?>();
+                return date == null ? (FuzzyDate?) null : new FuzzyDate(date.Value);
+            }
         }
 
         #endregion
