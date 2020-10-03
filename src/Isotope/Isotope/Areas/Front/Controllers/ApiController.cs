@@ -9,8 +9,7 @@ namespace Isotope.Areas.Front.Controllers
     /// <summary>
     /// General controller for frontend API methods.
     /// </summary>
-    [Route("~/@api")]
-    [ApiController]
+    [Route("~/@api"), ApiController]
     [ServiceFilter(typeof(TryAuthorizeFilter))]
     public class ApiController: ControllerBase
     {

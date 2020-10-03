@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Isotope.Areas.Front.Controllers
 {
@@ -7,7 +6,7 @@ namespace Isotope.Areas.Front.Controllers
     /// Base controller for bootstrapping the SPA page.
     /// </summary>
     [Route("")]
-    public class HomeController: ControllerBase
+    public class HomeController: FrontControllerBase
     {
         /// <summary>
         /// Hack to workaround regex not matching an empty string.

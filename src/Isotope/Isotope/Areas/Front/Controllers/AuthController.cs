@@ -9,10 +9,8 @@ namespace Isotope.Areas.Front.Controllers
     /// <summary>
     /// Controller for authorization methods.
     /// </summary>
-    [Route("~/@api/auth")]
-    [AllowAnonymous]
-    [ApiController]
-    public class AuthController: Controller
+    [Route("~/@api/auth"), AllowAnonymous, ApiController]
+    public class AuthController: FrontControllerBase
     {
         public AuthController(AuthService auth)
         {

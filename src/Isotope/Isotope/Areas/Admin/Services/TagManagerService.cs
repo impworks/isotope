@@ -28,7 +28,7 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Returns the list of all tags.
         /// </summary>
-        public async Task<IReadOnlyList<TagVM>> GetAsync()
+        public async Task<IReadOnlyList<TagVM>> GetListAsync()
         {
             return await _db.Tags
                             .OrderBy(x => x.Caption)
@@ -70,7 +70,7 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Removes the existing tag, clears all bindings.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task RemoveAsync(int id)
         {
             // todo: configure cascade delete
             var tag = await _db.Tags.FirstOrDefaultAsync(x => x.Id == id);

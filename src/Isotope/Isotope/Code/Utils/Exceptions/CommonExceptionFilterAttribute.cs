@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using Isotope.Areas.Admin.Dto;
+using Isotope.Areas.Admin.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
@@ -31,6 +33,11 @@ namespace Isotope.Code.Utils
             {
                 context.Result = new ObjectResult(nae.Message) { StatusCode = 403 };
                 return;
+            }
+
+            if (context.Exception is OperationException oe)
+            {
+                context.Result = new ObjectResult(new ErrorVM { Error = oe.Message }) { StatusCode = 400 };
             }
             
             _logger.Error(context.Exception.Demystify(), "Unhandled exception at " + context.ActionDescriptor.DisplayName);
