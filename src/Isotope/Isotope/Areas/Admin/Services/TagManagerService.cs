@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isotope.Areas.Admin.Dto;
 using Isotope.Areas.Admin.Utils;
+using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
 using Isotope.Data.Models;
 using Mapster;
@@ -56,12 +57,12 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task UpdateAsync(int id, TagVM vm)
         {
-            if(await _db.Tags.AnyAsync(x => x.Caption == vm.Caption && x.Id != id))
-                throw new OperationException($"Tag '{vm.Caption}' already exists.");
-
             var tag = await _db.Tags.FirstOrDefaultAsync(x => x.Id == id);
             if(tag == null)
                 throw new OperationException($"Tag #{id} does not exist.");
+            
+            if(await _db.Tags.AnyAsync(x => x.Caption == vm.Caption && x.Id != id))
+                throw new OperationException($"Tag '{vm.Caption}' already exists.");
 
             _mapper.Map(vm, tag);
             await _db.SaveChangesAsync();
@@ -73,10 +74,7 @@ namespace Isotope.Areas.Admin.Services
         public async Task RemoveAsync(int id)
         {
             // todo: configure cascade delete
-            var tag = await _db.Tags.FirstOrDefaultAsync(x => x.Id == id);
-            if(tag == null)
-                throw new OperationException($"Tag #{id} does not exist.");
-            
+            var tag = await _db.Tags.GetAsync(x => x.Id == id, $"Tag #{id} does not exist.");
             _db.Tags.Remove(tag);
             await _db.SaveChangesAsync();
         }

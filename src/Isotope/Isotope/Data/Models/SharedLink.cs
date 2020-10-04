@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using Isotope.Areas.Front.Dto;
 
@@ -41,5 +42,10 @@ namespace Isotope.Data.Models
         /// Latest available date.
         /// </summary>
         public string DateTo { get; set; }
+        
+        /// <summary>
+        /// Date of the link's creation.
+        /// </summary>
+        public DateTime CreationDate { get; set; }
     }
 }
