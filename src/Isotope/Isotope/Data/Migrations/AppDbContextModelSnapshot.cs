@@ -144,7 +144,7 @@ namespace Isotope.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("TagId")
+                    b.Property<int>("TagId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -200,7 +200,7 @@ namespace Isotope.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("TagId")
+                    b.Property<int>("TagId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Type")
@@ -220,6 +220,9 @@ namespace Isotope.Data.Migrations
                     b.Property<string>("Key")
                         .HasColumnType("TEXT")
                         .HasMaxLength(50);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DateFrom")
                         .HasColumnType("TEXT");
@@ -451,7 +454,9 @@ namespace Isotope.Data.Migrations
 
                     b.HasOne("Isotope.Data.Models.Tag", "Tag")
                         .WithMany()
-                        .HasForeignKey("TagId");
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Isotope.Data.Models.Media", b =>
@@ -498,7 +503,9 @@ namespace Isotope.Data.Migrations
 
                     b.HasOne("Isotope.Data.Models.Tag", "Tag")
                         .WithMany()
-                        .HasForeignKey("TagId");
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsOne("Isotope.Data.Models.Rect", "Location", b1 =>
                         {

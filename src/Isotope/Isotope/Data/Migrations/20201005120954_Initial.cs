@@ -206,7 +206,7 @@ namespace Isotope.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    TagId = table.Column<int>(nullable: true),
+                    TagId = table.Column<int>(nullable: false),
                     FolderKey = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -217,7 +217,7 @@ namespace Isotope.Data.Migrations
                         column: x => x.TagId,
                         principalTable: "Tags",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -270,7 +270,7 @@ namespace Isotope.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    TagId = table.Column<int>(nullable: true),
+                    TagId = table.Column<int>(nullable: false),
                     Location_X = table.Column<double>(nullable: true),
                     Location_Y = table.Column<double>(nullable: true),
                     Location_Width = table.Column<double>(nullable: true),
@@ -292,7 +292,7 @@ namespace Isotope.Data.Migrations
                         column: x => x.TagId,
                         principalTable: "Tags",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -335,7 +335,8 @@ namespace Isotope.Data.Migrations
                     Mode = table.Column<int>(nullable: false),
                     Tags = table.Column<string>(nullable: true),
                     DateFrom = table.Column<string>(nullable: true),
-                    DateTo = table.Column<string>(nullable: true)
+                    DateTo = table.Column<string>(nullable: true),
+                    CreationDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
