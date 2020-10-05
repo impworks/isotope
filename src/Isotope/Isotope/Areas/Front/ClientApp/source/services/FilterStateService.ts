@@ -81,7 +81,7 @@ export class FilterStateService {
             tags: getVal('tags', x => x.split(',').map(y => parseInt(y)).filter(y => y > 0)),
             dateFrom: getDate('dateFrom'),
             dateTo: getDate('dateTo'),
-            searchMode: getVal('searchMode', x => parseInt(x)),
+            searchMode: getVal('searchMode', x => parseInt(x)) || SearchMode.CurrentFolderAndSubfolders,
             mediaKey: route.hash?.startsWith('#m:') ? route.hash.substr(3) : null
         });
         
@@ -126,9 +126,8 @@ export class FilterStateService {
             }
         }
         
-        if(!isChanged) {
+        if(!isChanged)
             return;
-        }
 
         this._state = newState;
         if(!isInitial) {
@@ -149,6 +148,6 @@ export class FilterStateService {
      * @param f
      */
     isEmpty(f: Partial<IFilterState>) {
-        return !(f.dateTo || f.dateFrom || f.tags?.length);
+        return !f || !(f.dateTo || f.dateFrom || f.tags?.length);
     }
 }

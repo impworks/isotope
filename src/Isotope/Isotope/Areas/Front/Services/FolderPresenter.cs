@@ -106,7 +106,10 @@ namespace Isotope.Areas.Front.Services
         private FolderContentsRequestVM CombineRequest(FolderContentsRequestVM request, UserContext ctx)
         {
             if (ctx.Link == null)
+            {
+                request.Folder = PathHelper.Normalize(request.Folder);
                 return request;
+            }
 
             var link = ctx.Link;
             var rootPath = link.Folder.Path;
