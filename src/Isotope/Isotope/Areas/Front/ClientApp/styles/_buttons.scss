@@ -6,9 +6,13 @@
     color: $gray-700;
     padding: 0.75rem 0.5rem;
     transition: color 150ms linear;
-
+    
     &:hover {
         color: $primary;
+    }
+
+    &:focus {
+        outline: none;
     }
 
     &__content {
