@@ -1,7 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Impworks.Utils.Strings;
 using Isotope.Areas.Admin.Dto;
+using Isotope.Areas.Admin.Utils;
+using Isotope.Areas.Front.Dto;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
@@ -44,7 +48,10 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task<KeyResultVM> CreateAsync(SharedLinkVM vm)
         {
-            var folder = await _db.Folders.GetAsync(x => x.Path == vm.Folder, $"Folder '{vm.Folder}' does not exist.");
+            await ValidateAsync(vm);
+            
+            var folderPath = PathHelper.Normalize(vm.Folder);
+            var folder = await _db.Folders.GetAsync(x => x.Path == folderPath, $"Folder '{vm.Folder}' does not exist.");
             
             var link = new SharedLink
             {
@@ -67,6 +74,33 @@ namespace Isotope.Areas.Admin.Services
             var link = await _db.SharedLinks.GetAsync(x => x.Key == key, $"Shared link '{key}' does not exist.");
             _db.SharedLinks.Remove(link);
             await _db.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Ensures that the request is valid.
+        /// </summary>
+        private async Task ValidateAsync(SharedLinkVM vm)
+        {
+            if(!string.IsNullOrEmpty(vm.DateFrom) && vm.DateFrom.TryParse<DateTime>() == null)
+                throw new OperationException($"Date '{vm.DateFrom}' is not valid.");
+            
+            if(!string.IsNullOrEmpty(vm.DateTo) && vm.DateTo.TryParse<DateTime>() == null)
+                throw new OperationException($"Date '{vm.DateTo}' is not valid.");
+            
+            if(!Enum.IsDefined(typeof(SearchMode), vm.Mode))
+                throw new OperationException($"Search mode '{vm.Mode}' is not supported.");
+
+            if (!string.IsNullOrEmpty(vm.Tags))
+            {
+                var tagIdsRaw = vm.Tags.Split(",");
+                var tagIds = vm.Tags.TryParseList<int>(",");
+                if(tagIdsRaw.Length != tagIds.Count)
+                    throw new OperationException($"Tags format is invalid: '{vm.Tags}' is not a comma-separated list of integers.");
+
+                var existingCount = await _db.Tags.CountAsync(x => tagIds.Contains(x.Id));
+                if(existingCount != tagIds.Count)
+                    throw new OperationException($"Some tags of the specified list '{vm.Tags}' do not exist!");
+            }
         }
     }
 }

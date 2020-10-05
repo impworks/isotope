@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Isotope.Areas.Admin.Dto;
 using Isotope.Areas.Admin.Utils;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
@@ -9,6 +9,7 @@ using Isotope.Data.Models;
 using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
+using TagVM = Isotope.Areas.Admin.Dto.TagVM;
 
 namespace Isotope.Areas.Admin.Services
 {
@@ -42,8 +43,7 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task<TagVM> CreateAsync(TagVM vm)
         {
-            if(await _db.Tags.AnyAsync(x => x.Caption == vm.Caption))
-                throw new OperationException($"Tag '{vm.Caption}' already exists.");
+            await ValidateAsync(vm, null);
 
             var tag = _mapper.Map<Tag>(vm);
             _db.Tags.Add(tag);
@@ -57,13 +57,9 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task UpdateAsync(int id, TagVM vm)
         {
-            var tag = await _db.Tags.FirstOrDefaultAsync(x => x.Id == id);
-            if(tag == null)
-                throw new OperationException($"Tag #{id} does not exist.");
+            await ValidateAsync(vm, id);
             
-            if(await _db.Tags.AnyAsync(x => x.Caption == vm.Caption && x.Id != id))
-                throw new OperationException($"Tag '{vm.Caption}' already exists.");
-
+            var tag = await _db.Tags.GetAsync(x => x.Id == id, $"Tag #{id} does not exist.");
             _mapper.Map(vm, tag);
             await _db.SaveChangesAsync();
         }
@@ -77,6 +73,21 @@ namespace Isotope.Areas.Admin.Services
             var tag = await _db.Tags.GetAsync(x => x.Id == id, $"Tag #{id} does not exist.");
             _db.Tags.Remove(tag);
             await _db.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Ensures that the request is correct.
+        /// </summary>
+        private async Task ValidateAsync(TagVM vm, int? id)
+        {
+            if(string.IsNullOrEmpty(vm.Caption))
+                throw new OperationException($"Required field {nameof(vm.Caption)} is not set.");
+            
+            if(!Enum.IsDefined(typeof(TagType), vm.Type))
+                throw new OperationException($"Tag type '{vm.Type}' is unknown.");
+            
+            if(await _db.Tags.AnyAsync(x => x.Caption == vm.Caption && x.Id != id))
+                throw new OperationException($"Tag '{vm.Caption}' already exists.");
         }
     }
 }
