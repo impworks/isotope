@@ -28,7 +28,15 @@ export default class MobileFiltersWrapper extends Vue {
 
     @Watch('isVisible')
     onVisibilityChanged(value: boolean) {
+        const bodyClass = "mobile-filters-open";
+
         this.$emit('model', value);
+
+        if (value) {
+            document.body.classList.add(bodyClass);
+        } else {
+            document.body.classList.remove(bodyClass);
+        }
     }
     
     reset() {
@@ -56,22 +64,28 @@ export default class MobileFiltersWrapper extends Vue {
                     <div class="mobile-header">
                         <div class="mobile-header__caption">Filters</div>
                         <div class="mobile-header__actions">
-                            <a 
+                            <button
                                 href="#" 
-                                class="btn-header" 
-                                @click.prevent="close"
+                                class="btn-header btn-header_danger" 
+                                @click.prevent="reset"
                             >
                                 <div class="btn-header__content">
-                                    <i class="icon icon-cross"></i>
+                                    Clear
                                 </div>
-                            </a>
+                            </button>
                         </div>
                     </div>
                     <simplebar class="mobile-filters__content">
                         <Filters></Filters>
                     </simplebar>
                     <div class="mobile-filters__actions">
-                        <button type="button" class="btn btn-block btn-primary" @click.prevent="reset">Reset?</button>
+                        <button 
+                            type="button" 
+                            class="btn btn-block btn-primary"
+                            @click.prevent="close"
+                        >
+                            Ok
+                        </button>
                     </div>
                 </div>
             </transition>
@@ -103,15 +117,31 @@ export default class MobileFiltersWrapper extends Vue {
             width: 100%;
             background: rgba($dark, 0.5);
             z-index: $zindex-modal-backdrop;
+            will-change: opacity;
+            backface-visibility: hidden;
         }
 
         &__content {
             @include fixed();
             right: 0;
-            width: 17rem;
+            width: 18.5rem;
             background: $white;
             z-index: $zindex-modal;
             box-shadow: $box-shadow;
+            will-change: transform;
+            backface-visibility: hidden;
+
+            @include media-breakpoint-up(lg) {
+                width: 21rem;
+            }
+
+            @media only screen and (max-width: 320px) {
+                width: 90%;
+            }
+
+            @media only screen and (max-width: 300px) {
+                width: 100%;
+            }
         }
 
         &__slide {
@@ -172,7 +202,6 @@ export default class MobileFiltersWrapper extends Vue {
         &__content {
             height: 0;
             flex: 1 1 auto;
-            padding: 1rem;
         }
 
         &__actions {
@@ -180,5 +209,9 @@ export default class MobileFiltersWrapper extends Vue {
             flex: 0 0 auto;
             border-top: 1px solid $gray-300;
         }
+    }
+
+    .mobile-filters-open {
+        overflow: hidden;
     }
 </style>

@@ -16,7 +16,9 @@ html, body {
     background: $gray-200;
 }
 
-::-webkit-scrollbar { display: none; }
+.simplebar-content-wrapper::-webkit-scrollbar { 
+    display: none; 
+}
 
 .simplebar-scrollbar:before {
   background: $dark;

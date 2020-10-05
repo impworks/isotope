@@ -189,7 +189,10 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             flex: 1 1 auto;
             display: block;
             background: $gray-200;
-            height: 0;
+
+            @include media-breakpoint-up(md) {
+                height: 0;
+            }
         }
 
         &__tags {

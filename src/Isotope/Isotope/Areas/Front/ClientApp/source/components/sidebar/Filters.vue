@@ -19,7 +19,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
     async mounted() {
         this.observe(this.$filter.onStateChanged, x => this.updateFromState(x));
         this.updateFromState(this.$filter.state);
-
+        
         try {
             await this.showLoading(async () => {
                 this.tags = await this.$api.getTags();
@@ -149,10 +149,6 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
     
         &:first-child {
             padding-top: 1rem;
-        }
-    
-        &:last-child {
-            border-bottom: 1px solid $gray-300;
         }
     
         h6 {

@@ -35,7 +35,7 @@ export default class Sidebar extends Vue {
                 isotope
             </a>
             <div class="sidebar__header__actions">
-                <a href="#" class="btn-header">
+                <button class="btn-header">
                     <div class="btn-header__content">
                         <i 
                             class="icon icon-user"
@@ -47,9 +47,8 @@ export default class Sidebar extends Vue {
                             style="background-image: url('../../../images/avatar.jpg')"
                         ></div>
                     </div>
-                </a>
-                <a 
-                    href="#" 
+                </button>
+                <button
                     class="sidebar__filter-button btn-header"
                     @click.prevent="isMobileFiltersVisible = !isMobileFiltersVisible"
                 >
@@ -58,7 +57,7 @@ export default class Sidebar extends Vue {
                         <div class="btn-header__content__badge">8</div>
                         <MobileFiltersWrapper v-model="isMobileFiltersVisible"></MobileFiltersWrapper>
                     </div>
-                </a>
+                </button>
             </div>
         </div>
         <div class="sidebar__content">
@@ -79,16 +78,18 @@ export default class Sidebar extends Vue {
         width: 18.5rem;
         position: relative;
         background: $white;
-        flex: 0 0 auto;
-        display: flex;
-        flex-direction: column;
 
         @include media-breakpoint-down(sm) {
+            top: 0;
             width: 100%;
+            position: fixed;
             border-bottom: 1px solid $gray-300;
         }
 
         @include media-breakpoint-up(md) {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
             border-right: 1px solid $gray-300;
         }
 

@@ -1,7 +1,10 @@
 .btn-header {
+    margin: 0;
+    border: none;
     display: block;
-    padding: 0.75rem 0.5rem;
+    background: none;
     color: $gray-700;
+    padding: 0.75rem 0.5rem;
     transition: color 150ms linear;
 
     &:hover {
@@ -9,12 +12,15 @@
     }
 
     &__content {
-        width: 2.125rem;
-        height: 2.125rem;
+        min-width: 2.125rem;
+        min-height: 2.125rem;
+        padding: 0.5rem 1rem;
         position: relative;
-        border-radius: 50%;
+        border-radius: 1.5rem;
+        line-height: 1;
         box-sizing: border-box;
         background-color: $gray-200;
+        transition: background 150ms linear;
 
         @mixin absolute() {
             top: 0;
@@ -54,6 +60,22 @@
             left: 0;
             border-radius: 50%;
             background-size: cover;
+        }
+    }
+
+    &_danger {
+        color: $danger;
+
+        &:hover {
+            color: $danger;
+
+            .btn-header__content {
+                background-color: lighten(saturate(adjust-hue($danger, 3), 14.42), 32.55)
+            }
+        }
+
+        .btn-header__content {
+            background-color: lighten(saturate(adjust-hue($danger, 2), 7.28), 35.29);
         }
     }
 }

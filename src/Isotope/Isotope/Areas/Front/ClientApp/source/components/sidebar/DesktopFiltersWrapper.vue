@@ -27,7 +27,7 @@ export default class DesktopFiltersWrapper extends Vue {
 </script>
 
 <template>
-    <div class="filters">
+    <div class="desktop-filters">
         <a 
             class="sidebar-button clickable"
             :class="{ 'sidebar-button_opened': isOpen }"
@@ -50,10 +50,16 @@ export default class DesktopFiltersWrapper extends Vue {
 </template>
 
 <style lang="scss">
-    .filters {
+    @import "../../../styles/variables";
+
+    .desktop-filters {
         flex: 0 0 auto;
         position: relative;
         z-index: 3;
+
+        .filter:last-child {
+            border-bottom: 1px solid $gray-300;
+        }
 
         .filter-icon {
             background-image: url(../../../images/filter.svg);
