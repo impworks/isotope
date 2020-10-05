@@ -23,36 +23,36 @@ namespace Isotope.Areas.Admin.Controllers
         /// Returns the list of all tags. 
         /// </summary>
         [HttpGet, Route("")]
-        public async Task<IReadOnlyList<TagVM>> GetList()
+        public Task<IReadOnlyList<TagVM>> GetList()
         {
-            return await _tms.GetListAsync();
+            return _tms.GetListAsync();
         }
 
         /// <summary>
         /// Adds a new tag.
         /// </summary>
         [HttpPost, Route("")]
-        public async Task<TagVM> Create(TagVM tag)
+        public Task<TagVM> Create(TagVM tag)
         {
-            return await _tms.CreateAsync(tag);
+            return _tms.CreateAsync(tag);
         }
         
         /// <summary>
         /// Updates an existing tag.
         /// </summary>
         [HttpPut, Route("{id:int}")]
-        public async Task Update(int id, TagVM tag)
+        public Task Update(int id, TagVM tag)
         {
-            await _tms.UpdateAsync(id, tag);
+            return _tms.UpdateAsync(id, tag);
         }
         
         /// <summary>
         /// Removes an existing tag.
         /// </summary>
         [HttpDelete, Route("{id:int}")]
-        public async Task Delete(int id)
+        public Task Delete(int id)
         {
-            await _tms.RemoveAsync(id);
+            return _tms.RemoveAsync(id);
         }
     }
 }

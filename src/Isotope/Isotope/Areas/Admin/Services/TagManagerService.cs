@@ -15,7 +15,7 @@ namespace Isotope.Areas.Admin.Services
     /// <summary>
     /// Service for managing the global list of tags.
     /// </summary>
-    public class TagManagerService
+    public class TagManagerService  
     {
         public TagManagerService(AppDbContext db, IMapper mapper)
         {

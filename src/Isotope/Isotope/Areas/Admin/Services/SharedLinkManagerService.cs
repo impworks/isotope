@@ -62,7 +62,7 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Removes the shared link.
         /// </summary>
-        public async Task DeleteAsync(string key)
+        public async Task RemoveAsync(string key)
         {
             var link = await _db.SharedLinks.GetAsync(x => x.Key == key, $"Shared link '{key}' does not exist.");
             _db.SharedLinks.Remove(link);
