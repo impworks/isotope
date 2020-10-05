@@ -14,7 +14,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
     @Dep('$filter') $filter: FilterStateService;
 
     filter: Partial<IFilterState> = { searchMode: SearchMode.CurrentFolderAndSubfolders };
-    tags: Tag[] = null;
+    tags: Tag[] = [];
 
     async mounted() {
         this.observe(this.$filter.onStateChanged, x => this.updateFromState(x));
@@ -41,9 +41,6 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
             dateFrom: state.dateFrom,
             dateTo: state.dateTo
         };
-
-        if(!this.isOpen && !this.$filter.isEmpty(this.filter))
-            this.isOpen = true;
     }
 }
 </script>
@@ -54,8 +51,8 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
             <h6>Tags</h6>
             <v-select
                 multiple
-                v-if="tags"
                 v-model="filter.tags"
+                :disabled="asyncState.isLoading"
                 :options="tags"
                 :reduce="x => x.id"
                 label="caption"

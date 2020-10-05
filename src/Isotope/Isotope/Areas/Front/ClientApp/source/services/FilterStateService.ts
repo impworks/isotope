@@ -1,15 +1,15 @@
+import cloneDeep from 'lodash.cloneDeep';
 import { SearchMode } from "../vms/SearchMode";
 import { Route } from "vue-router";
 import { Func2, IObservable } from "../utils/Interfaces";
 import { Observable } from "../utils/Observable";
-import cloneDeep from 'lodash.cloneDeep';
 import { StaticHelper } from "../utils/StaticHelper";
 
 export interface IFilterState {
     folder: string;
     tags: number[];
-    dateFrom: string;
-    dateTo: string;
+    dateFrom: Date;
+    dateTo: Date;
     searchMode: SearchMode;
     mediaKey: string;
     
@@ -53,13 +53,17 @@ export class FilterStateService {
         const s = this._state;
         const query = StaticHelper.getQuery({
             tags: s.tags && s.tags.length ? s.tags.join(',') : null,
-            dateFrom: s.dateFrom,
-            dateTo: s.dateTo,
+            dateFrom: fmtDate(s.dateFrom),
+            dateTo: fmtDate(s.dateTo),
             searchMode: this.isEmpty(s) ? null : s.searchMode,
             sh: this.shareId
         });
         
         return s.folder + (query ? '?' + query : '') + (s.mediaKey ? '#m:' + s.mediaKey : '');
+        
+        function fmtDate(d: Date) {
+            return d ? JSON.stringify(d).substr(1, 10) : null;
+        }
     }
 
     // -----------------------------------
@@ -75,8 +79,8 @@ export class FilterStateService {
         this.update(null, {
             folder: route.path,
             tags: getVal('tags', x => x.split(',').map(y => parseInt(y)).filter(y => y > 0)),
-            dateFrom: getStr('dateFrom'),
-            dateTo: getStr('dateTo'),
+            dateFrom: getDate('dateFrom'),
+            dateTo: getDate('dateTo'),
             searchMode: getVal('searchMode', x => parseInt(x)),
             mediaKey: route.hash?.startsWith('#m:') ? route.hash.substr(3) : null
         });
@@ -89,6 +93,11 @@ export class FilterStateService {
         function getVal<T>(key: string, apply: Func2<string, T>) {
             const str = getStr(key);
             return typeof str === 'string' ? apply(str) : null;
+        }
+        
+        function getDate(key: string) {
+            const str = getStr(key);
+            return typeof str === 'string' && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(str) ? new Date(str) : null; 
         }
     }
 

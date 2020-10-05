@@ -1,7 +1,5 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { HasLifetime } from "../mixins/HasLifetime";
-import { HasAsyncState } from "../mixins/HasAsyncState";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
 import TransitionExpand from '../utils/TransitionExpand.vue';
@@ -17,6 +15,10 @@ export default class DesktopFiltersWrapper extends Vue {
     @Dep('$filter') $filter: FilterStateService;
     
     isOpen: boolean = false;
+    
+    mounted() {
+        this.isOpen = !this.$filter.isEmpty(this.$filter.state);
+    }
 
     toggleOpen() {
         if(this.isOpen)
