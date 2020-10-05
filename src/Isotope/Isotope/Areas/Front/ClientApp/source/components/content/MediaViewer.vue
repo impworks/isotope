@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Mixins, Prop } from "vue-property-decorator";
+import { Component, Mixins, Prop, Watch } from "vue-property-decorator";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { IObservable } from "../../utils/Interfaces";
 import { Media } from "../../vms/Media";
@@ -9,6 +9,7 @@ import { ApiService } from "../../services/ApiService";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
 import OverlayTag from "./OverlayTag.vue";
+
 @Component({
     components: { OverlayTag }
 })
@@ -101,6 +102,17 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
         }
         this.cache = [];
     }
+
+    @Watch('shown')
+    onVisibilityChanged(value: boolean) {
+        const bodyClass = "media-viewer-open";
+
+        if (value) {
+            document.body.classList.add(bodyClass);
+        } else {
+            document.body.classList.remove(bodyClass);
+        }
+    }
 }
 
 interface ICachedMedia {
@@ -110,98 +122,137 @@ interface ICachedMedia {
 </script>
 
 <template>
-    <div>
-        <portal to="overlay">
-            <div v-if="shown" class="viewer">
-                <GlobalEvents @keydown.left="nav(-1)" @keydown.right="nav(1)" @keydown.esc="hide()"></GlobalEvents>
-                <div class="overlay" @click="hide()" @mouseenter="showOverlay = false" @mouseleave="showOverlay = true"></div>
-                <div class="viewer-wrapper">
-                    <div class="viewer-body card">
-                        <div class="card-body">
-                            <loading :is-loading="asyncState.isLoading">
-                                <div v-if="media" class="media-wrapper">
-                                    <img :src="getAbsolutePath(media.fullPath)"
-                                         :alt="media.description" />
-                                    <template v-if="showOverlay">
-                                        <a class="navigation-arrow left clickable" @click.prevent="nav(-1)" v-if="index > 0">&lt;</a>
-                                        <a class="navigation-arrow right clickable" @click.prevent="nav(1)" v-if="index < source.length - 1">&gt;</a>
-                                        <OverlayTag v-for="t in media.overlayTags" :value="t" :show="true"></OverlayTag>
-                                    </template>
-                                </div>
-                            </loading>
-                        </div>
+    <portal to="overlay">
+        <transition name="mobile-filters-modal__fade">
+            <div 
+                class="media-viewer-modal"
+                v-if="shown"
+            >
+                <div 
+                    class="media-viewer-modal__backdrop clickable" 
+                    @click="hide()"
+                ></div>
+                <div 
+                    class="media-viewer-modal__content" 
+                    @mouseenter="showOverlay = true" 
+                    @mouseleave="showOverlay = false"
+                >
+                    <div class="media-viewer">
+                        <GlobalEvents @keydown.left="nav(-1)" @keydown.right="nav(1)" @keydown.esc="hide()"></GlobalEvents>
+                        <loading :is-loading="asyncState.isLoading">
+                            <div v-if="media" class="media-wrapper">
+                                <img :src="getAbsolutePath(media.fullPath)"
+                                        :alt="media.description" />
+                                <template v-if="showOverlay">
+                                    <a class="media-viewer__arrow media-viewer__arrow_left clickable" @click.prevent="nav(-1)" v-if="index > 0">&lt;</a>
+                                    <a class="media-viewer__arrow media-viewer__arrow_right clickable" @click.prevent="nav(1)" v-if="index < source.length - 1">&gt;</a>
+                                    <OverlayTag v-for="t in media.overlayTags" :value="t" :show="true"></OverlayTag>
+                                </template>
+                            </div>
+                        </loading>
                     </div>
                 </div>
             </div>
-        </portal>
-    </div>
+        </transition>
+    </portal>
 </template>
 
-<style lang="scss" scoped>
-.viewer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 100;
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-    .overlay {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: #000;
-        opacity: 0.4;
-    }
-    
-    .viewer-wrapper {
-        position: absolute;
-        z-index: 101;
+<style lang="scss">
+    @import "../../../styles/variables";
+    @import "./node_modules/bootstrap/scss/functions";
+    @import "./node_modules/bootstrap/scss/variables";
+    @import "./node_modules/bootstrap/scss/mixins";
+
+    .media-viewer-modal {
         
-        .viewer-body {
-            margin: auto 0;
-            padding: 1rem;
-            min-width: 300px;
-            
-            .media-wrapper {
-                position: relative;
-                width: 100%;
-                
-                .navigation-arrow {
-                    color: #FFFFFF;
-                    text-decoration: none;
-                    position: absolute;
-                    top: 0;
-                    bottom: 0;
-                    width: 64px;
-                    font-size: 72px;
-                    opacity: 0.4;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    
-                    &:hover {
-                        opacity: 1;
-                    }
-                    
-                    &.left {
-                        left: 0;
-                    }
-                    
-                    &.right {
-                        right: 0;
-                    }
-                }
-                
-                img {
-                    width: 100%;
-                }
+        z-index: $zindex-modal;
+        display: flex;
+        overflow: auto;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        @mixin fixed () {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+        }
+
+        @include fixed();
+        
+        &__backdrop {
+            @include fixed();
+            background: rgba($dark, 0.5);
+            z-index: $zindex-modal-backdrop;
+        }
+
+        &__content {
+            margin: auto;
+            position: relative;
+            z-index: $zindex-modal;
+        }
+
+        &__fade {
+
+            &-enter-active, 
+            &-leave-active {
+                transition: opacity 150ms;
+            }
+
+            &-enter, 
+            &-leave-to {
+                opacity: 0;
             }
         }
     }
-}
+
+    .media-viewer {
+        max-width: 100%;
+        max-height: 100%;
+        background: $white;
+        margin: 1rem;
+        padding: 1rem;
+        position: relative;
+        border-radius: $border-radius;
+        box-shadow: $box-shadow-lg;
+        box-sizing: border-box;
+
+        img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        &__arrow {
+            color: $white;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            font-size: 4rem;
+            opacity: 0.4;
+            display: flex;
+            padding: 0 2rem;
+            justify-content: center;
+            align-items: center;
+            
+            &:hover {
+                opacity: 1;
+                color: $white;
+                text-decoration: none;
+            }
+            
+            &_left {
+                left: 0;
+            }
+            
+            &_right {
+                right: 0;
+            }
+        }
+    }
+
+    .media-viewer-open {
+        overflow: hidden;
+    }
 </style>
