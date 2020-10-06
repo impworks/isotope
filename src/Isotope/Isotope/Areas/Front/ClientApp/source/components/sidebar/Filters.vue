@@ -65,7 +65,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
                 </template>
             </v-select>
         </div>
-        <div class="filter">
+        <div class="filter hide-mobile">
             <h6>Date range</h6>
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -84,6 +84,20 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
                     />
                 </div>
             </div>
+        </div>
+        <div class="filter hide-desktop">
+            <h6>Date from</h6>
+            <input 
+                type="date" 
+                class="form-control mb-3" 
+                v-model="filter.dateFrom"
+            />
+            <h6>Date to</h6>
+            <input 
+                type="date" 
+                class="form-control" 
+                v-model="filter.dateTo"
+            />
         </div>
         <div class="filter">
             <h6>Search in</h6>

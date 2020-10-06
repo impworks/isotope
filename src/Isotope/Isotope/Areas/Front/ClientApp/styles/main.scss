@@ -2,6 +2,7 @@
 @import "./node_modules/bootstrap/scss/bootstrap";
 @import "./node_modules/vue-select/src/scss/vue-select";
 @import "vue-select";
+@import "datepicker";
 @import "mixins";
 @import "fonts";
 @import "icons";
@@ -39,4 +40,20 @@ html, body {
     position: absolute;
     right: 0;
     bottom: 0;
+}
+
+.hide-mobile {
+    @include media-breakpoint-down(sm) {
+        display: none !important;
+    }
+}
+
+.hide-desktop {
+    @include media-breakpoint-up(md) {
+        display: none !important;
+    }
+}
+
+input[type="date"] {
+    -webkit-appearance: none;
 }

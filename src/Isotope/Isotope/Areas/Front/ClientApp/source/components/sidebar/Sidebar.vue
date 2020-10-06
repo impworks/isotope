@@ -1,24 +1,40 @@
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
+import { Vue, Component, Mixins } from "vue-property-decorator";
 import { Dep } from "../../utils/VueInjectDecorator";
-import { FilterStateService } from "../../services/FilterStateService";
+import { FilterStateService, IFilterStateChangedEvent } from "../../services/FilterStateService";
 import DesktopFiltersWrapper from "./DesktopFiltersWrapper.vue";
 import MobileFiltersWrapper from "./MobileFiltersWrapper.vue";
 import Folders from './Folders.vue';
+import { IObservable } from "../../utils/Interfaces";
+import { Observable } from "../../utils/Observable";
+import { HasLifetime } from "../mixins/HasLifetime";
 
 @Component({
     components: { DesktopFiltersWrapper, Folders, MobileFiltersWrapper }
 })
-export default class Sidebar extends Vue {
+export default class Sidebar extends Mixins(HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
 
     avatar: string = null;
     isMobileFiltersVisible: boolean = false;
+    isFilterActive : boolean = false;
     
     get isFilterShown() {
         return !this.$filter.shareId;
     }
-    
+
+    async mounted() {
+        this.observe(this.$filter.onStateChanged, x => this.refresh(x));
+        await this.refresh({ ...this.$filter.state, source: null });
+    }
+
+    refresh(state: IFilterStateChangedEvent) {
+        if(state.source === 'viewer')
+            return;
+
+        this.isFilterActive = !this.$filter.isEmpty(state);
+    }
+
     goToRoot() {
         this.$filter.update('logo', { folder: '/' });
     }
@@ -54,7 +70,7 @@ export default class Sidebar extends Vue {
                 >
                     <div class="btn-header__content">
                         <i class="icon icon-filter"></i>
-                        <div class="btn-header__content__badge">8</div>
+                        <div v-if="isFilterActive" class="btn-header__badge"></div>
                         <MobileFiltersWrapper v-model="isMobileFiltersVisible"></MobileFiltersWrapper>
                     </div>
                 </button>

@@ -20,7 +20,8 @@ Vue.component("simplebar", simplebar);
 import vSelect from 'vue-select';
 Vue.component('v-select', vSelect);
 
-import Datepicker from 'vuejs-datepicker';
+import Datepicker from '@sum.cumo/vue-datepicker';
+import '@sum.cumo/vue-datepicker/dist/vuejs-datepicker.css'
 Vue.component('datepicker', {
     extends: Datepicker,
     props: {

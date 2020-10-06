@@ -1,4 +1,4 @@
-declare module "vuejs-datepicker" {
+declare module "@sum.cumo/vue-datepicker" {
     import { VueConstructor } from "vue";
     
     export default VuejsDatepicker;
