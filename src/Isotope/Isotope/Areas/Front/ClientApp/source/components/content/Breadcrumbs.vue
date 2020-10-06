@@ -35,6 +35,7 @@ export default class Breadcrumbs extends Mixins(HasLifetime) {
             return;
         }
         
+        path = path.replace(/\/$/, '');
         const parts = path.split('/');
         const crumbs: Crumb[] = [{ caption: this.info.caption, path: '/' }];
         let scope = this.folderTree;
