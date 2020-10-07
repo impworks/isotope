@@ -1,3 +1,4 @@
+using Isotope.Areas.Admin.Services;
 using Isotope.Areas.Front.Services;
 using Isotope.Code.Services;
 using Isotope.Code.Services.Config;
@@ -25,6 +26,9 @@ namespace Isotope.Code.Config
             services.AddScoped<GalleryInfoPresenter>();
 
             // admin
+            services.AddScoped<TagManagerService>();
+            services.AddScoped<SharedLinkManagerService>();
+            services.AddScoped<UserManagerService>();
         }
     }
 }
