@@ -90,7 +90,7 @@ export default class Sidebar extends Mixins(HasLifetime) {
     @import "./node_modules/bootstrap/scss/mixins";
 
     .sidebar {
-        z-index: 1;
+        z-index: 10;
         width: 18.5rem;
         position: relative;
         background: $white;

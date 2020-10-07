@@ -21,8 +21,12 @@ i.icon {
         content: "\e902";
     }
 
-    &-cross:before {
+    &-share:before {
         content: "\e903";
+    }
+
+    &-back:before {
+        content: "\e904";
     }
 }
   

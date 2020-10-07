@@ -64,14 +64,49 @@ interface Crumb {
 </script>
 
 <template>
-    <ul class="breadcrumbs">
-        <li v-for="c in crumbs" class="breadcrumbs__item">
-            <a href="#" @click.prevent="selectFolder(c)">{{c.caption}}</a>
-        </li>
-        <li class="breadcrumbs__item breadcrumbs__item_active">
-            {{currentFolder}}
-        </li>
-    </ul>
+    <div>
+        <ul class="breadcrumbs">
+            <li 
+                class="breadcrumbs__item"
+                v-for="c in crumbs"
+            >
+                <a 
+                    href="#" 
+                    @click.prevent="selectFolder(c)"
+                >
+                    {{c.caption}}
+                </a>
+            </li>
+            <li class="breadcrumbs__item breadcrumbs__item_active">
+                {{currentFolder}}
+            </li>
+        </ul>
+        <div class="mobile-navigation">
+            <div 
+                class="mobile-navigation__actions"
+            >
+                <button 
+                    class="btn-header"
+                    v-if="crumbs.length"
+                    @click.prevent="selectFolder(crumbs[crumbs.length - 1])"
+                >
+                    <div class="btn-header__content">
+                        <i class="icon icon-back"></i>
+                    </div>
+                </button>
+            </div>
+            <div class="mobile-navigation__caption">
+                {{currentFolder}}
+            </div>
+            <div class="mobile-navigation__actions">
+                <button class="btn-header">
+                    <div class="btn-header__content">
+                        <i class="icon icon-share"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style lang="scss">
@@ -88,6 +123,10 @@ interface Crumb {
         flex-direction: row;
         flex-wrap: wrap;
         line-height: 1.625;
+        
+        @include media-breakpoint-down(sm) {
+            display: none;
+        }
 
         &__item {
             position: relative;
@@ -114,6 +153,57 @@ interface Crumb {
 
             &_active {
                 font-weight: 500;
+            }
+        }
+    }
+
+    .mobile-navigation {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background: $gray-200;
+
+        @include media-breakpoint-up(md) {
+            display: none;
+        }
+
+        &__caption {
+            font-weight: bold;
+            flex: 1 1 auto;
+            padding: 0 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-align: center;
+            text-overflow: ellipsis;
+
+            &:first-child {
+                padding-left: 1rem;
+            }
+
+            &:last-child {
+                padding-right: 1rem;
+            }
+        }
+
+        &__actions {
+            min-width: 3.625rem;
+
+            .btn-header {
+                padding: 0.5rem 0.5rem;
+                
+                &__content {
+                    background: none !important;
+                }
+            }
+
+            &:first-child .btn-header {
+                padding-left: 1rem;
+            }
+
+            &:last-child .btn-header {
+                padding-right: 1rem;
             }
         }
     }

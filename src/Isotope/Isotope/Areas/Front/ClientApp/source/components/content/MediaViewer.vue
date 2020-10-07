@@ -123,7 +123,7 @@ interface ICachedMedia {
 
 <template>
     <portal to="overlay">
-        <transition name="mobile-filters-modal__fade">
+        <transition name="media-viewer-modal__fade">
             <div 
                 class="media-viewer-modal"
                 v-if="shown"
@@ -198,7 +198,7 @@ interface ICachedMedia {
 
             &-enter-active, 
             &-leave-active {
-                transition: opacity 150ms;
+                transition: opacity 200ms cubic-bezier(.645,.045,.355,1);
             }
 
             &-enter, 

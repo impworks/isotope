@@ -89,7 +89,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
 <template>
     <div class="gallery">
         <div class="gallery__header">
-            <breadcrumbs/>
+            <breadcrumbs></breadcrumbs>
         </div>
             <simplebar class="gallery__content">
                 <loading 
@@ -180,7 +180,8 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             border-bottom: 1px solid $gray-300;
 
             @include media-breakpoint-down(sm) {
-                display: none;
+                margin-top: -1px;
+                border-top: 1px solid $gray-300;
             }
         }
 
@@ -188,7 +189,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             width: 100%;
             flex: 1 1 auto;
             display: block;
-            background: $gray-200;
 
             @include media-breakpoint-up(md) {
                 height: 0;

@@ -15,6 +15,10 @@ html, body {
     color: $gray-800;
     font-family: "Rubik";
     background: $gray-200;
+
+    @include media-breakpoint-down(sm) {
+        background: $gray-100;
+    }
 }
 
 .simplebar-content-wrapper::-webkit-scrollbar { 

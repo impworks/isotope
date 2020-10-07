@@ -61,9 +61,9 @@ export default class MobileFiltersWrapper extends Vue {
                     class="mobile-filters-modal__content mobile-filters"
                     v-if="model"
                 >
-                    <div class="mobile-header">
-                        <div class="mobile-header__caption">Filters</div>
-                        <div class="mobile-header__actions">
+                    <div class="mobile-filters__header">
+                        <div class="mobile-filters__header__caption">Filters</div>
+                        <div class="mobile-filters__header__actions">
                             <button
                                 href="#" 
                                 class="btn-header btn-header_danger" 
@@ -148,7 +148,7 @@ export default class MobileFiltersWrapper extends Vue {
 
             &-enter-active, 
             &-leave-active {
-                transition: transform 300ms ease-out;
+                transition: transform 400ms cubic-bezier(.645,.045,.355,1);
             }
 
             &-enter, 
@@ -161,7 +161,7 @@ export default class MobileFiltersWrapper extends Vue {
 
             &-enter-active, 
             &-leave-active {
-                transition: opacity 150ms;
+                transition: opacity 400ms cubic-bezier(.645,.045,.355,1);
             }
 
             &-enter, 
@@ -171,32 +171,29 @@ export default class MobileFiltersWrapper extends Vue {
         }
     }
 
-    .mobile-header {
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 1px solid $gray-300;
-
-        &__caption {
-            flex: 1 1 auto;
-            padding: 0.9125rem 1rem;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        &__actions {
-            
-            .btn-header:last-child {
-                padding-right: 1rem;
-            }
-        }
-    }
-
     .mobile-filters {
         display: flex;
         flex-direction: column;
 
-        .mobile-header {
+        &__header {
             flex: 0 0 auto;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid $gray-300;
+
+            &__caption {
+                flex: 1 1 auto;
+                padding: 0.9125rem 1rem;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+
+            &__actions {
+                
+                .btn-header:last-child {
+                    padding-right: 1rem;
+                }
+            }
         }
 
         &__content {
