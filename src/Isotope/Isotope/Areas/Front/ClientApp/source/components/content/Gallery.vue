@@ -91,12 +91,12 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
         <div class="gallery__header">
             <breadcrumbs></breadcrumbs>
         </div>
-            <simplebar class="gallery__content">
+            <simplebar v-if="!isEmpty" class="gallery__content">
                 <loading 
                     :is-full-page="true"
                     :is-loading="asyncState.isLoading"
                 >
-                <div v-if="contents">
+                <fragment v-if="contents">
                     <div 
                         class="gallery__tags"
                         v-if="contents.tags && contents.tags.length"
@@ -148,17 +148,22 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                             </div>
                         </div>
                     </div>
-                    <div v-if="isEmpty" class="alert alert-info ml-5 mr-5">
-                        <span v-if="isFilterActive">No matching media found.</span>
-                        <span v-else>This folder is empty.</span>
-                    </div>
-                </div>
-                <div v-if="error" class="alert alert-danger ml-5 mr-5 mt-5">
-                    <strong>Error</strong><br/>
-                    {{error}}
-                </div>
+                </fragment>
+                
             </loading>
+            <div v-if="error" class="alert alert-danger ml-5 mr-5 mt-5">
+                <strong>Error</strong><br/>
+                {{error}}
+            </div>
         </simplebar>
+        <div v-if="isEmpty" class="gallery__error">
+            <div class="gallery__error__content">
+                <div class="gallery__error__image"></div>
+                <h3>Oops…</h3>
+                <p v-if="isFilterActive">No matching media found.</p>
+                <p v-else>This folder is empty.</p>
+            </div>
+        </div>
         <MediaViewer :index-feed="indexFeed" :source="contents.media" v-if="contents && contents.media && contents.media.length"></MediaViewer>
     </div>
 </template>
@@ -335,6 +340,34 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 width: 100%;
                 height: 100%;
                 background-size: cover;
+            }
+        }
+
+        &__error {
+            display: flex;
+            flex: 1 1 auto;
+            text-align: center;
+            padding: 1rem 1rem 2rem;
+            align-items: center;
+            justify-content: center;
+
+            &__content {
+                flex: 1 1 auto;
+                margin: auto;
+
+                p {
+                    color: $gray-600;
+                }
+            }
+
+            &__image {
+                display: block;
+                height: 10rem;
+                background-image: url(../../../images/cat.svg);
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: auto 100%;
+                margin-bottom: 1rem;
             }
         }
     }
