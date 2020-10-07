@@ -131,6 +131,7 @@ interface Crumb {
         &__item {
             position: relative;
             padding: 0 2em 0 0;
+            white-space: nowrap;
             
             a {
                 color: $gray-700;
