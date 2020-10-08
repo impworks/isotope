@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from "vue-property-decorator";
+import { Component, Mixins, Prop, Vue, Watch } from "vue-property-decorator";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { IObservable } from "../../utils/Interfaces";
 import { Media } from "../../vms/Media";
@@ -13,7 +13,7 @@ import OverlayTag from "./OverlayTag.vue";
 @Component({
     components: { OverlayTag }
 })
-export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
+export default class MediaViewer extends Mixins(HasLifetime) {
     @Dep('$host') $host: string;
     @Dep('$api') $api: ApiService;
     @Dep('$filter') $filter: FilterStateService;
@@ -23,9 +23,20 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
 
     shown: boolean = false;
     index: number = null;
-    media: Media = null;
-    cache: Promise<ICachedMedia>[] = [];
+    cache: ICachedMedia[] = [];
     showOverlay: boolean = false;
+    
+    get prev(): ICachedMedia {
+        return this.cache[this.index - 1] || null;
+    }
+
+    get curr(): ICachedMedia {
+        return this.cache[this.index] || null;
+    }
+
+    get next(): ICachedMedia {
+        return this.cache[this.index + 1] || null;
+    }
 
     mounted() {
         this.observe(this.indexFeed, x => this.show(x));
@@ -35,55 +46,66 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
     hide() {
         this.shown = false;
         this.index = null;
-        this.media = null;
         this.clearCache();
+        
         this.$filter.update('viewer', { mediaKey: null });
     }
 
-    async show(i: number) {
+    show(i: number) {
         if(i < 0 || i >= this.source.length)
             return;
         
         this.shown = true;
         this.index = i;
-        try {
-            const getter = this.cache[i] || (this.cache[i] = this.preloadMedia(i));
-            await this.showLoading(async () => this.media = (await getter).media);
-            
-            this.$filter.update('viewer', { mediaKey: this.media.key });
-            this.updateCache(i); // sic! no awaiting
-        } catch (e) {
-            console.log('failed to load media', e);
-        }
+        this.$filter.update('viewer', { mediaKey: this.source[i].key });
+        
+        this.updateCache(i);
     }
     
-    async nav(pos: number) {
+    nav(pos: number) {
         const idx = this.index + pos;
         if(idx < 0 || idx >= this.source.length)
             return;
         
-        await this.show(idx);
-        this.updateCache(idx); // sic! no awaiting
+        this.show(idx);
     }
     
     getAbsolutePath(path: string) {
         return this.$host + path;
     }
     
-    private async updateCache(idx: number) {
+    private updateCache(idx: number) {
+        this.updateCacheItem(idx);
+        
         const back = 1;
         const forward = 3;
         
         for(let i = idx - back; i < idx + forward; i++) {
-            if(i < 0 || i >= this.source.length || this.cache[i] != null)
-                continue;
-            
-            this.cache[i] = this.preloadMedia(i);
+            if(i >= 0 && i < this.source.length)
+                this.updateCacheItem(i);
         }
     }
     
-    private async preloadMedia(idx: number): Promise<ICachedMedia> {
-        const key = this.source[idx].key;
+    private async updateCacheItem(idx: number) {
+        if(this.cache[idx])
+            return;
+        
+        const item: ICachedMedia = { isLoading: true };
+        Vue.set(this.cache, idx, item);
+        
+        try {
+            const key = this.source[idx].key;
+            const { img, media } = await this.preloadMedia(key);
+            item.img = img;
+            item.media = media;
+        } catch (e) {
+            console.log('Failed to load media!', e);
+        } finally {
+            item.isLoading = false;
+        }
+    }
+    
+    private async preloadMedia(key: string): Promise<IMedia> {
         const media = await this.$api.getMedia(key);        
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -96,28 +118,25 @@ export default class MediaViewer extends Mixins(HasLifetime, HasAsyncState()) {
     }
     
     private async clearCache() {
-        for(let elem of this.cache) {
-            const img = (await elem).img;
-            img.parentElement.removeChild(img);
-        }
+        for(let elem of this.cache)
+            elem.img.parentElement.removeChild(elem.img);
+        
         this.cache = [];
     }
 
     @Watch('shown')
-    onVisibilityChanged(value: boolean) {
-        const bodyClass = "media-viewer-open";
-
-        if (value) {
-            document.body.classList.add(bodyClass);
-        } else {
-            document.body.classList.remove(bodyClass);
-        }
+    onShownChanged(value: boolean) {
+        document.body.classList.toggle('media-viewer-open', value);
     }
 }
 
-interface ICachedMedia {
-    media: Media;
-    img: HTMLImageElement;
+interface IMedia {
+    media?: Media;
+    img?: HTMLImageElement;
+}
+
+interface ICachedMedia extends IMedia {
+    isLoading: boolean;
 }
 </script>
 
@@ -137,16 +156,16 @@ interface ICachedMedia {
                     @mouseenter="showOverlay = true" 
                     @mouseleave="showOverlay = false"
                 >
-                    <div class="media-viewer">
+                    <div class="media-viewer" v-if="curr">
                         <GlobalEvents @keydown.left="nav(-1)" @keydown.right="nav(1)" @keydown.esc="hide()"></GlobalEvents>
-                        <loading :is-loading="asyncState.isLoading">
-                            <div v-if="media" class="media-wrapper">
-                                <img :src="getAbsolutePath(media.fullPath)"
-                                        :alt="media.description" />
+                        <loading :is-loading="curr.isLoading">
+                            <div v-if="curr.media" class="media-wrapper">
+                                <img :src="getAbsolutePath(curr.media.fullPath)"
+                                        :alt="curr.media.description" />
                                 <template v-if="showOverlay">
                                     <a class="media-viewer__arrow media-viewer__arrow_left clickable" @click.prevent="nav(-1)" v-if="index > 0">&lt;</a>
                                     <a class="media-viewer__arrow media-viewer__arrow_right clickable" @click.prevent="nav(1)" v-if="index < source.length - 1">&gt;</a>
-                                    <OverlayTag v-for="t in media.overlayTags" :value="t" :show="true"></OverlayTag>
+                                    <OverlayTag v-for="t in curr.media.overlayTags" :value="t" :show="true"></OverlayTag>
                                 </template>
                             </div>
                         </loading>
