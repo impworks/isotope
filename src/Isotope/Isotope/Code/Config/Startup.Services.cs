@@ -29,6 +29,7 @@ namespace Isotope.Code.Config
             services.AddScoped<TagManagerService>();
             services.AddScoped<SharedLinkManagerService>();
             services.AddScoped<UserManagerService>();
+            services.AddScoped<ConfigManagerService>();
         }
     }
 }
