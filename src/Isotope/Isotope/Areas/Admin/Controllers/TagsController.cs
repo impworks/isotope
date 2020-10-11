@@ -12,12 +12,12 @@ namespace Isotope.Areas.Admin.Controllers
     [Route("~/@api/admin/tags")]
     public class TagsController: AdminControllerBase
     {
-        public TagsController(TagManager tms)
+        public TagsController(TagManager tagMgr)
         {
-            _tms = tms;
+            _tagMgr = tagMgr;
         }
         
-        private readonly TagManager _tms;
+        private readonly TagManager _tagMgr;
 
         /// <summary>
         /// Returns the list of all tags. 
@@ -25,7 +25,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpGet, Route("")]
         public Task<IReadOnlyList<TagVM>> GetList()
         {
-            return _tms.GetListAsync();
+            return _tagMgr.GetListAsync();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpPost, Route("")]
         public Task<TagVM> Create(TagVM tag)
         {
-            return _tms.CreateAsync(tag);
+            return _tagMgr.CreateAsync(tag);
         }
         
         /// <summary>
@@ -43,7 +43,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpPut, Route("{id:int}")]
         public Task Update(int id, TagVM tag)
         {
-            return _tms.UpdateAsync(id, tag);
+            return _tagMgr.UpdateAsync(id, tag);
         }
         
         /// <summary>
@@ -52,7 +52,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpDelete, Route("{id:int}")]
         public Task Delete(int id)
         {
-            return _tms.RemoveAsync(id);
+            return _tagMgr.RemoveAsync(id);
         }
     }
 }

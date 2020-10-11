@@ -11,12 +11,12 @@ namespace Isotope.Areas.Admin.Controllers
     [Route("~/@api/admin/config")]
     public class ConfigController: AdminControllerBase
     {
-        public ConfigController(ConfigManager cfg)
+        public ConfigController(ConfigManager cfgMgr)
         {
-            _cfg = cfg;
+            _cfgMgr = cfgMgr;
         }
         
-        private readonly ConfigManager _cfg;
+        private readonly ConfigManager _cfgMgr;
 
         /// <summary>
         /// Returns the current configuration state.
@@ -24,7 +24,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpGet, Route("")]
         public Task<ConfigVM> Get()
         {
-            return _cfg.GetAsync();
+            return _cfgMgr.GetAsync();
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpPut, Route("")]
         public Task Set(ConfigVM vm)
         {
-            return _cfg.SetAsync(vm);
+            return _cfgMgr.SetAsync(vm);
         }
     }
 }

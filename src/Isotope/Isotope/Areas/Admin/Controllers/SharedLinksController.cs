@@ -12,12 +12,12 @@ namespace Isotope.Areas.Admin.Controllers
     [Route("~/@api/admin/shared-links")]
     public class SharedLinksController: AdminControllerBase
     {
-        public SharedLinksController(SharedLinkManager smls)
+        public SharedLinksController(SharedLinkManager smMgr)
         {
-            _smls = smls;
+            _smMgr = smMgr;
         }
         
-        private readonly SharedLinkManager _smls;
+        private readonly SharedLinkManager _smMgr;
 
         /// <summary>
         /// Returns the list of all existing shared links.
@@ -25,7 +25,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpGet, Route("")]
         public Task<IReadOnlyList<SharedLinkDetailsVM>> GetList()
         {
-            return _smls.GetListAsync();
+            return _smMgr.GetListAsync();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpPost, Route("")]
         public Task<KeyResultVM> Create(SharedLinkVM vm)
         {
-            return _smls.CreateAsync(vm);
+            return _smMgr.CreateAsync(vm);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpDelete, Route("{key}")]
         public Task Remove(string key)
         {
-            return _smls.RemoveAsync(key);
+            return _smMgr.RemoveAsync(key);
         }
     }
 }
