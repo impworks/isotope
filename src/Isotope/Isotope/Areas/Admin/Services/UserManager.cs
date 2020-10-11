@@ -15,9 +15,9 @@ namespace Isotope.Areas.Admin.Services
     /// <summary>
     /// Service for managing the list of users.
     /// </summary>
-    public class UserManagerService
+    public class UserManager
     {
-        public UserManagerService(AppDbContext db, UserManager<AppUser> userMgr, IMapper mapper)
+        public UserManager(AppDbContext db, UserManager<AppUser> userMgr, IMapper mapper)
         {
             _db = db;
             _userMgr = userMgr;

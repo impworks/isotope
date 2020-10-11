@@ -19,9 +19,9 @@ namespace Isotope.Areas.Admin.Services
     /// <summary>
     /// Service for managing the folder tree.
     /// </summary>
-    public class FolderManagerService
+    public class FolderManager
     {
-        public FolderManagerService(AppDbContext db, IMapper mapper)
+        public FolderManager(AppDbContext db, IMapper mapper)
         {
             _db = db;
             _mapper = mapper;

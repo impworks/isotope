@@ -12,12 +12,12 @@ namespace Isotope.Areas.Admin.Controllers
     [Route("~/@api/admin/tags")]
     public class TagsController: AdminControllerBase
     {
-        public TagsController(TagManagerService tms)
+        public TagsController(TagManager tms)
         {
             _tms = tms;
         }
         
-        private readonly TagManagerService _tms;
+        private readonly TagManager _tms;
 
         /// <summary>
         /// Returns the list of all tags. 

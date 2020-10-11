@@ -1,6 +1,6 @@
 using Isotope.Data.Models;
 
-namespace Isotope.Areas.Front.Dto
+namespace Isotope.Areas.Front.Services
 {
     /// <summary>
     /// Context of a user's invocation.

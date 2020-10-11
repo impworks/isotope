@@ -12,12 +12,12 @@ namespace Isotope.Areas.Admin.Controllers
     [Route("~/@api/admin/shared-links")]
     public class SharedLinksController: AdminControllerBase
     {
-        public SharedLinksController(SharedLinkManagerService smls)
+        public SharedLinksController(SharedLinkManager smls)
         {
             _smls = smls;
         }
         
-        private readonly SharedLinkManagerService _smls;
+        private readonly SharedLinkManager _smls;
 
         /// <summary>
         /// Returns the list of all existing shared links.

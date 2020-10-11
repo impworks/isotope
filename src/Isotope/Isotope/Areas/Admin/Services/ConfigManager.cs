@@ -11,9 +11,9 @@ namespace Isotope.Areas.Admin.Services
     /// <summary>
     /// Service for managing configuration properties.
     /// </summary>
-    public class ConfigManagerService
+    public class ConfigManager
     {
-        public ConfigManagerService(AppDbContext db, ConfigService cfg, IMapper mapper)
+        public ConfigManager(AppDbContext db, ConfigService cfg, IMapper mapper)
         {
             _db = db;
             _cfg = cfg;

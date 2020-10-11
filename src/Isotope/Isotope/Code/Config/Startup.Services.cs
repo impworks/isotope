@@ -26,10 +26,11 @@ namespace Isotope.Code.Config
             services.AddScoped<GalleryInfoPresenter>();
 
             // admin
-            services.AddScoped<TagManagerService>();
-            services.AddScoped<SharedLinkManagerService>();
-            services.AddScoped<UserManagerService>();
-            services.AddScoped<ConfigManagerService>();
+            services.AddScoped<TagManager>();
+            services.AddScoped<SharedLinkManager>();
+            services.AddScoped<UserManager>();
+            services.AddScoped<ConfigManager>();
+            services.AddScoped<FolderManager>();
         }
     }
 }

@@ -18,9 +18,9 @@ namespace Isotope.Areas.Admin.Services
     /// <summary>
     /// Service for managing the list of shared links.
     /// </summary>
-    public class SharedLinkManagerService
+    public class SharedLinkManager
     {
-        public SharedLinkManagerService(AppDbContext db, IMapper mapper)
+        public SharedLinkManager(AppDbContext db, IMapper mapper)
         {
             _db = db;
             _mapper = mapper;

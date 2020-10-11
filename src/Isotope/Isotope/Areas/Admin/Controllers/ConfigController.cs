@@ -11,12 +11,12 @@ namespace Isotope.Areas.Admin.Controllers
     [Route("~/@api/admin/config")]
     public class ConfigController: AdminControllerBase
     {
-        public ConfigController(ConfigManagerService cfg)
+        public ConfigController(ConfigManager cfg)
         {
             _cfg = cfg;
         }
         
-        private readonly ConfigManagerService _cfg;
+        private readonly ConfigManager _cfg;
 
         /// <summary>
         /// Returns the current configuration state.
