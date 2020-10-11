@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isotope.Areas.Admin.Dto;
+using Isotope.Areas.Admin.Utils;
 using Isotope.Data;
 using Isotope.Data.Models;
 using Mapster;
@@ -42,25 +42,38 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Creates a new user.
         /// </summary>
-        public async Task<UserVM> CreateAsync(UserCreationVM user)
+        public async Task<UserVM> CreateAsync(UserCreationVM vm)
         {
-            throw new NotImplementedException();
+            await ValidateAsync(vm.UserInfo);
+            await ValidateAsync(vm.PasswordInfo);
+
+            var user = _mapper.Map<AppUser>(vm.UserInfo);
+            var result = await _userMgr.CreateAsync(user, vm.PasswordInfo.Password);
+            if(!result.Succeeded)
+                throw new OperationException("User creation failed, please try again!");
+
+            return _mapper.Map<UserVM>(user);
         }
         
         /// <summary>
         /// Updates the user's profile.
         /// </summary>
-        public async Task UpdateProfileAsync(string id, UserVM user)
+        public async Task UpdateProfileAsync(string id, UserVM vm)
         {
-            throw new NotImplementedException();
+            var user = await FindAsync(id);
+            _mapper.Map(vm, user);
+            await _db.SaveChangesAsync();
         }
         
         /// <summary>
         /// Updates the user's profile.
         /// </summary>
-        public async Task UpdatePasswordAsync(string id, UserPasswordVM pass)
+        public async Task UpdatePasswordAsync(string id, UserPasswordVM vm)
         {
-            throw new NotImplementedException();
+            await ValidateAsync(vm);
+            var user = await FindAsync(id);
+            var token = await _userMgr.GeneratePasswordResetTokenAsync(user);
+            await _userMgr.ResetPasswordAsync(user, token, vm.Password);
         }
         
         /// <summary>
@@ -68,7 +81,48 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task RemoveAsync(string id)
         {
-            throw new NotImplementedException();
+            var user = await FindAsync(id);
+            await _userMgr.DeleteAsync(user);
+        }
+
+        /// <summary>
+        /// Validates the user data. 
+        /// </summary>
+        private async Task ValidateAsync(UserVM vm, string id = null)
+        {
+            if(string.IsNullOrEmpty(vm.UserName))
+                throw new OperationException("UserName cannot be empty.");
+
+            var upper = vm.UserName.ToUpper();
+            var q = _db.Users.Where(x => x.NormalizedUserName == upper);
+            if (id != null)
+                q = q.Where(x => x.Id != id);
+            
+            if(await q.AnyAsync())
+                throw new OperationException($"UserName '{vm.UserName}' is already taken.");
+        }
+
+        /// <summary>
+        /// Validates the user password.
+        /// </summary>
+        private Task ValidateAsync(UserPasswordVM vm)
+        {
+            if(string.IsNullOrEmpty(vm.Password) || string.IsNullOrEmpty(vm.PasswordConfirmation))
+                throw new OperationException("Password cannot be empty.");
+            
+            if(vm.Password != vm.PasswordConfirmation)
+                throw new OperationException("Passwords do not match.");
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Gets the user by ID.
+        /// </summary>
+        private async Task<AppUser> FindAsync(string id)
+        {
+            return await _db.Users.FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new OperationException($"User '{id}' does not exist.");
         }
     }
 }
