@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Isotope.Code.Utils.Helpers
 {
@@ -23,6 +24,14 @@ namespace Isotope.Code.Utils.Helpers
         public static string Normalize(string path)
         {
             return '/' + path.Trim('/').ToLower();
+        }
+
+        /// <summary>
+        /// Returns the path of the immediately containing folder.
+        /// </summary>
+        public static string GetParentPath(string path)
+        {
+            return Normalize(Regex.Replace(path.TrimEnd('/'), @"\/[^\/]+$", ""));
         }
     }
 }
