@@ -149,7 +149,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                         </div>
                     </div>
                 </fragment>
-                
             </loading>
             <div v-if="error" class="alert alert-danger ml-5 mr-5 mt-5">
                 <strong>Error</strong><br/>

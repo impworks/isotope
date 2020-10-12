@@ -270,63 +270,56 @@ interface ICachedMedia extends IMedia {
 
 <template>
     <portal to="overlay">
-        <div class="media-viewer-modal" v-if="shown">
-            <GlobalEvents 
-                @keydown.left="nav(-1)" 
-                @keydown.right="nav(1)" 
-                @keydown.esc="hide()"
-            ></GlobalEvents>
-            <div id="media-viewer"
-                v-hammer:swipe.left="handleTouchEvents"
-                v-hammer:pan="handleTouchEvents"
+        <GlobalEvents 
+            @keydown.left="nav(-1)" 
+            @keydown.right="nav(1)" 
+            @keydown.esc="hide()"
+        ></GlobalEvents>
+        <div class="media-viewer"
+            v-if="shown"
+            v-hammer:swipe.left="handleTouchEvents"
+            v-hammer:pan="handleTouchEvents"
+        >
+            <div class="media-viewer__content"
+                :class="transitionClass" 
+                :style="{transform: transformStyle}" 
+                @transitionstart="isTransitioning = true" 
+                @transitionend="updateCurrentItem"
             >
-                <div id="rendered-items-flexbox"
-                    :class="transitionClass" 
-                    :style="{transform: transformStyle}" 
-                    @transitionstart="isTransitioning = true" 
-                    @transitionend="updateCurrentItem"
-                >
-                    <div class="rendered-item">
-                        <div class="item-content" v-if="prev">
-                            <loading :is-loading="prev.isLoading">
-                                <div v-if="prev.media" class="media-wrapper">
-                                    <img :src="getAbsolutePath(prev.media.fullPath)"
-                                        :alt="prev.media.description" />
-                                </div>
-                            </loading>
-                        </div>
-                    </div>
-                    <div class="rendered-item">
-                        <div class="item-content" v-if="curr">
-                            <loading :is-loading="curr.isLoading">
-                                <div v-if="curr.media" class="media-wrapper">
-                                    <img :src="getAbsolutePath(curr.media.fullPath)"
-                                        :alt="curr.media.description" />
-                                </div>
-                            </loading>
-                        </div>
-                    </div>
-                    <div class="rendered-item">
-                        <div class="item-content" v-if="next">
-                            <loading :is-loading="next.isLoading">
-                                <div v-if="next.media" class="media-wrapper">
-                                    <img :src="getAbsolutePath(next.media.fullPath)"
-                                        :alt="next.media.description" />
-                                </div>
-                            </loading>
-                        </div>
+                <div class="media-viewer__content__item">
+                    <div v-if="prev">
+                        <loading :is-loading="prev.isLoading">
+                            <img :src="getAbsolutePath(prev.media.fullPath)"
+                                :alt="prev.media.description" />
+                        </loading>
                     </div>
                 </div>
-                <div class="touch-tap-left" role="button" aria-label="Previous" tabindex="0">
-                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 10 100" height="100%" width="40px" preserveAspectRatio="none" class="left-edge-shape" :class="transitionClass" :style="{transform: 'scaleX(' + leftEdgeScale + ')'}">
-                        <path d="M0,0v100h5.2c3-14.1,4.8-31.4,4.8-50S8.2,14.1,5.2,0H0z" />
-                    </svg>
+                <div class="media-viewer__content__item">
+                    <div v-if="curr">
+                        <loading :is-loading="curr.isLoading">
+                            <img :src="getAbsolutePath(curr.media.fullPath)"
+                                :alt="curr.media.description" />
+                        </loading>
+                    </div>
                 </div>
-                <div class="touch-tap-right" role="button" aria-label="Next" tabindex="0">
-                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 10 100" height="100%" width="40px" preserveAspectRatio="none" class="right-edge-shape" :class="transitionClass" :style="{transform: 'scaleX(' + rightEdgeScale + ')'}">
-                        <path d="M10,100V0L4.8,0C1.8,14.1,0,31.4,0,50c0,18.6,1.8,35.9,4.8,50H10z" />
-                    </svg>
+                <div class="media-viewer__content__item">
+                    <div v-if="next">
+                        <loading :is-loading="next.isLoading">
+                            <img :src="getAbsolutePath(next.media.fullPath)"
+                                :alt="next.media.description" />
+                        </loading>
+                    </div>
                 </div>
+            </div>
+            <div class="touch-tap-left" role="button" aria-label="Previous" tabindex="0">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 10 100" height="100%" width="40px" preserveAspectRatio="none" class="left-edge-shape" :class="transitionClass" :style="{transform: 'scaleX(' + leftEdgeScale + ')'}">
+                    <path d="M0,0v100h5.2c3-14.1,4.8-31.4,4.8-50S8.2,14.1,5.2,0H0z" />
+                </svg>
+            </div>
+            <div class="touch-tap-right" role="button" aria-label="Next" tabindex="0">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 10 100" height="100%" width="40px" preserveAspectRatio="none" class="right-edge-shape" :class="transitionClass" :style="{transform: 'scaleX(' + rightEdgeScale + ')'}">
+                    <path d="M10,100V0L4.8,0C1.8,14.1,0,31.4,0,50c0,18.6,1.8,35.9,4.8,50H10z" />
+                </svg>
             </div>
         </div>
     </portal>
@@ -338,7 +331,7 @@ interface ICachedMedia extends IMedia {
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";
 
-    .media-viewer-modal {
+    .media-viewer {
         z-index: $zindex-modal;
         background-color: rgba($dark, 0.5);
         top: 0;
@@ -347,27 +340,35 @@ interface ICachedMedia extends IMedia {
         height: 100%;
         position: fixed;
 
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
+        &__content {
+            width: 100vw;
+            height: 100%;
+            position: relative;
+            justify-content: center;
+            box-sizing: border-box;
+            will-change: transform;
+            touch-action: pan-y;
+            display: flex;
 
-    #touch-container {
-        position: relative;
-        min-width: 100%;
-        height: 100%;
-        overflow-x: hidden;
-    }
+            &__item {
+                height: 100%;
+                min-width: 100vw;
+                position: relative;
 
-    #rendered-items-flexbox {
-        display: flex;
-        justify-content: center;
-        height: 100%;
-        min-height: fit-content;
-        width: 100vw;
-        box-sizing: border-box;
-        touch-action: pan-y; // Disables automatic browser control of touches, except vertical scrolling
+                img {
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    margin: auto;
+                    max-width: 100%;
+                    max-height: 100%;
+                    position: absolute;
+                    vertical-align: bottom;
+                }
+            }
+        }
+        
     }
 
     .transition-initial {
@@ -380,30 +381,6 @@ interface ICachedMedia extends IMedia {
 
     .transition-edge {
         transition: transform 500ms ease-out;
-    }
-
-    .rendered-item {
-        height: 100%;
-        min-height: 500px;
-        min-width: 100%;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .item-content {
-        min-height: 500px;
-        height: 100%;
-        width: 100vw;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-sizing: border-box;
-
-        img {
-            width: 300px;
-            height: 300px;
-        }
     }
 
     .touch-tap-left,
