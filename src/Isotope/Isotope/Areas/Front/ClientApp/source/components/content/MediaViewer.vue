@@ -9,6 +9,7 @@ import { ApiService } from "../../services/ApiService";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
 import OverlayTag from "./OverlayTag.vue";
+import debounce from 'lodash.debounce';
 
 @Component({
     components: { OverlayTag }
@@ -25,7 +26,15 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     index: number = null;
     cache: ICachedMedia[] = [];
     showOverlay: boolean = false;
-    
+    upcomingIndex: number = null;
+    translateX: number = 0;
+    maxTranslateX: number = 0;
+    transformStyle = "translateX(0)";
+    transitionClass = "transition-initial";
+    isTransitioning: boolean = false;
+    leftEdgeScale: number = 0;
+    rightEdgeScale: number = 0;
+
     get prev(): ICachedMedia {
         return this.cache[this.index - 1] || null;
     }
@@ -47,52 +56,52 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         this.shown = false;
         this.index = null;
         this.clearCache();
-        
+
         this.$filter.update('viewer', { mediaKey: null });
     }
 
     show(i: number) {
         if(i < 0 || i >= this.source.length)
             return;
-        
+
         this.shown = true;
         this.index = i;
         this.$filter.update('viewer', { mediaKey: this.source[i].key });
-        
+
         this.updateCache(i);
     }
-    
+
     nav(pos: number) {
         const idx = this.index + pos;
         if(idx < 0 || idx >= this.source.length)
             return;
-        
+
         this.show(idx);
     }
-    
+
     getAbsolutePath(path: string) {
         return this.$host + path;
     }
-    
+
     private updateCache(idx: number) {
         this.updateCacheItem(idx);
-        
+
         const back = 1;
         const forward = 3;
-        
+
         for(let i = idx - back; i < idx + forward; i++) {
             if(i >= 0 && i < this.source.length)
                 this.updateCacheItem(i);
         }
     }
-    
+
     private async updateCacheItem(idx: number) {
         if(this.cache[idx])
             return;
-        
+
         const item: ICachedMedia = { isLoading: true };
         Vue.set(this.cache, idx, item);
-        
+
         try {
             const key = this.source[idx].key;
             const { img, media } = await this.preloadMedia(key);
@@ -104,9 +113,9 @@ export default class MediaViewer extends Mixins(HasLifetime) {
             item.isLoading = false;
         }
     }
-    
+
     private async preloadMedia(key: string): Promise<IMedia> {
-        const media = await this.$api.getMedia(key);        
+        const media = await this.$api.getMedia(key);
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.className = 'preload-image';
@@ -116,17 +125,136 @@ export default class MediaViewer extends Mixins(HasLifetime) {
             document.body.appendChild(img);
         });
     }
-    
+
     private async clearCache() {
         for(let elem of this.cache)
             elem.img.parentElement.removeChild(elem.img);
-        
+
         this.cache = [];
     }
 
     @Watch('shown')
     onShownChanged(value: boolean) {
         document.body.classList.toggle('media-viewer-open', value);
+    }
+
+    get isNextAvailable() {
+      return this.index < this.source.length - 1;
+    }
+
+    get isPreviousAvailable() {
+      return this.index > 0;
+    }
+
+    handleTouchEvents(e: any) {
+
+        if (this.isTransitioning) {
+            return;
+        }
+
+        if (
+            (Math.abs(e.deltaX) < 8 || Math.abs(e.deltaY) - Math.abs(e.deltaX) > -1) &&
+            !this.translateX &&
+            !this.leftEdgeScale &&
+            !this.rightEdgeScale
+        ) {
+            return;
+        }
+
+        if (
+            (!this.isPreviousAvailable && e.deltaX > 0) ||
+            (!this.isNextAvailable && e.deltaX < 0)
+        ) {
+            this.updateEdgeEffect(e.deltaX, e.isFinal);
+        } else if (e.isFinal) {
+            this.handleGestureEnd();
+        } else {
+            this.handleGestureMove(e.deltaX);
+        }
+    }
+
+    handleGestureMove(deltaX: number) {
+        if (Math.abs(deltaX) > Math.abs(this.maxTranslateX)) {
+            this.maxTranslateX = deltaX;
+        }
+
+        this.translateX = deltaX;
+        this.transitionClass = "transition-initial";
+        this.transformStyle = `translateX(${deltaX}px)`;
+    }
+
+    handleGestureEnd() {
+        if (Math.abs(this.translateX) - Math.abs(this.maxTranslateX) < -1) {
+            this.transitionClass = 'transition-item';
+            this.transformStyle = 'translateX(0)';
+        } else if (this.translateX > 0) {
+            this.swipeLeft();
+        } else if (this.translateX < 0) {
+            this.swipeRight();
+        }
+    }
+
+    swipeLeft = debounce(
+    function(this: MediaViewer) {
+        if (this.isTransitioning) {
+            return;
+        }
+
+        if (!this.isPreviousAvailable) {
+            return;
+        }
+
+        this.transitionClass = "transition-item";
+        this.transformStyle = "translateX(100vw)";
+
+        const prevIndex = this.index === 0 ? this.source.length - 1 : this.index - 1;
+        this.upcomingIndex = prevIndex;
+    },
+
+    100);
+
+    swipeRight = debounce(
+        function(this: MediaViewer) {
+            if (this.isTransitioning || !this.isNextAvailable) {
+                return;
+            }
+
+            this.transitionClass = "transition-item";
+            this.transformStyle = "translateX(-100vw)";
+
+            const nextIndex =  this.index === this.source.length - 1 ? 0 : this.index + 1;
+            this.upcomingIndex = nextIndex;
+        }, 
+    100);
+
+    updateEdgeEffect(deltaX: number, isFinal: boolean) {
+        if (isFinal) {
+            this.transitionClass = "transition-edge";
+            this.leftEdgeScale = 0;
+            this.rightEdgeScale = 0;
+        } else {
+            this.transitionClass = "transition-initial";
+            const scaleVal = Math.min(0.2 + Math.abs(deltaX) / 50, 1);
+            if (deltaX > 0) {
+                this.leftEdgeScale = scaleVal;
+            }
+            if (deltaX < 0) {
+                this.rightEdgeScale = scaleVal;
+            }
+        }
+    }
+
+    updateCurrentItem() {
+      this.show(this.upcomingIndex);
+      this.resetTranslate();
+    }
+
+    resetTranslate() {
+      this.isTransitioning = false;
+      this.transitionClass = "transition-initial";
+      this.transformStyle = "translateX(0)";
+      this.translateX = 0;
+      this.maxTranslateX = 0;
     }
 }
 
@@ -142,37 +270,65 @@ interface ICachedMedia extends IMedia {
 
 <template>
     <portal to="overlay">
-        <transition name="media-viewer-modal__fade">
-            <div 
-                class="media-viewer-modal"
-                v-if="shown"
+        <div class="media-viewer-modal" v-if="shown">
+            <GlobalEvents 
+                @keydown.left="nav(-1)" 
+                @keydown.right="nav(1)" 
+                @keydown.esc="hide()"
+            ></GlobalEvents>
+            <div id="media-viewer"
+                v-hammer:swipe.left="handleTouchEvents"
+                v-hammer:pan="handleTouchEvents"
             >
-                <div 
-                    class="media-viewer-modal__backdrop clickable" 
-                    @click="hide()"
-                ></div>
-                <div 
-                    class="media-viewer-modal__content" 
-                    @mouseenter="showOverlay = true" 
-                    @mouseleave="showOverlay = false"
+                <div id="rendered-items-flexbox"
+                    :class="transitionClass" 
+                    :style="{transform: transformStyle}" 
+                    @transitionstart="isTransitioning = true" 
+                    @transitionend="updateCurrentItem"
                 >
-                    <div class="media-viewer" v-if="curr">
-                        <GlobalEvents @keydown.left="nav(-1)" @keydown.right="nav(1)" @keydown.esc="hide()"></GlobalEvents>
-                        <loading :is-loading="curr.isLoading">
-                            <div v-if="curr.media" class="media-wrapper">
-                                <img :src="getAbsolutePath(curr.media.fullPath)"
+                    <div class="rendered-item">
+                        <div class="item-content" v-if="prev">
+                            <loading :is-loading="prev.isLoading">
+                                <div v-if="prev.media" class="media-wrapper">
+                                    <img :src="getAbsolutePath(prev.media.fullPath)"
+                                        :alt="prev.media.description" />
+                                </div>
+                            </loading>
+                        </div>
+                    </div>
+                    <div class="rendered-item">
+                        <div class="item-content" v-if="curr">
+                            <loading :is-loading="curr.isLoading">
+                                <div v-if="curr.media" class="media-wrapper">
+                                    <img :src="getAbsolutePath(curr.media.fullPath)"
                                         :alt="curr.media.description" />
-                                <template v-if="showOverlay">
-                                    <a class="media-viewer__arrow media-viewer__arrow_left clickable" @click.prevent="nav(-1)" v-if="index > 0">&lt;</a>
-                                    <a class="media-viewer__arrow media-viewer__arrow_right clickable" @click.prevent="nav(1)" v-if="index < source.length - 1">&gt;</a>
-                                    <OverlayTag v-for="t in curr.media.overlayTags" :value="t" :show="true"></OverlayTag>
-                                </template>
-                            </div>
-                        </loading>
+                                </div>
+                            </loading>
+                        </div>
+                    </div>
+                    <div class="rendered-item">
+                        <div class="item-content" v-if="next">
+                            <loading :is-loading="next.isLoading">
+                                <div v-if="next.media" class="media-wrapper">
+                                    <img :src="getAbsolutePath(next.media.fullPath)"
+                                        :alt="next.media.description" />
+                                </div>
+                            </loading>
+                        </div>
                     </div>
                 </div>
+                <div class="touch-tap-left" role="button" aria-label="Previous" tabindex="0">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 10 100" height="100%" width="40px" preserveAspectRatio="none" class="left-edge-shape" :class="transitionClass" :style="{transform: 'scaleX(' + leftEdgeScale + ')'}">
+                        <path d="M0,0v100h5.2c3-14.1,4.8-31.4,4.8-50S8.2,14.1,5.2,0H0z" />
+                    </svg>
+                </div>
+                <div class="touch-tap-right" role="button" aria-label="Next" tabindex="0">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 10 100" height="100%" width="40px" preserveAspectRatio="none" class="right-edge-shape" :class="transitionClass" :style="{transform: 'scaleX(' + rightEdgeScale + ')'}">
+                        <path d="M10,100V0L4.8,0C1.8,14.1,0,31.4,0,50c0,18.6,1.8,35.9,4.8,50H10z" />
+                    </svg>
+                </div>
             </div>
-        </transition>
+        </div>
     </portal>
 </template>
 
@@ -183,95 +339,106 @@ interface ICachedMedia extends IMedia {
     @import "./node_modules/bootstrap/scss/mixins";
 
     .media-viewer-modal {
-        
         z-index: $zindex-modal;
+        background-color: rgba($dark, 0.5);
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        position: fixed;
+
         display: flex;
-        overflow: auto;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-
-        @mixin fixed () {
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            position: fixed;
-        }
-
-        @include fixed();
-        
-        &__backdrop {
-            @include fixed();
-            background: rgba($dark, 0.5);
-            z-index: $zindex-modal-backdrop;
-        }
-
-        &__content {
-            margin: auto;
-            position: relative;
-            z-index: $zindex-modal;
-        }
-
-        &__fade {
-
-            &-enter-active, 
-            &-leave-active {
-                transition: opacity 200ms cubic-bezier(.645,.045,.355,1);
-            }
-
-            &-enter, 
-            &-leave-to {
-                opacity: 0;
-            }
-        }
     }
 
-    .media-viewer {
-        max-width: 100%;
-        max-height: 100%;
-        background: $white;
-        margin: 1rem;
-        padding: 1rem;
+    #touch-container {
         position: relative;
-        border-radius: $border-radius;
-        box-shadow: $box-shadow-lg;
+        min-width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+    }
+
+    #rendered-items-flexbox {
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        min-height: fit-content;
+        width: 100vw;
+        box-sizing: border-box;
+        touch-action: pan-y; // Disables automatic browser control of touches, except vertical scrolling
+    }
+
+    .transition-initial {
+        transition: transform 0s ease,
+    }
+
+    .transition-item {
+        transition: transform 250ms cubic-bezier(0.0, 0.0, 0.2, 1); // ease-out timing function
+    }
+
+    .transition-edge {
+        transition: transform 500ms ease-out;
+    }
+
+    .rendered-item {
+        height: 100%;
+        min-height: 500px;
+        min-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .item-content {
+        min-height: 500px;
+        height: 100%;
+        width: 100vw;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         box-sizing: border-box;
 
         img {
-            max-height: 100%;
-            max-width: 100%;
-        }
-
-        &__arrow {
-            color: $white;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            font-size: 4rem;
-            opacity: 0.4;
-            display: flex;
-            padding: 0 2rem;
-            justify-content: center;
-            align-items: center;
-            
-            &:hover {
-                opacity: 1;
-                color: $white;
-                text-decoration: none;
-            }
-            
-            &_left {
-                left: 0;
-            }
-            
-            &_right {
-                right: 0;
-            }
+            width: 300px;
+            height: 300px;
         }
     }
 
-    .media-viewer-open {
-        overflow: hidden;
+    .touch-tap-left,
+    .touch-tap-right {
+        position: absolute;
+        top: 0;
+        width: 20%;
+        height: 100%;
+    }
+
+    .touch-tap-left {
+        left: 0;
+    }
+
+    .touch-tap-right {
+        right: 0;
+    }
+
+    .touch-tap-left:focus, .touch-tap-right:focus {
+        outline: none;
+    }
+
+    .left-edge-shape, .right-edge-shape {
+        position: absolute;
+        fill: white;
+        opacity: 0.3;
+    }
+
+    .left-edge-shape {
+        left: 0;
+        transform-origin: left;
+    }
+
+    .right-edge-shape {
+        right: 0;
+        transform-origin: right;
     }
 </style>

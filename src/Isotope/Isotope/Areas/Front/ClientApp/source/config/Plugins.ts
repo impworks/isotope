@@ -34,6 +34,9 @@ Vue.component('datepicker', {
 import { PopoverPlugin } from 'bootstrap-vue';
 Vue.use(PopoverPlugin);
 
+import { VueHammer } from 'vue2-hammer'
+Vue.use(VueHammer)
+
 // -----------------------------------
 // Custom components
 // -----------------------------------
