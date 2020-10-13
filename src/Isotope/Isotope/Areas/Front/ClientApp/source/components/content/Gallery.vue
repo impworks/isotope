@@ -91,77 +91,76 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
         <div class="gallery__header">
             <breadcrumbs></breadcrumbs>
         </div>
-            <simplebar v-if="!isEmpty" class="gallery__content">
-                <loading 
-                    :is-full-page="true"
-                    :is-loading="asyncState.isLoading"
+        <loading 
+            :is-full-page="true"
+            :is-loading="asyncState.isLoading"
+        >
+            <simplebar v-if="contents && !error && !isEmpty" class="gallery__content">
+                <div 
+                    class="gallery__tags"
+                    v-if="contents.tags && contents.tags.length"
                 >
-                <fragment v-if="contents">
-                    <div 
-                        class="gallery__tags"
-                        v-if="contents.tags && contents.tags.length"
+                    <a 
+                        class="gallery__tags__item clickable" 
+                        v-for="t in contents.tags" 
+                        :key="t.tag.id"
+                        @click.prevent="filterByTag(t)"
                     >
-                        <a 
-                            class="gallery__tags__item clickable" 
-                            v-for="t in contents.tags" 
-                            :key="t.tag.id"
-                            @click.prevent="filterByTag(t)"
+                        {{t.tag.caption}}
+                    </a>
+                </div>
+                <div class="gallery__grid">
+                    <div v-if="contents.subfolders && contents.subfolders.length" class="gallery__grid__row">
+                        <div
+                            class="gallery__item gallery__item_folder"
+                            v-for="f in contents.subfolders"
+                            :key="f.path"
                         >
-                            {{t.tag.caption}}
-                        </a>
-                    </div>
-                    <div class="gallery__grid">
-                        <div v-if="contents.subfolders && contents.subfolders.length" class="gallery__grid__row">
-                            <div
-                                class="gallery__item gallery__item_folder"
-                                v-for="f in contents.subfolders"
-                                :key="f.path"
+                            <a
+                                class="gallery__item__content clickable"
+                                @click.prevent="showFolder(f)"
                             >
-                                <a
-                                    class="gallery__item__content clickable"
-                                    @click.prevent="showFolder(f)"
-                                >
-                                    <div class="gallery__item__icon"></div>
-                                    <div class="gallery__item__caption">
-                                        {{f.caption}}
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                        <div v-if="contents.media && contents.media.length" class="gallery__grid__row">
-                            <div 
-                                class="gallery__item gallery__item_picture"
-                                v-for="(m, i) in contents.media"
-                                :key="m.key"
-                            >
-                                <a
-                                    class="gallery__item__content clickable"
-                                    @click.prevent="showMedia(i)"
-                                >
-                                    <div class="gallery__item__icon">
-                                        <div 
-                                            class="gallery__item__preview" 
-                                            :style="{backgroundImage: getThumbnailPath(m)}"
-                                        ></div>
-                                    </div>
-                                </a>
-                            </div>
+                                <div class="gallery__item__icon"></div>
+                                <div class="gallery__item__caption">
+                                    {{f.caption}}
+                                </div>
+                            </a>
                         </div>
                     </div>
-                </fragment>
-            </loading>
-            <div v-if="error" class="alert alert-danger ml-5 mr-5 mt-5">
-                <strong>Error</strong><br/>
-                {{error}}
-            </div>
-        </simplebar>
-        <div v-if="isEmpty" class="gallery__error">
+                    <div v-if="contents.media && contents.media.length" class="gallery__grid__row">
+                        <div 
+                            class="gallery__item gallery__item_picture"
+                            v-for="(m, i) in contents.media"
+                            :key="m.key"
+                        >
+                            <a
+                                class="gallery__item__content clickable"
+                                @click.prevent="showMedia(i)"
+                            >
+                                <div class="gallery__item__icon">
+                                    <div 
+                                        class="gallery__item__preview" 
+                                        :style="{backgroundImage: getThumbnailPath(m)}"
+                                    ></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+            </simplebar>
+        </loading>
+        <div v-if="!asyncState.isLoading && isEmpty" class="gallery__error">
             <div class="gallery__error__content">
                 <div class="gallery__error__image"></div>
                 <h3>Oops…</h3>
                 <p v-if="isFilterActive">No matching media found.</p>
                 <p v-else>This folder is empty.</p>
             </div>
+        </div>
+        <div v-if="!asyncState.isLoading && error" class="alert alert-danger ml-5 mr-5 mt-5">
+            <strong>Error</strong><br/>
+            {{error}}
         </div>
         <MediaViewer :index-feed="indexFeed" :source="contents.media" v-if="contents && contents.media && contents.media.length"></MediaViewer>
     </div>
