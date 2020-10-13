@@ -8,12 +8,11 @@ import { HasAsyncState } from "../mixins/HasAsyncState";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
-import OverlayTag from "./OverlayTag.vue";
 import debounce from 'lodash.debounce';
 import MediaContent from "./MediaContent.vue";
 
 @Component({
-    components: { MediaContent, OverlayTag }
+    components: { MediaContent }
 })
 export default class MediaViewer extends Mixins(HasLifetime) {
     @Dep('$host') $host: string;
@@ -26,7 +25,6 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     shown: boolean = false;
     index: number = null;
     cache: ICachedMedia[] = [];
-    showOverlay: boolean = false;
     upcomingIndex: number = null;
     translateX: number = 0;
     maxTranslateX: number = 0;
@@ -137,7 +135,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     }
 
     handleTouchEvents(e: any) {
-        if (this.isTransitioning) {
+        if (this.isTransitioning || e.pointerType == 'mouse') {
             return;
         }
 
@@ -246,7 +244,7 @@ interface ICachedMedia extends IMedia {
                 :style="{transform: transformStyle}" 
                 @transitionstart="isTransitioning = true" 
                 @transitionend="updateCurrentItem"
-            >
+            >  
                 <MediaContent :elem="prev"></MediaContent>
                 <MediaContent :elem="curr"></MediaContent>
                 <MediaContent :elem="next"></MediaContent>
@@ -281,14 +279,13 @@ interface ICachedMedia extends IMedia {
         position: fixed;
         
         &__content {
-            width: 100vw;
+            width: 300%;
             height: 100%;
-            position: relative;
-            justify-content: center;
-            box-sizing: border-box;
+            margin-left: -100%;
+            display: flex;
+            flex-direction: row;
             will-change: transform;
             touch-action: pan-y;
-            display: flex;
         }
     }
 
