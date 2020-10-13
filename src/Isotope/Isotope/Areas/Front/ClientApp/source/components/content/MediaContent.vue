@@ -30,7 +30,7 @@ interface ICachedMedia extends IMedia {
 
 <template>
     <div class="media-viewer__item">
-        <div class="media-content">
+        <div class="media-content" v-if="elem">
             <loading :is-loading="elem.isLoading">
                 <img 
                     v-if="elem.media"
@@ -64,7 +64,7 @@ interface ICachedMedia extends IMedia {
     }
 
     .media-content {
-
+        
         img {
             top: 0;
             left: 0;
