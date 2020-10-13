@@ -10,9 +10,10 @@ import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
 import OverlayTag from "./OverlayTag.vue";
 import debounce from 'lodash.debounce';
+import MediaContent from "./MediaContent.vue";
 
 @Component({
-    components: { OverlayTag }
+    components: { MediaContent, OverlayTag }
 })
 export default class MediaViewer extends Mixins(HasLifetime) {
     @Dep('$host') $host: string;
@@ -79,10 +80,6 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         this.show(idx);
     }
 
-    getAbsolutePath(path: string) {
-        return this.$host + path;
-    }
-
     private updateCache(idx: number) {
         this.updateCacheItem(idx);
 
@@ -108,6 +105,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
             item.img = img;
             item.media = media;
         } catch (e) {
+            debugger;
             console.log('Failed to load media!', e);
         } finally {
             item.isLoading = false;
@@ -120,7 +118,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
             const img = new Image();
             img.className = 'preload-image';
             img.onload = () => resolve({ media: media, img: img });
-            img.onerror = () => reject();
+            img.onerror = e => reject(e);
             img.src = this.$host + media.fullPath;
             document.body.appendChild(img);
         });
@@ -138,16 +136,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         document.body.classList.toggle('media-viewer-open', value);
     }
 
-    get isNextAvailable() {
-      return this.index < this.source.length - 1;
-    }
-
-    get isPreviousAvailable() {
-      return this.index > 0;
-    }
-
     handleTouchEvents(e: any) {
-
         if (this.isTransitioning) {
             return;
         }
@@ -162,8 +151,8 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         }
 
         if (
-            (!this.isPreviousAvailable && e.deltaX > 0) ||
-            (!this.isNextAvailable && e.deltaX < 0)
+            (!this.prev && e.deltaX > 0) ||
+            (!this.next && e.deltaX < 0)
         ) {
             this.updateEdgeEffect(e.deltaX, e.isFinal);
         } else if (e.isFinal) {
@@ -187,45 +176,20 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         if (Math.abs(this.translateX) - Math.abs(this.maxTranslateX) < -1) {
             this.transitionClass = 'transition-item';
             this.transformStyle = 'translateX(0)';
-        } else if (this.translateX > 0) {
-            this.swipeLeft();
-        } else if (this.translateX < 0) {
-            this.swipeRight();
+        } else if (this.translateX !== 0) {
+            this.swipe(Math.sign(this.translateX));
         }
     }
-
-    swipeLeft = debounce(
-    function(this: MediaViewer) {
-        if (this.isTransitioning) {
-            return;
-        }
-
-        if (!this.isPreviousAvailable) {
+    
+    swipe(dir: number) {
+        if (this.isTransitioning || !this.cache[this.index - dir]) {
             return;
         }
 
         this.transitionClass = "transition-item";
-        this.transformStyle = "translateX(100vw)";
-
-        const prevIndex = this.index === 0 ? this.source.length - 1 : this.index - 1;
-        this.upcomingIndex = prevIndex;
-    },
-
-    100);
-
-    swipeRight = debounce(
-        function(this: MediaViewer) {
-            if (this.isTransitioning || !this.isNextAvailable) {
-                return;
-            }
-
-            this.transitionClass = "transition-item";
-            this.transformStyle = "translateX(-100vw)";
-
-            const nextIndex =  this.index === this.source.length - 1 ? 0 : this.index + 1;
-            this.upcomingIndex = nextIndex;
-        }, 
-    100);
+        this.transformStyle = `translateX(${dir * 100}vw)`;
+        this.upcomingIndex = Math.min(Math.max(this.index - dir, 0), this.source.length - 1);
+    }
 
     updateEdgeEffect(deltaX: number, isFinal: boolean) {
         if (isFinal) {
@@ -245,16 +209,13 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     }
 
     updateCurrentItem() {
-      this.show(this.upcomingIndex);
-      this.resetTranslate();
-    }
-
-    resetTranslate() {
-      this.isTransitioning = false;
-      this.transitionClass = "transition-initial";
-      this.transformStyle = "translateX(0)";
-      this.translateX = 0;
-      this.maxTranslateX = 0;
+        this.isTransitioning = false;
+        this.transitionClass = "transition-initial";
+        this.transformStyle = "translateX(0)";
+        this.translateX = 0;
+        this.maxTranslateX = 0;
+        
+        this.show(this.upcomingIndex);
     }
 }
 
@@ -286,30 +247,9 @@ interface ICachedMedia extends IMedia {
                 @transitionstart="isTransitioning = true" 
                 @transitionend="updateCurrentItem"
             >
-                <div class="media-viewer__content__item">
-                    <div v-if="prev">
-                        <loading :is-loading="prev.isLoading">
-                            <img :src="getAbsolutePath(prev.media.fullPath)"
-                                :alt="prev.media.description" />
-                        </loading>
-                    </div>
-                </div>
-                <div class="media-viewer__content__item">
-                    <div v-if="curr">
-                        <loading :is-loading="curr.isLoading">
-                            <img :src="getAbsolutePath(curr.media.fullPath)"
-                                :alt="curr.media.description" />
-                        </loading>
-                    </div>
-                </div>
-                <div class="media-viewer__content__item">
-                    <div v-if="next">
-                        <loading :is-loading="next.isLoading">
-                            <img :src="getAbsolutePath(next.media.fullPath)"
-                                :alt="next.media.description" />
-                        </loading>
-                    </div>
-                </div>
+                <MediaContent :elem="prev"></MediaContent>
+                <MediaContent :elem="curr"></MediaContent>
+                <MediaContent :elem="next"></MediaContent>
             </div>
             <div class="touch-tap-left" role="button" aria-label="Previous" tabindex="0">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 10 100" height="100%" width="40px" preserveAspectRatio="none" class="left-edge-shape" :class="transitionClass" :style="{transform: 'scaleX(' + leftEdgeScale + ')'}">
@@ -339,7 +279,7 @@ interface ICachedMedia extends IMedia {
         width: 100%;
         height: 100%;
         position: fixed;
-
+        
         &__content {
             width: 100vw;
             height: 100%;
@@ -349,30 +289,11 @@ interface ICachedMedia extends IMedia {
             will-change: transform;
             touch-action: pan-y;
             display: flex;
-
-            &__item {
-                height: 100%;
-                min-width: 100vw;
-                position: relative;
-
-                img {
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    margin: auto;
-                    max-width: 100%;
-                    max-height: 100%;
-                    position: absolute;
-                    vertical-align: bottom;
-                }
-            }
         }
-        
     }
 
     .transition-initial {
-        transition: transform 0s ease,
+        transition: transform 0s ease;
     }
 
     .transition-item {

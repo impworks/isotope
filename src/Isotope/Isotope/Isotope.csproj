@@ -49,6 +49,7 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\ApiService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\AuthService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\FilterStateService.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\utils\DebounceDecorator.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Folder.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContents.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContentsRequest.ts" />
