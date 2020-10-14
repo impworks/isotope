@@ -13,7 +13,7 @@ export default class MediaContent extends Vue {
     @Dep('$host') $host: string;
     @Prop({ required: true }) elem: ICachedMedia;
 
-    maxHeight: number = null;
+    maxHeight: number = 0;
     showOverlay: boolean = false;
 
     $refs: {
