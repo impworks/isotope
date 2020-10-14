@@ -3,7 +3,8 @@ import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import { Media } from "../../vms/Media";
 import { Dep } from "../../utils/VueInjectDecorator";
 import OverlayTag from "./OverlayTag.vue";
-import { Throttle } from "../../utils/ThrottleDecorator";
+import { Bind } from 'lodash-decorators';
+import { Debounce } from 'lodash-decorators';
 
 @Component({
     components: { OverlayTag }
@@ -31,15 +32,18 @@ export default class MediaContent extends Vue {
         window.removeEventListener('resize', this.resizeHandler);
     }
 
+    @Debounce(50)
+    @Bind()
     resizeHandler() {
         if (this.$refs.card) {
+            const imageHeight = window.innerHeight;
             const windowHeight = window.innerHeight;
             const cardStyles = getComputedStyle(this.$refs.card, null);
             const paddingSize = parseFloat(cardStyles.paddingTop) + parseFloat(cardStyles.paddingBottom);
             const marginSize = parseFloat(cardStyles.marginTop) + parseFloat(cardStyles.marginBottom);
 
-            if (windowHeight >= this.elem.media.height + marginSize + paddingSize) {
-                return;
+            if (windowHeight >= imageHeight + marginSize + paddingSize) {
+                this.maxHeight = imageHeight;
             }
             
             this.maxHeight = windowHeight - paddingSize - marginSize;
