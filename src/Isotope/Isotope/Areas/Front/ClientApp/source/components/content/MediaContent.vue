@@ -36,7 +36,7 @@ export default class MediaContent extends Vue {
     @Bind()
     resizeHandler() {
         if (this.$refs.card) {
-            const imageHeight = window.innerHeight;
+            const imageHeight = this.elem.media.height;
             const windowHeight = window.innerHeight;
             const cardStyles = getComputedStyle(this.$refs.card, null);
             const paddingSize = parseFloat(cardStyles.paddingTop) + parseFloat(cardStyles.paddingBottom);
