@@ -8,7 +8,6 @@ import { HasAsyncState } from "../mixins/HasAsyncState";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
-import debounce from 'lodash.debounce';
 import MediaContent from "./MediaContent.vue";
 
 @Component({
@@ -270,54 +269,18 @@ interface ICachedMedia extends IMedia {
             transition: transform 0s linear;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
+
+            &.transition-initial {
+                transition: transform 0s linear;
+            }
+
+            &.transition-item {
+                transition: transform 250ms cubic-bezier(0.0, 0.0, 0.2, 1); // ease-out timing function
+            }
+
+            &.transition-edge {
+                transition: transform 500ms ease-out;
+            }
         }
-    }
-
-    .transition-initial {
-        transition: transform 0s linear;
-    }
-
-    .transition-item {
-        transition: transform 250ms cubic-bezier(0.0, 0.0, 0.2, 1); // ease-out timing function
-    }
-
-    .transition-edge {
-        transition: transform 500ms ease-out;
-    }
-
-    .touch-tap-left,
-    .touch-tap-right {
-        position: absolute;
-        top: 0;
-        width: 20%;
-        height: 100%;
-    }
-
-    .touch-tap-left {
-        left: 0;
-    }
-
-    .touch-tap-right {
-        right: 0;
-    }
-
-    .touch-tap-left:focus, .touch-tap-right:focus {
-        outline: none;
-    }
-
-    .left-edge-shape, .right-edge-shape {
-        position: absolute;
-        fill: white;
-        opacity: 0.3;
-    }
-
-    .left-edge-shape {
-        left: 0;
-        transform-origin: left;
-    }
-
-    .right-edge-shape {
-        right: 0;
-        transform-origin: right;
     }
 </style>
