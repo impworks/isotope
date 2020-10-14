@@ -44,9 +44,9 @@ export default class MediaContent extends Vue {
 
             if (windowHeight >= imageHeight + marginSize + paddingSize) {
                 this.maxHeight = imageHeight;
+            } else {
+                this.maxHeight = windowHeight - paddingSize - marginSize;
             }
-            
-            this.maxHeight = windowHeight - paddingSize - marginSize;
         }
     }
 
