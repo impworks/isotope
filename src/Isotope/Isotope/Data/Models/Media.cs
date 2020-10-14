@@ -53,6 +53,16 @@ namespace Isotope.Data.Models
         /// Rectangle of the image portion used for a thumbnail.
         /// </summary>
         public Rect ThumbnailRect { get; set; }
+        
+        /// <summary>
+        /// Media width (original size in pixels).
+        /// </summary>
+        public int? Width { get; set; }
+        
+        /// <summary>
+        /// Media height (original size in pixels).
+        /// </summary>
+        public int? Height { get; set; }
 
         /// <summary>
         /// List of entities tagged on this image.

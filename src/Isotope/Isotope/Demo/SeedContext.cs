@@ -92,6 +92,8 @@ namespace Isotope.Demo
                 Order = order,
                 Path = $"/@media/{folder.Key}/{key}.jpg",
                 ThumbnailRect = GetThumbnailRect(srcImg),
+                Width = srcImg.Width,
+                Height = srcImg.Height,
                 Type = MediaType.Photo,
                 Tags = new List<MediaTagBinding>()
             };

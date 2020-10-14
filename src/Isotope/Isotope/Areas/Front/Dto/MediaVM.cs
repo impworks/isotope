@@ -43,6 +43,16 @@ namespace Isotope.Areas.Front.Dto
         public string Description { get; set; }
         
         /// <summary>
+        /// Original media width in pixels.
+        /// </summary>
+        public int? Width { get; set; }
+        
+        /// <summary>
+        /// Original media height in pixels.
+        /// </summary>
+        public int? Height { get; set; }
+        
+        /// <summary>
         /// Tags to be displayed over the image.
         /// </summary>
         public TagBindingVM[] OverlayTags { get; set; }
@@ -61,6 +71,8 @@ namespace Isotope.Areas.Front.Dto
                   .Map(x => x.OriginalPath, x => x.Path)
                   .Map(x => x.Date, x => TryFormatDate(x.Date))
                   .Map(x => x.Description, x => x.Description)
+                  .Map(x => x.Width, x => x.Width)
+                  .Map(x => x.Height, x => x.Height)
                   .Map(x => x.OverlayTags, x => x.Tags.Where(y => y.Location != null))
                   .Map(x => x.ExtraTags, x => x.Tags.Where(y => y.Location == null && y.Type != TagBindingType.Inherited));
         }

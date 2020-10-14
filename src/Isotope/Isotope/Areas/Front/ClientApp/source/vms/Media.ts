@@ -8,6 +8,8 @@ export interface Media {
     originalPath: string;
     date: string;
     description: string;
+    width?: number;
+    height?: number;
     overlayTags: TagBindingWithLocation[];
     extraTags: TagBindingWithType[];
 }

@@ -234,7 +234,9 @@ namespace Isotope.Data.Migrations
                     ThumbnailRect_X = table.Column<double>(nullable: true),
                     ThumbnailRect_Y = table.Column<double>(nullable: true),
                     ThumbnailRect_Width = table.Column<double>(nullable: true),
-                    ThumbnailRect_Height = table.Column<double>(nullable: true)
+                    ThumbnailRect_Height = table.Column<double>(nullable: true),
+                    Width = table.Column<int>(nullable: true),
+                    Height = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
