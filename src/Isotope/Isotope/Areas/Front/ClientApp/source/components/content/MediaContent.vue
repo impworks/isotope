@@ -12,7 +12,7 @@ export default class MediaContent extends Vue {
     @Dep('$host') $host: string;
     @Prop({ required: true }) elem: ICachedMedia;
 
-    height: number = null;
+    maxHeight: number = null;
     showOverlay: boolean = false;
 
     $refs: {
@@ -33,11 +33,16 @@ export default class MediaContent extends Vue {
 
     resizeHandler() {
         if (this.$refs.card) {
+            const windowHeight = window.innerHeight;
             const cardStyles = getComputedStyle(this.$refs.card, null);
             const paddingSize = parseFloat(cardStyles.paddingTop) + parseFloat(cardStyles.paddingBottom);
             const marginSize = parseFloat(cardStyles.marginTop) + parseFloat(cardStyles.marginBottom);
 
-            this.height = window.innerHeight - paddingSize - marginSize;
+            if (windowHeight >= this.elem.media.height + marginSize + paddingSize) {
+                return;
+            }
+            
+            this.maxHeight = windowHeight - paddingSize - marginSize;
         }
     }
 
@@ -75,7 +80,7 @@ interface ICachedMedia extends IMedia {
                             I am overlay!
                         </div>
                         <img 
-                            :style="{maxHeight : height + 'px'}"
+                            :style="{maxHeight : maxHeight + 'px'}"
                             v-if="elem.media"
                             :src="getAbsolutePath(elem.media.fullPath)"
                             :alt="elem.media.description" 
