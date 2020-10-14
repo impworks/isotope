@@ -48,23 +48,20 @@ interface ICachedMedia extends IMedia {
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";
 
-    .media-viewer {
+    .media-viewer__item {
+        width: 100%;
+        height: 100%;
+        min-width: 100%;
+        box-sizing: border-box;
+        position: relative;
 
-        &__item {
-            width: 100%;
-            height: 100%;
-            margin: auto;
-            flex-grow: 1;
-            flex-basis: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
+        -webkit-transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
     }
 
     .media-content {
-        
+        will-change: contents;
+
         img {
             top: 0;
             left: 0;
@@ -74,7 +71,6 @@ interface ICachedMedia extends IMedia {
             max-width: 100%;
             max-height: 100%;
             position: absolute;
-            vertical-align: bottom;
         }
     }
 </style>

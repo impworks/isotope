@@ -65,6 +65,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
 
         this.shown = true;
         this.index = i;
+        this.upcomingIndex = null;
         this.$filter.update('viewer', { mediaKey: this.source[i].key });
 
         this.updateCache(i);
@@ -147,14 +148,9 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         ) {
             return;
         }
-
-        if (
-            (!this.prev && e.deltaX > 0) ||
-            (!this.next && e.deltaX < 0)
-        ) {
-            this.updateEdgeEffect(e.deltaX, e.isFinal);
-        } else if (e.isFinal) {
-            this.handleGestureEnd();
+        
+        if (e.isFinal) {
+            this.handleGestureEnd(e.deltaX);
         } else {
             this.handleGestureMove(e.deltaX);
         }
@@ -165,13 +161,22 @@ export default class MediaViewer extends Mixins(HasLifetime) {
             this.maxTranslateX = deltaX;
         }
 
+        const sign = Math.sign(this.translateX);
+        const px = ((!this.prev && deltaX > 0) || (!this.next && deltaX < 0)) 
+            ? sign * Math.sqrt(Math.abs(deltaX)) 
+            : deltaX;
+
         this.translateX = deltaX;
         this.transitionClass = "transition-initial";
-        this.transformStyle = `translateX(${deltaX}px)`;
+        this.transformStyle = `translateX(${px}px)`;
     }
 
-    handleGestureEnd() {
-        if (Math.abs(this.translateX) - Math.abs(this.maxTranslateX) < -1) {
+    handleGestureEnd(deltaX: number) {
+        if (
+            (!this.prev && deltaX > 0) ||
+            (!this.next && deltaX < 0) ||
+            (Math.abs(this.translateX) - Math.abs(this.maxTranslateX) < -1)
+        ) {
             this.transitionClass = 'transition-item';
             this.transformStyle = 'translateX(0)';
         } else if (this.translateX !== 0) {
@@ -189,31 +194,16 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         this.upcomingIndex = Math.min(Math.max(this.index - dir, 0), this.source.length - 1);
     }
 
-    updateEdgeEffect(deltaX: number, isFinal: boolean) {
-        if (isFinal) {
-            this.transitionClass = "transition-edge";
-            this.leftEdgeScale = 0;
-            this.rightEdgeScale = 0;
-        } else {
-            this.transitionClass = "transition-initial";
-            const scaleVal = Math.min(0.2 + Math.abs(deltaX) / 50, 1);
-            if (deltaX > 0) {
-                this.leftEdgeScale = scaleVal;
-            }
-            if (deltaX < 0) {
-                this.rightEdgeScale = scaleVal;
-            }
-        }
-    }
-
     updateCurrentItem() {
         this.isTransitioning = false;
         this.transitionClass = "transition-initial";
         this.transformStyle = "translateX(0)";
         this.translateX = 0;
         this.maxTranslateX = 0;
-        
-        this.show(this.upcomingIndex);
+
+        if (this.upcomingIndex !== null && this.upcomingIndex !== this.index) {
+            this.show(this.upcomingIndex);
+        }
     }
 }
 
@@ -238,7 +228,7 @@ interface ICachedMedia extends IMedia {
             v-if="shown"
             v-hammer:swipe.left="handleTouchEvents"
             v-hammer:pan="handleTouchEvents"
-        >
+        >   
             <div class="media-viewer__content"
                 :class="transitionClass" 
                 :style="{transform: transformStyle}" 
@@ -248,16 +238,6 @@ interface ICachedMedia extends IMedia {
                 <MediaContent :elem="prev"></MediaContent>
                 <MediaContent :elem="curr"></MediaContent>
                 <MediaContent :elem="next"></MediaContent>
-            </div>
-            <div class="touch-tap-left" role="button" aria-label="Previous" tabindex="0">
-                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 10 100" height="100%" width="40px" preserveAspectRatio="none" class="left-edge-shape" :class="transitionClass" :style="{transform: 'scaleX(' + leftEdgeScale + ')'}">
-                    <path d="M0,0v100h5.2c3-14.1,4.8-31.4,4.8-50S8.2,14.1,5.2,0H0z" />
-                </svg>
-            </div>
-            <div class="touch-tap-right" role="button" aria-label="Next" tabindex="0">
-                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 10 100" height="100%" width="40px" preserveAspectRatio="none" class="right-edge-shape" :class="transitionClass" :style="{transform: 'scaleX(' + rightEdgeScale + ')'}">
-                    <path d="M10,100V0L4.8,0C1.8,14.1,0,31.4,0,50c0,18.6,1.8,35.9,4.8,50H10z" />
-                </svg>
             </div>
         </div>
     </portal>
@@ -274,23 +254,27 @@ interface ICachedMedia extends IMedia {
         background-color: rgba($dark, 0.5);
         top: 0;
         left: 0;
-        width: 100%;
         height: 100%;
-        position: fixed;
+        width: 100%;
+        position: absolute;
+        overflow: hidden;
         
         &__content {
-            width: 300%;
-            height: 100%;
-            margin-left: -100%;
             display: flex;
-            flex-direction: row;
-            will-change: transform;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
             touch-action: pan-y;
+            will-change: transform;
+            transition: transform 0s linear;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
     }
 
     .transition-initial {
-        transition: transform 0s ease;
+        transition: transform 0s linear;
     }
 
     .transition-item {
