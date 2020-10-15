@@ -50,8 +50,6 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     mounted() {
         this.observe(this.indexFeed, x => this.show(x));
         this.observe(this.$filter.onStateChanged, x => x.source === 'viewer' || this.hide());
-
-        this.show(2)
     }
 
     hide() {
