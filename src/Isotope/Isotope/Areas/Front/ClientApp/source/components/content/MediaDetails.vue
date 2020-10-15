@@ -1,0 +1,139 @@
+<script lang="ts">
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Bind } from 'lodash-decorators';
+import { Debounce } from 'lodash-decorators';
+import { Media } from "../../vms/Media";
+
+@Component
+export default class MediaDetails extends Vue {
+    @Prop({ required: true }) media: Media;
+    
+    isOpen: boolean = false;
+    height: number = 0;
+
+    $refs: {
+        button: HTMLElement,
+        content: HTMLElement
+    }
+
+    mounted () {
+        this.height = this.$refs.button.clientHeight;
+
+        window.addEventListener("resize", this.resizeHandler);
+    }
+
+    beforeDestroy() {
+        window.removeEventListener('resize', this.resizeHandler);
+    }
+
+    countHeight() {
+        this.height = this.isOpen 
+            ? this.$refs.button.clientHeight + this.$refs.content.clientHeight
+            : this.$refs.button.clientHeight;
+    }
+
+    @Debounce(50)
+    @Bind()
+    resizeHandler() {
+        this.countHeight();
+    }
+
+    @Watch('isOpen')
+    onElemChanged() {
+        this.countHeight();
+    }
+}
+</script>
+
+<template>
+    <div 
+        class="media-details"
+        :style="{height: height + 'px'}" 
+        :class="{ 'media-details_open': isOpen }"
+    >
+        <div class="media-details__header">
+            <button 
+                ref="button"
+                class="media-details__button"
+                @click.prevent="isOpen = !isOpen"
+            >
+                <div class="media-details__button__caption">
+                    Details
+                </div>
+                <div class="media-details__button__arrow">
+                    <i class="icon icon-arrow"></i>
+                </div>
+            </button>
+        </div>
+        <div 
+            ref="content"
+            class="media-details__content"
+        >
+            <span>Growable details block</span>
+        </div>
+    </div>
+</template>
+
+<style lang="scss">
+    @import "../../../styles/variables";
+    @import "./node_modules/bootstrap/scss/functions";
+    @import "./node_modules/bootstrap/scss/variables";
+    @import "./node_modules/bootstrap/scss/mixins";
+
+    .media-details {
+        left: 0;
+        bottom: 0;
+        z-index: 2;
+        position: absolute;
+        overflow: hidden;
+        min-height: 2.5rem;
+        color: $light;
+        min-width: 50%;
+        transition: height 300ms cubic-bezier(.645,.045,.355,1);
+
+        $background: rgba(0,0,0, 0.7);
+
+        &_open {
+            z-index: $zindex-tooltip;
+
+            .media-details__button {
+                opacity: 1;
+            }
+
+            .media-details__button__arrow {
+                transform: rotate(180deg);
+            }
+        }
+
+        &__button {
+            margin: 0;
+            border: 0;
+            opacity: 0.6;
+            color: $light;
+            display: flex;
+            flex-direction: row;
+            padding: 0.5rem 1rem;
+            border-radius: $border-radius $border-radius 0 0;
+            background-color: $background;
+            transition: opacity 200ms linear;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            &__caption {
+                padding-right: 1rem;
+            }
+
+            &__arrow {
+                transition: transform 150ms ease;
+            }
+        }
+
+        &__content {
+            padding: 1rem;
+            border-radius: 0 $border-radius 0 0;
+            background-color: $background;
+        }
+    }
+</style>

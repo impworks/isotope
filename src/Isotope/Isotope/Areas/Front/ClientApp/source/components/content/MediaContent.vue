@@ -3,11 +3,12 @@ import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import { Media } from "../../vms/Media";
 import { Dep } from "../../utils/VueInjectDecorator";
 import OverlayTag from "./OverlayTag.vue";
+import MediaDetails from "./MediaDetails.vue";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 
 @Component({
-    components: { OverlayTag }
+    components: { OverlayTag, MediaDetails }
 })
 export default class MediaContent extends Vue {
     @Dep('$host') $host: string;
@@ -98,7 +99,7 @@ interface ICachedMedia extends IMedia {
                     <fragment v-if="!elem.isLoading">
                         <div 
                             class="media-content__overlay"
-                            v-if="hasOverlay && elem.media && !isTransitioning" 
+                            v-if="hasOverlay && elem.media" 
                         >
                             <button 
                                 class="media-content__nav media-content__nav_left clickable" 
@@ -114,12 +115,15 @@ interface ICachedMedia extends IMedia {
                             >
                                 <i class="icon icon-slider-arrow"></i>
                             </button>
-                            <OverlayTag 
+                            <overlay-tag
                                 v-for="t in elem.media.overlayTags"
                                 :key="t.id"
                                 :value="t" 
                                 :show="true"
-                            ></OverlayTag>
+                            ></overlay-tag>
+                            <media-details
+                                :media="elem.media"
+                            ></media-details>
                         </div>
                         <img 
                             v-if="elem.media"
@@ -202,7 +206,6 @@ interface ICachedMedia extends IMedia {
 
                 @include media-breakpoint-up(md) {
                     opacity: 1;
-                    visibility: visible;
                 }
             }
         }
@@ -294,8 +297,7 @@ interface ICachedMedia extends IMedia {
 
         &__overlay {
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 200ms ease;
+            transition: opacity 300ms linear;
 
             @include position-absolute();
         }
