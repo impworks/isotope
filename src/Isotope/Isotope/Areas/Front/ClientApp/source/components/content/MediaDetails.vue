@@ -32,6 +32,14 @@ export default class MediaDetails extends Vue {
             : this.$refs.button.clientHeight;
     }
 
+    get hasDetails(): boolean {
+        if (this.media.date != null || this.media.description != null || this.media.extraTags.length > 0 ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @Debounce(50)
     @Bind()
     resizeHandler() {
@@ -39,7 +47,7 @@ export default class MediaDetails extends Vue {
     }
 
     @Watch('isOpen')
-    onElemChanged() {
+    onOpenChanged() {
         this.countHeight();
     }
 }
@@ -47,6 +55,7 @@ export default class MediaDetails extends Vue {
 
 <template>
     <div 
+        v-show="hasDetails"
         class="media-details"
         :style="{height: height + 'px'}" 
         :class="{ 'media-details_open': isOpen }"
@@ -69,7 +78,21 @@ export default class MediaDetails extends Vue {
             ref="content"
             class="media-details__content"
         >
-            <span>Growable details block</span>
+            <div v-if="media.date">{{media.date}}</div>
+            <div v-if="media.description">{{media.description}}</div>
+            <div 
+                class="media-details__tags"
+                v-if="media.extraTags.length"
+            >
+                <a 
+                    class="media-details__tags__item clickable" 
+                    v-for="t in media.extraTags" 
+                    :key="t.tag.id"
+                    @click.prevent="filterByTag(t)"
+                >
+                    {{t.tag.caption}}
+                </a>
+            </div>
         </div>
     </div>
 </template>
@@ -84,11 +107,12 @@ export default class MediaDetails extends Vue {
         left: 0;
         bottom: 0;
         z-index: 2;
-        position: absolute;
-        overflow: hidden;
-        min-height: 2.5rem;
         color: $light;
-        min-width: 50%;
+        min-width: 30%;
+        max-width: 100%;
+        overflow: hidden;
+        position: absolute;
+        min-height: 2.5rem;
         transition: height 300ms cubic-bezier(.645,.045,.355,1);
 
         $background: rgba(0,0,0, 0.7);
@@ -108,7 +132,7 @@ export default class MediaDetails extends Vue {
         &__button {
             margin: 0;
             border: 0;
-            opacity: 0.6;
+            opacity: 0.7;
             color: $light;
             display: flex;
             flex-direction: row;
@@ -119,6 +143,10 @@ export default class MediaDetails extends Vue {
 
             &:hover {
                 opacity: 1;
+            }
+
+            &:focus {
+                outline: none;
             }
 
             &__caption {
@@ -134,6 +162,26 @@ export default class MediaDetails extends Vue {
             padding: 1rem;
             border-radius: 0 $border-radius 0 0;
             background-color: $background;
+        }
+
+        &__tags {
+            font-size: 0;
+
+            &__item {
+                color: $white;
+                font-size: 1rem;
+                padding: 0 0.5rem;
+                margin: 0.5rem 0.5rem 0 0;
+                display: inline-block;
+                border-radius: $border-radius;
+                background-color: $primary;
+
+                &:hover {
+                    color: $white;
+                    text-decoration: none;
+                    background-color: darken($primary, 3%);
+                }
+            }
         }
     }
 </style>
