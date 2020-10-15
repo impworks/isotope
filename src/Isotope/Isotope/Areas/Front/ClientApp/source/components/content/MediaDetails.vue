@@ -3,10 +3,15 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { Media } from "../../vms/Media";
+import { Dep } from "../../utils/VueInjectDecorator";
+import { FilterStateService } from "../../services/FilterStateService";
+import { SearchMode } from "../../vms/SearchMode";
+import { TagBinding } from "../../vms/TagBinding";
 
 @Component
 export default class MediaDetails extends Vue {
     @Prop({ required: true }) media: Media;
+    @Dep('$filter') $filter: FilterStateService;
     
     isOpen: boolean = false;
     height: number = 0;
@@ -38,6 +43,20 @@ export default class MediaDetails extends Vue {
         } else {
             return false;
         }
+    }
+
+    filterByTag(tag: TagBinding) {
+        this.$filter.update(
+            'tag', 
+            {
+                folder: '/',
+                tags: [ tag.id ],
+                dateFrom: null,
+                dateTo: null,
+                mediaKey: null,
+                searchMode: SearchMode.CurrentFolderAndSubfolders
+            }
+        );
     }
 
     @Debounce(50)
