@@ -231,6 +231,8 @@ interface ICachedMedia extends IMedia {
             <div class="media-viewer"
                 v-if="shown"
                 v-hammer:pan="handleTouchEvents"
+                v-hammer:swipe.left="handleTouchEvents"
+                v-hammer:swipe.right="handleTouchEvents"
             >   
                 <div class="media-viewer__content"
                     :class="transitionClass" 
