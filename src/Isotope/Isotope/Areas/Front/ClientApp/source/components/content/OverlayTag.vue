@@ -51,21 +51,26 @@ export default class OverlayTag extends Vue {
 <template>
     <fragment>
         <div class="overlay-tag tooltip-target" :style="style" :id="id"></div>
-        <b-popover :target="id" placement="bottom" container="body" triggers="hover">
+        <b-popover :target="id" placement="bottom" :container="id" triggers="hover">
             <a v-if="hasFilter" class="clickable" @click.prevent="filterByTag()">{{value.tag.caption}}</a>
             <span v-if="!hasFilter">{{value.tag.caption}}</span>
         </b-popover>
     </fragment>
 </template>
 
-<style lang="scss" scoped>
-.overlay-tag {
-    position: absolute;
-    border: 2px #ffffff solid;
-    opacity: 0.2;
-    
-    &:hover {
-        opacity: 0.4;
+<style lang="scss">
+    @import "../../../styles/variables";
+    @import "./node_modules/bootstrap/scss/functions";
+    @import "./node_modules/bootstrap/scss/variables";
+    @import "./node_modules/bootstrap/scss/mixins";
+
+    .overlay-tag {
+        position: absolute;
+        border: 2px solid rgba($white, 0.2);
+        transition: border-color 200ms ease;
+        
+        &:hover {
+            border-color: rgba($white, 0.5);
+        }
     }
-}
 </style>

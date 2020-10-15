@@ -12,12 +12,18 @@ import { Debounce } from 'lodash-decorators';
 export default class MediaContent extends Vue {
     @Dep('$host') $host: string;
     @Prop({ required: true }) elem: ICachedMedia;
+    @Prop({ required: false }) isFirst: boolean;
+    @Prop({ required: false }) isLast: boolean;
+    @Prop({ required: false }) hasOverlay: boolean;
 
     maxHeight: number = 0;
+    maxWidth: number = 0;
     showOverlay: boolean = false;
+    isOverlayVisible: boolean = false;
 
     $refs: {
-        card: HTMLElement
+        card: HTMLElement,
+        wrapper: HTMLElement
     }
 
     getAbsolutePath(path: string) {
@@ -26,22 +32,32 @@ export default class MediaContent extends Vue {
 
     mounted () {
         window.addEventListener("resize", this.resizeHandler);
+        this.conutMaxHeight();
     }
 
     beforeDestroy() {
         window.removeEventListener('resize', this.resizeHandler);
     }
 
+    nav(pos: number) {
+        this.$emit('nav', pos);
+    }
+
     @Debounce(50)
     @Bind()
     resizeHandler() {
-        if (this.$refs.card) {
+        this.conutMaxHeight();
+    }
+
+    conutMaxHeight () {
+        if (this.$refs.card && this.$refs.wrapper && this.elem && this.elem.media) {
             const imageHeight = this.elem.media.height;
             const windowHeight = window.innerHeight;
             const cardStyles = getComputedStyle(this.$refs.card, null);
+            const wrapperStyles = getComputedStyle(this.$refs.wrapper, null);
             const paddingSize = parseFloat(cardStyles.paddingTop) + parseFloat(cardStyles.paddingBottom);
-            const marginSize = parseFloat(cardStyles.marginTop) + parseFloat(cardStyles.marginBottom);
-
+            const marginSize = parseFloat(wrapperStyles.paddingTop) + parseFloat(wrapperStyles.paddingBottom);
+            
             if (windowHeight >= imageHeight + marginSize + paddingSize) {
                 this.maxHeight = imageHeight;
             } else {
@@ -50,11 +66,10 @@ export default class MediaContent extends Vue {
         }
     }
 
+    @Watch('elem')
     @Watch('elem.isLoading')
-    onLoaded(value: boolean) {
-        if (!value) {
-            this.resizeHandler();
-        }
+    onElemChanged(value: boolean) {
+        this.conutMaxHeight();
     }
 }
 
@@ -71,27 +86,54 @@ interface ICachedMedia extends IMedia {
 <template>
     <div class="media-viewer__item">
         <div 
+            ref="wrapper"
             class="media-content" 
             v-if="elem"
-        >
-            <div class="media-content__card" ref="card">
-                <loading 
-                    :is-loading="elem.isLoading"
-                    :is-full-page="true"
-                >
-                    <div class="media-content__wrapper">
-                        <div class="media-content__wrapper__overlay">
-                            I am overlay!
+        >   
+            <div 
+                ref="card"
+                class="media-content__card" 
+            >
+                <div class="media-content__wrapper">
+                    <fragment v-if="!elem.isLoading">
+                        <div 
+                            class="media-content__overlay"
+                            v-if="hasOverlay && elem.media && !isTransitioning" 
+                        >
+                            <button 
+                                class="media-content__nav media-content__nav_left clickable" 
+                                v-if="!isFirst"
+                                @click.prevent="nav(-1)"
+                            >
+                                <i class="icon icon-slider-arrow"></i>
+                            </button>
+                            <button 
+                                class="media-content__nav media-content__nav_right clickable" 
+                                v-if="!isLast"
+                                @click.prevent="nav(1)"
+                            >
+                                <i class="icon icon-slider-arrow"></i>
+                            </button>
+                            <OverlayTag 
+                                v-for="t in elem.media.overlayTags"
+                                :key="t.id"
+                                :value="t" 
+                                :show="true"
+                            ></OverlayTag>
                         </div>
                         <img 
-                            :style="{maxHeight : maxHeight + 'px'}"
                             v-if="elem.media"
                             :src="getAbsolutePath(elem.media.fullPath)"
                             :alt="elem.media.description" 
+                            :style="{maxHeight : maxHeight + 'px'}"
                         />
-                    </div>
-                </loading>
+                    </fragment>
+                </div>
             </div>
+            <div 
+                class="media-content__close clickable"
+                @click.prevent="$emit('close')"
+            ></div>
         </div>
     </div>
 </template>
@@ -116,49 +158,156 @@ interface ICachedMedia extends IMedia {
         display: flex;
         width: 100%;
         height: 100%;
+        position: relative;
         align-items: center;
         justify-content: center;
         will-change: contents;
 
+        @include media-breakpoint-down(sm) {
+            padding: 0.5rem;
+        }
+
+        @include media-breakpoint-up(md) {
+            padding: 1rem;
+        }
+
+        @mixin position-absolute() {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+
         &__card {
-            margin: auto;
+            margin: 0 auto;
             max-width: 100%;
             max-height: 100%;
             background: $white;
+            position: relative;
+            z-index: $zindex-modal;
             border-radius: $border-radius;
 
             @include media-breakpoint-down(sm) {
-                margin: 0.5rem;
                 padding: 0.5rem;
                 box-shadow: $box-shadow;
             }
 
             @include media-breakpoint-up(md) {
-                margin: 1rem;
                 padding: 1rem;
                 box-shadow: $box-shadow-lg;
+            }
+
+            &:hover .media-content__overlay {
+
+                @include media-breakpoint-up(md) {
+                    opacity: 1;
+                    visibility: visible;
+                }
             }
         }
 
         &__wrapper {
-            margin: auto;
             position: relative;
-            border-radius: $border-radius;
+            background-color: $gray-200;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-image: url(../../../images/image.svg);
+            
+            @include media-breakpoint-down(sm) {
+                $min-size: 6rem;
 
-            &__overlay {
-                top: 0;
-                left: 0;
-                padding: 0.5rem;
-                // width: 100%;
-                // height: 100%;
-                position: absolute;
-                background-color: rgba($white, 0.5);
+                min-height: $min-size;
+                min-width: $min-size;
+                background-size: auto 3rem;
+            }
+
+            @include media-breakpoint-up(md) {
+                $min-size: 8rem;
+
+                min-height: $min-size;
+                min-width: $min-size;
+                background-size: auto 4rem;
+            }
+
+            img {
+                min-height: 1px;
+                max-height: 100%;
+                max-width: 100%;
+                -webkit-user-drag: none;
+                -khtml-user-drag: none;
+                -moz-user-drag: none;
+                -o-user-drag: none;
+                user-drag: none;
             }
         }
 
-        img {
-            max-width: 100%;
-            max-height: 100%;
+        &__nav {
+            top: 0;
+            z-index: 1;
+            height: 100%;
+            width: 5rem;
+            border: 0;
+            margin: 0;
+            color: $white;
+            font-size: 2.5rem;
+            line-height: 1;
+            padding-top: 0.375rem;
+            background: none;
+            position: absolute;
+
+            @include media-breakpoint-down(sm) {
+                display: none;
+            }
+
+            &:focus {
+                outline: none;
+            }
+
+            &_left {
+                left: 0;
+            }
+
+            &_right {
+                right: 0;
+                transform: rotate(180deg);
+            }
+
+            .icon {
+                margin-right: 1rem;
+            }
+
+            &:hover:before {
+                opacity: 1;
+            }
+
+            &:before {
+                opacity: 0;
+                content: "";
+                z-index: -1;
+                transition: opacity 200ms ease;
+                background: linear-gradient(to left, rgba(0,0,0,0), rgba(0,0,0,0.2));
+
+                @include position-absolute();
+            }
+        }
+
+        &__overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 200ms ease;
+
+            @include position-absolute();
+        }
+
+        &__close {
+            z-index: $zindex-modal-backdrop;
+
+            @include position-absolute();
+
+            @include media-breakpoint-down(sm) {
+                display: none;
+            }
         }
     }
 </style>

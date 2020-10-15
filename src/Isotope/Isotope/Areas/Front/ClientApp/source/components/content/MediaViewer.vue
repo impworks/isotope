@@ -9,6 +9,8 @@ import { ApiService } from "../../services/ApiService";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
 import MediaContent from "./MediaContent.vue";
+import { Bind } from 'lodash-decorators';
+import { Debounce } from 'lodash-decorators';
 
 @Component({
     components: { MediaContent }
@@ -48,6 +50,8 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     mounted() {
         this.observe(this.indexFeed, x => this.show(x));
         this.observe(this.$filter.onStateChanged, x => x.source === 'viewer' || this.hide());
+
+        this.show(2)
     }
 
     hide() {
@@ -183,6 +187,8 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         }
     }
     
+    @Debounce(100)
+    @Bind()
     swipe(dir: number) {
         if (this.isTransitioning || !this.cache[this.index - dir]) {
             return;
@@ -223,22 +229,30 @@ interface ICachedMedia extends IMedia {
             @keydown.right="nav(1)" 
             @keydown.esc="hide()"
         ></GlobalEvents>
-        <div class="media-viewer"
-            v-if="shown"
-            v-hammer:swipe.left="handleTouchEvents"
-            v-hammer:pan="handleTouchEvents"
-        >   
-            <div class="media-viewer__content"
-                :class="transitionClass" 
-                :style="{transform: transformStyle}" 
-                @transitionstart="isTransitioning = true" 
-                @transitionend="updateCurrentItem"
-            >  
-                <MediaContent :elem="prev"></MediaContent>
-                <MediaContent :elem="curr"></MediaContent>
-                <MediaContent :elem="next"></MediaContent>
+        <transition name="media-viewer__fade">
+            <div class="media-viewer"
+                v-if="shown"
+                v-hammer:pan="handleTouchEvents"
+            >   
+                <div class="media-viewer__content"
+                    :class="transitionClass" 
+                    :style="{transform: transformStyle}" 
+                    @transitionstart.self="isTransitioning = true" 
+                    @transitionend.self="updateCurrentItem"
+                >  
+                    <MediaContent :elem="prev"></MediaContent>
+                    <MediaContent 
+                        :elem="curr" 
+                        :hasOverlay="true"
+                        :isFirst="index == 0"
+                        :isLast="index == source.length - 1"
+                        v-on:nav="nav($event)"
+                        v-on:close="hide()"
+                    ></MediaContent>
+                    <MediaContent :elem="next"></MediaContent>
+                </div>
             </div>
-        </div>
+        </transition>
     </portal>
 </template>
 
@@ -253,10 +267,14 @@ interface ICachedMedia extends IMedia {
         background-color: rgba($dark, 0.5);
         top: 0;
         left: 0;
-        height: 100vh;
-        width: 100vw;
+        height: 100%;
+        width: 100%;
         position: absolute;
         overflow: hidden;
+        -webkit-user-select: none;  
+        -moz-user-select: none;    
+        -ms-user-select: none;      
+        user-select: none;
         
         &__content {
             display: flex;
@@ -275,12 +293,29 @@ interface ICachedMedia extends IMedia {
             }
 
             &.transition-item {
-                transition: transform 250ms cubic-bezier(0.0, 0.0, 0.2, 1); // ease-out timing function
+                transition: transform 250ms cubic-bezier(0.0, 0.0, 0.2, 1);
             }
 
             &.transition-edge {
                 transition: transform 500ms ease-out;
             }
         }
+
+        &__fade {
+
+            &-enter-active, 
+            &-leave-active {
+                transition: opacity 200ms linear;
+            }
+
+            &-enter, 
+            &-leave-to {
+                opacity: 0;
+            }
+        }
+    }
+
+    .media-viewer-open {
+        overflow: hidden;
     }
 </style>
