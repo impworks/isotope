@@ -96,7 +96,7 @@ interface ICachedMedia extends IMedia {
                 class="media-content__card" 
             >
                 <div class="media-content__wrapper">
-                    <fragment v-if="!elem.isLoading">
+                    <template v-if="!elem.isLoading">
                         <div 
                             class="media-content__overlay"
                             v-if="hasOverlay && elem.media" 
@@ -131,7 +131,7 @@ interface ICachedMedia extends IMedia {
                             :alt="elem.media.description" 
                             :style="{maxHeight : maxHeight + 'px'}"
                         />
-                    </fragment>
+                    </template>
                 </div>
             </div>
             <div 

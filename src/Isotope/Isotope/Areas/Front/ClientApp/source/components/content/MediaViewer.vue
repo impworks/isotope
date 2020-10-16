@@ -105,7 +105,6 @@ export default class MediaViewer extends Mixins(HasLifetime) {
             item.img = img;
             item.media = media;
         } catch (e) {
-            debugger;
             console.log('Failed to load media!', e);
         } finally {
             item.isLoading = false;
@@ -196,6 +195,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         this.transformStyle = `translateX(${dir * 100}vw)`;
         this.upcomingIndex = Math.min(Math.max(this.index - dir, 0), this.source.length - 1);
     }
+    
 
     updateCurrentItem() {
         this.isTransitioning = false;
@@ -244,8 +244,8 @@ interface ICachedMedia extends IMedia {
                     <MediaContent 
                         :elem="curr" 
                         :hasOverlay="true"
-                        :isFirst="index == 0"
-                        :isLast="index == source.length - 1"
+                        :isFirst="!prev"
+                        :isLast="!next"
                         v-on:nav="nav($event)"
                         v-on:close="hide()"
                     ></MediaContent>
@@ -267,7 +267,7 @@ interface ICachedMedia extends IMedia {
         background-color: rgba($dark, 0.5);
         top: 0;
         left: 0;
-        height: 100%;
+        height: 100vh;
         width: 100%;
         position: absolute;
         overflow: hidden;
@@ -279,7 +279,7 @@ interface ICachedMedia extends IMedia {
         &__content {
             display: flex;
             justify-content: center;
-            height: 100%;
+            height: 100vh;
             width: 100%;
             box-sizing: border-box;
             touch-action: pan-y;
