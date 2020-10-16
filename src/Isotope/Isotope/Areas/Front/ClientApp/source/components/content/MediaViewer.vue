@@ -240,7 +240,7 @@ interface ICachedMedia extends IMedia {
                     @transitionstart.self="isTransitioning = true" 
                     @transitionend.self="updateCurrentItem"
                 >  
-                    <MediaContent :elem="prev"></MediaContent>
+                    <MediaContent :elem="prev" :key="'p' + index"></MediaContent>
                     <MediaContent 
                         :elem="curr" 
                         :hasOverlay="true"
@@ -249,7 +249,7 @@ interface ICachedMedia extends IMedia {
                         v-on:nav="nav($event)"
                         v-on:close="hide()"
                     ></MediaContent>
-                    <MediaContent :elem="next"></MediaContent>
+                    <MediaContent :elem="next" :key="'n' + index"></MediaContent>
                 </div>
             </div>
         </transition>
