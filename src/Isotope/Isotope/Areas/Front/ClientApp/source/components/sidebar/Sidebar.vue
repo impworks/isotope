@@ -36,7 +36,7 @@ export default class Sidebar extends Mixins(HasLifetime) {
     }
 
     goToRoot() {
-        this.$filter.update('logo', { folder: '/' });
+        this.$filter.update('logo', { folder: '/', tags: null, dateFrom: null, dateTo: null });
     }
 } 
 </script>
