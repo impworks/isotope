@@ -185,8 +185,8 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         }
     }
     
-    @Debounce(100)
-    @Bind()
+    @Debounce(20)
+    @Bind
     swipe(dir: number) {
         if (this.isTransitioning || !this.cache[this.index - dir]) {
             return;
