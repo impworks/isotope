@@ -45,12 +45,12 @@ export default class MediaDetails extends Vue {
         }
     }
 
-    filterByTag(tag: TagBinding) {
+    filterByTag(binding: TagBinding) {
         this.$filter.update(
             'tag', 
             {
                 folder: '/',
-                tags: [ tag.id ],
+                tags: [ binding.tag.id ],
                 dateFrom: null,
                 dateTo: null,
                 mediaKey: null,

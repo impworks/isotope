@@ -125,7 +125,8 @@ export default class MediaViewer extends Mixins(HasLifetime) {
 
     private async clearCache() {
         for(let elem of this.cache)
-            elem.img.parentElement.removeChild(elem.img);
+            if(elem && elem.img)
+                elem.img.parentElement.removeChild(elem.img);
 
         this.cache = [];
     }

@@ -1,9 +1,10 @@
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Mixins, Vue } from "vue-property-decorator";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
 import TransitionExpand from '../utils/TransitionExpand.vue';
 import Filters from "./Filters.vue";
+import { HasLifetime } from "../mixins/HasLifetime";
 
 @Component({
     components: {
@@ -11,13 +12,17 @@ import Filters from "./Filters.vue";
         TransitionExpand
     }
 })
-export default class DesktopFiltersWrapper extends Vue {
+export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
     
     isOpen: boolean = false;
     
     mounted() {
         this.isOpen = !this.$filter.isEmpty(this.$filter.state);
+        this.observe(this.$filter.onStateChanged, x => {
+            if(!this.$filter.isEmpty(x) && !this.isOpen)
+                this.isOpen = true;
+        });
     }
 
     toggleOpen() {
