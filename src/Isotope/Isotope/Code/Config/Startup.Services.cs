@@ -31,6 +31,7 @@ namespace Isotope.Code.Config
             services.AddScoped<UserManager>();
             services.AddScoped<ConfigManager>();
             services.AddScoped<FolderManager>();
+            services.AddScoped<MediaManager>();
         }
     }
 }

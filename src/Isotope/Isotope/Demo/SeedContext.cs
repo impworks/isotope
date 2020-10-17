@@ -85,6 +85,7 @@ namespace Isotope.Demo
             var media = new Media
             {
                 Key = key,
+                UploadDate = DateTime.Now,
                 Description = descr,
                 Date = date,
                 Folder = folder,

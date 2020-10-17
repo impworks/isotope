@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Isotope.Data.Models
@@ -17,6 +18,11 @@ namespace Isotope.Data.Models
         /// </summary>
         [StringLength(500)]
         public string Path { get; set; }
+        
+        /// <summary>
+        /// Date of the media's uploading to the system.
+        /// </summary>
+        public DateTime UploadDate { get; set; }
 
         /// <summary>
         /// Containing folder.
