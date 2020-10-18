@@ -80,6 +80,14 @@ namespace Isotope.Areas.Admin.Services
             var key = UniqueKey.Get();
             var paths = await SaveUploadAsync(file, folder, key);
             var mediaInfo = await handler.ProcessAsync(key, paths.Path);
+            
+            // todo: get inherited tags
+            
+            var maxOrder = await _db.Media
+                                    .Where(x => x.FolderKey == folderKey)
+                                    .Select(x => x.Order)
+                                    .OrderBy(x => x)
+                                    .FirstOrDefaultAsync();
 
             var media = new Media
             {
@@ -92,12 +100,11 @@ namespace Isotope.Areas.Admin.Services
                 Width = mediaInfo.FullImage.Width,
                 Height = mediaInfo.FullImage.Height,
                 UploadDate = DateTime.Now,
+                Order = maxOrder + 1
             };
 
             _db.Media.Add(media);
-            
-            // todo: add inherited tags
-            
+
             await _db.SaveChangesAsync();
 
             ImageHelper.CreateThumbnails(mediaInfo.FullImage, paths.Path);
