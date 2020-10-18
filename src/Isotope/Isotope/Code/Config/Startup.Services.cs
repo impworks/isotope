@@ -1,4 +1,5 @@
 using Isotope.Areas.Admin.Services;
+using Isotope.Areas.Admin.Services.MediaHandlers;
 using Isotope.Areas.Front.Services;
 using Isotope.Code.Services;
 using Isotope.Code.Services.Config;
@@ -24,6 +25,8 @@ namespace Isotope.Code.Config
             services.AddScoped<MediaPresenter>();
             services.AddScoped<UserContextManager>();
             services.AddScoped<GalleryInfoPresenter>();
+            
+            services.AddScoped<IMediaHandler, JpegMediaHandler>();
 
             // admin
             services.AddScoped<TagManager>();

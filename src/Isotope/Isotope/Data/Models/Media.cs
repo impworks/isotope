@@ -61,6 +61,11 @@ namespace Isotope.Data.Models
         public Rect ThumbnailRect { get; set; }
         
         /// <summary>
+        /// Flag indicating that the media has been processed completely and is ready for display.
+        /// </summary>
+        public bool IsReady { get; set; }
+        
+        /// <summary>
         /// Media width (original size in pixels).
         /// </summary>
         public int? Width { get; set; }

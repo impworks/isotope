@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using Isotope.Areas.Admin.Services.MediaHandlers;
+using Isotope.Code.Utils.Helpers;
+using Isotope.Data.Models;
 
 namespace Isotope.Code.Utils
 {
@@ -93,6 +96,38 @@ namespace Isotope.Code.Utils
             var newSize = new Size((int)(maxSize.Width / ratio), (int)(maxSize.Height / ratio));
             var pos = new Point((size.Width - newSize.Width) / 2, (size.Height - newSize.Height) / 2);
             return new Rectangle(pos, newSize);
+        }
+
+        /// <summary>
+        /// Saves thumbnails for an image.
+        /// </summary>
+        public static void CreateThumbnails(Image originalImage, string originalPath)
+        {
+            foreach (var size in new[] {MediaSize.Large, MediaSize.Small})
+            {
+                var path = MediaHelper.GetSizedMediaPath(originalPath, size);
+                var func = size == MediaSize.Large ? (Func<Image, Size, Image>) ResizeToFit : ResizeToFill;
+                var image = func(originalImage, Sizes[size]);
+                image.Save(path);
+            }
+        }
+
+        /// <summary>
+        /// Returns the small thumbnail rect in 0..1 coordinate space.
+        /// </summary>
+        public static Rect GetDefaultThumbnailRect(Size size)
+        {
+            var targetSize = Sizes[MediaSize.Small];
+            var rect = GetFillRectangle(size, targetSize);
+            var w = 1.0 / size.Width;
+            var h = 1.0 / size.Height;
+            return new Rect
+            {
+                X = rect.X * w,
+                Y = rect.Y * h,
+                Width = rect.Width * w,
+                Height = rect.Height * h,
+            };
         }
     }
 }

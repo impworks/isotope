@@ -79,8 +79,7 @@ namespace Isotope.Demo
 
             File.Copy(sourceFullPath, targetFullPath);
             using var srcImg = Image.FromFile(sourceFullPath);
-            SaveThumbnail(srcImg, targetFullPath, MediaSize.Small);
-            SaveThumbnail(srcImg, targetFullPath, MediaSize.Large);
+            ImageHelper.CreateThumbnails(srcImg, targetFullPath);
 
             var media = new Media
             {
@@ -92,7 +91,8 @@ namespace Isotope.Demo
                 FolderKey = folder.Key,
                 Order = order,
                 Path = $"/@media/{folder.Key}/{key}.jpg",
-                ThumbnailRect = GetThumbnailRect(srcImg),
+                ThumbnailRect = ImageHelper.GetDefaultThumbnailRect(srcImg.Size),
+                IsReady = true,
                 Width = srcImg.Width,
                 Height = srcImg.Height,
                 Type = MediaType.Photo,
@@ -103,30 +103,6 @@ namespace Isotope.Demo
             _db.Media.Add(media);
 
             return media;
-
-            static void SaveThumbnail(Image img, string target, MediaSize size)
-            {
-                using var destImg = size == MediaSize.Small
-                    ? ImageHelper.ResizeToFill(img, ImageHelper.Sizes[size])
-                    : ImageHelper.ResizeToFit(img, ImageHelper.Sizes[size]);
-                var targetSized = MediaHelper.GetSizedMediaPath(target, size);
-                destImg.Save(targetSized);
-            }
-
-            static Rect GetThumbnailRect(Image img)
-            {
-                var size = ImageHelper.Sizes[MediaSize.Small];
-                var rect = ImageHelper.GetFillRectangle(img.Size, size);
-                var w = 1.0 / img.Width;
-                var h = 1.0 / img.Height;
-                return new Rect
-                {
-                    X = rect.X * w,
-                    Y = rect.Y * h,
-                    Width = rect.Width * w,
-                    Height = rect.Height * h,
-                };
-            }
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Impworks.Utils.Format;
 using Impworks.Utils.Linq;
 using Isotope.Areas.Admin.Dto;
+using Isotope.Areas.Admin.Services.MediaHandlers;
 using Isotope.Areas.Admin.Utils;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
@@ -13,6 +14,7 @@ using Isotope.Data;
 using Isotope.Data.Models;
 using Mapster;
 using MapsterMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Isotope.Areas.Admin.Services
@@ -22,14 +24,16 @@ namespace Isotope.Areas.Admin.Services
     /// </summary>
     public class MediaManager
     {
-        public MediaManager(AppDbContext db, IMapper mapper)
+        public MediaManager(AppDbContext db, IMapper mapper, IEnumerable<IMediaHandler> mediaHandlers)
         {
             _db = db;
             _mapper = mapper;
+            _mediaHandlers = mediaHandlers.ToArray();
         }
         
         private readonly AppDbContext _db;
         private readonly IMapper _mapper;
+        private readonly IMediaHandler[] _mediaHandlers;
 
         /// <summary>
         /// Returns the list of media files.
@@ -55,6 +59,53 @@ namespace Isotope.Areas.Admin.Services
                               .Take(PAGE_SIZE)
                               .ProjectToType<MediaThumbnailVM>(_mapper.Config)
                               .ToListAsync();
+        }
+
+        /// <summary>
+        /// Adds a new file from uploaded data.
+        /// </summary>
+        public async Task<MediaThumbnailVM> UploadAsync(string folderKey, IFormFile file)
+        {
+            var folder = await _db.Folders
+                                  .AsNoTracking()
+                                  .FirstOrDefaultAsync(x => x.Key == folderKey);
+            
+            if(folder == null)
+                throw new OperationException($"Folder '{folderKey}' does not exist.");
+
+            var handler = _mediaHandlers.FirstOrDefault(x => x.SupportedMimeTypes.Contains(file.ContentType));
+            if(handler == null)
+                throw new OperationException($"Media type '{file.ContentType}' is not supported!");
+
+            var key = UniqueKey.Get();
+            var paths = await SaveUploadAsync(file, folder, key);
+            var mediaInfo = await handler.ProcessAsync(key, paths.Path);
+
+            var media = new Media
+            {
+                Key = key,
+                Folder = folder,
+                Path = paths.Url,
+                Type = mediaInfo.MediaType,
+                IsReady = mediaInfo.IsReady,
+                Date = mediaInfo.Date?.ToString("yyyy.MM.dd"),
+                Width = mediaInfo.FullImage.Width,
+                Height = mediaInfo.FullImage.Height,
+                UploadDate = DateTime.Now,
+            };
+
+            _db.Media.Add(media);
+            
+            // todo: add inherited tags
+            
+            await _db.SaveChangesAsync();
+
+            ImageHelper.CreateThumbnails(mediaInfo.FullImage, paths.Path);
+
+            return await _db.Media
+                            .Where(x => x.Key == key)
+                            .ProjectToType<MediaThumbnailVM>(_mapper.Config)
+                            .FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -169,10 +220,32 @@ namespace Isotope.Areas.Admin.Services
             }
         }
 
+        #region Helpers
+
+        /// <summary>
+        /// Caches the uploaded file to disk within specified folder.
+        /// </summary>
+        private async Task<(string Path, string Url)> SaveUploadAsync(IFormFile file, Folder folder, string key)
+        {
+            var fileName = key + Path.GetExtension(file.FileName);
+            var path = Path.Combine("@media", folder.Key, fileName);
+            var localPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", path);
+            
+            Directory.CreateDirectory(Path.GetDirectoryName(localPath));
+            
+            await using var fs = new FileStream(localPath, FileMode.Open, FileAccess.Write);
+            await file.CopyToAsync(fs);
+
+            return (localPath, '/' + path);
+        }
+
+        #endregion
+
+        #region Validation
+
         /// <summary>
         /// Validates the media details.
         /// </summary>
-        /// <param name="vm"></param>
         private void Validate(MediaVM vm)
         {
             if (vm.OverlayTags != null)
@@ -206,5 +279,7 @@ namespace Isotope.Areas.Admin.Services
             if(vm.Y + vm.Height > 1)
                 throw new OperationException($"Width must not exceed media size for {descr}.");
         }
+        
+        #endregion
     }
 }
