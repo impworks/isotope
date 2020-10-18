@@ -62,7 +62,7 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task<FolderTitleVM> CreateAsync(string parentKey, FolderVM vm)
         {
-            await ValidateAsync(vm, creating: true);
+            await ValidateAsync(vm, null, parentKey);
 
             var parent = await GetParentFolderAsync(parentKey);
 
@@ -115,13 +115,13 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Updates the existing folder.
         /// </summary>
-        public async Task<FolderTitleVM> UpdateAsync(FolderVM vm)
+        public async Task<FolderTitleVM> UpdateAsync(string key, FolderVM vm)
         {
-            await ValidateAsync(vm, creating: false);
+            await ValidateAsync(vm, key);
             
             var folder = await _db.Folders
                                   .Include(x => x.Tags)
-                                  .FirstOrDefaultAsync(x => x.Key == vm.Key);
+                                  .FirstOrDefaultAsync(x => x.Key == key);
             
             if (folder.Slug != vm.Slug)
             {
@@ -152,7 +152,7 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Ensures that the folder details are valid.
         /// </summary>
-        private async Task ValidateAsync(FolderVM vm, bool creating, string parentKey = null)
+        private async Task ValidateAsync(FolderVM vm, string key, string parentKey = null)
         {
             if(string.IsNullOrEmpty(vm.Caption))
                 throw new OperationException("Caption is required.");
@@ -193,7 +193,7 @@ namespace Isotope.Areas.Admin.Services
 
             async Task<IReadOnlyList<Folder>> GetNeighboursAsync()
             {
-                if (creating)
+                if (string.IsNullOrEmpty(key))
                 {
                     var parent = await GetParentFolderAsync(parentKey);
                     return await _db.Folders
@@ -205,16 +205,16 @@ namespace Isotope.Areas.Admin.Services
                 {
                     var folder = await _db.Folders
                                           .AsNoTracking()
-                                          .FirstOrDefaultAsync(x => x.Key == vm.Key);
+                                          .FirstOrDefaultAsync(x => x.Key == key);
                     if(folder == null)
-                        throw new OperationException($"Folder '{vm.Key}' does not exist.");
+                        throw new OperationException($"Folder '{key}' does not exist.");
 
                     var parentPath = PathHelper.GetParentPath(folder.Path);
                     return await _db.Folders
                                     .AsNoTracking()
                                     .Where(x => x.Path.StartsWith(parentPath)
                                         && x.Depth == folder.Depth
-                                        && x.Key != vm.Key)
+                                        && x.Key != key)
                                     .ToListAsync();
                 }
             }

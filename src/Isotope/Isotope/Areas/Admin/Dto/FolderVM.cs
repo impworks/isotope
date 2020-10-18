@@ -7,7 +7,6 @@ namespace Isotope.Areas.Admin.Dto
 {
     public class FolderVM: IMapped
     {
-        public string Key { get; set; }
         public string Caption { get; set; }
         public string Slug { get; set; }
         public string ThumbnailKey { get; set; }
@@ -16,7 +15,6 @@ namespace Isotope.Areas.Admin.Dto
         public void Configure(TypeAdapterConfig config)
         {
             config.NewConfig<Folder, FolderVM>()
-                  .Map(x => x.Key, x => x.Key)
                   .Map(x => x.Caption, x => x.Caption)
                   .Map(x => x.Slug, x => x.Slug)
                   .Map(x => x.ThumbnailKey, x => x.ThumbnailKey)
@@ -26,7 +24,6 @@ namespace Isotope.Areas.Admin.Dto
                   .Map(x => x.Caption, x => x.Caption)
                   .Map(x => x.Slug, x => x.Slug)
                   .Map(x => x.ThumbnailKey, x => x.ThumbnailKey)
-                  .Ignore(x => x.Key)
                   .Ignore(x => x.Tags);
         }
     }
