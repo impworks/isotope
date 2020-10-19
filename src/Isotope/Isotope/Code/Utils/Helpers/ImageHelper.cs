@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using Isotope.Areas.Admin.Services.MediaHandlers;
-using Isotope.Code.Utils.Helpers;
 using Isotope.Data.Models;
 
-namespace Isotope.Code.Utils
+namespace Isotope.Code.Utils.Helpers
 {
     /// <summary>
     /// Helper utilities for image processing.

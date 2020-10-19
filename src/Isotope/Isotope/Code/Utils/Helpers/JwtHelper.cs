@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Isotope.Code.Utils
+namespace Isotope.Code.Utils.Helpers
 {
     /// <summary>
     /// Helper class for working with JWT authorization.

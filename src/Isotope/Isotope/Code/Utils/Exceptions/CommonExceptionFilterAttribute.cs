@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
 
-namespace Isotope.Code.Utils
+namespace Isotope.Code.Utils.Exceptions
 {
     /// <summary>
     /// Filter for handling\logging common exceptions.

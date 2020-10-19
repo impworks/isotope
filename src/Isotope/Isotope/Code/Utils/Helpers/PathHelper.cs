@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Isotope.Code.Utils.Helpers
@@ -32,6 +35,25 @@ namespace Isotope.Code.Utils.Helpers
         public static string GetParentPath(string path)
         {
             return Normalize(Regex.Replace(path.TrimEnd('/'), @"\/[^\/]+$", ""));
+        }
+
+        /// <summary>
+        /// Returns all parent paths from the top to current folder.
+        /// </summary>
+        public static IReadOnlyList<string> GetParentPaths(string folder)
+        {
+            var result = new List<string>();
+            var tmp = new StringBuilder(folder.Length);
+            var parts = folder.Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+            
+            foreach (var part in parts)
+            {
+                tmp.Append('/');
+                tmp.Append(part);
+                result.Add(tmp.ToString());
+            }
+
+            return result;
         }
     }
 }

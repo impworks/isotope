@@ -4,6 +4,7 @@ using Impworks.Utils.Strings;
 using Isotope.Areas.Front.Dto;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
+using Isotope.Code.Utils.Exceptions;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
 using MapsterMapper;

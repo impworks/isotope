@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Isotope.Code.Utils
+namespace Isotope.Code.Utils.Helpers
 {
     /// <summary>
     /// Helper methods for ordering values.

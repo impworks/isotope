@@ -80,8 +80,9 @@ namespace Isotope.Areas.Admin.Services
             var key = UniqueKey.Get();
             var paths = await SaveUploadAsync(file, folder, key);
             var mediaInfo = await handler.ProcessAsync(key, paths.Path);
-            
-            // todo: get inherited tags
+
+            var tagsIds = await GetInheritedTagsAsync(folder);
+            var tags = tagsIds.Select(x => new MediaTagBinding {TagId = x, Type = TagBindingType.Inherited}).ToList();
             
             var maxOrder = await _db.Media
                                     .Where(x => x.FolderKey == folderKey)
@@ -100,7 +101,8 @@ namespace Isotope.Areas.Admin.Services
                 Width = mediaInfo.FullImage.Width,
                 Height = mediaInfo.FullImage.Height,
                 UploadDate = DateTime.Now,
-                Order = maxOrder + 1
+                Order = maxOrder + 1,
+                Tags = tags
             };
 
             _db.Media.Add(media);
@@ -244,6 +246,20 @@ namespace Isotope.Areas.Admin.Services
             await file.CopyToAsync(fs);
 
             return (localPath, '/' + path);
+        }
+
+        /// <summary>
+        /// Returns tag IDs inherited from all parent folders, including this one. 
+        /// </summary>
+        private async Task<IReadOnlyList<int>> GetInheritedTagsAsync(Folder folder)
+        {
+            var paths = PathHelper.GetParentPaths(folder.Path);
+            return await _db.Folders
+                            .Where(x => paths.Contains(x.Path))
+                            .SelectMany(x => x.Tags)
+                            .Select(x => x.TagId)
+                            .Distinct()
+                            .ToListAsync();
         }
 
         #endregion
