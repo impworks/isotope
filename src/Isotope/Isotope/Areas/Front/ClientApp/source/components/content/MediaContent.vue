@@ -6,6 +6,7 @@ import OverlayTag from "./OverlayTag.vue";
 import MediaDetails from "./MediaDetails.vue";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
+import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
 
 @Component({
     components: { OverlayTag, MediaDetails }
@@ -18,10 +19,9 @@ export default class MediaContent extends Vue {
     @Prop({ required: false }) hasOverlay: boolean;
 
     maxHeight: number = 0;
-    maxWidth: number = 0;
-    showOverlay: boolean = false;
+    isMobile: boolean = false;
     isOverlayVisible: boolean = false;
-
+    
     $refs: {
         card: HTMLElement,
         wrapper: HTMLElement
@@ -32,8 +32,9 @@ export default class MediaContent extends Vue {
     }
 
     mounted () {
-        window.addEventListener("resize", this.resizeHandler);
         this.conutMaxHeight();
+        this.isMobile = BreakpointHelper.down(Breakpoints.md);
+        window.addEventListener("resize", this.resizeHandler);
     }
 
     beforeDestroy() {
@@ -48,6 +49,7 @@ export default class MediaContent extends Vue {
     @Bind()
     resizeHandler() {
         this.conutMaxHeight();
+        this.isMobile = BreakpointHelper.down(Breakpoints.md);
     }
 
     conutMaxHeight () {
@@ -122,6 +124,7 @@ interface ICachedMedia extends IMedia {
                                 :show="true"
                             ></overlay-tag>
                             <media-details
+                                v-if="!isMobile"
                                 :media="elem.media"
                             ></media-details>
                         </div>
@@ -296,10 +299,12 @@ interface ICachedMedia extends IMedia {
         }
 
         &__overlay {
-            opacity: 0;
-            transition: opacity 300ms linear;
-
             @include position-absolute();
+
+            @include media-breakpoint-up(md) {
+                opacity: 0;
+                transition: opacity 300ms linear;
+            }
         }
 
         &__close {

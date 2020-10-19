@@ -9,11 +9,13 @@ import { ApiService } from "../../services/ApiService";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
 import MediaContent from "./MediaContent.vue";
+import MediaDetails from "./MediaDetails.vue";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
+import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
 
 @Component({
-    components: { MediaContent }
+    components: { MediaContent, MediaDetails }
 })
 export default class MediaViewer extends Mixins(HasLifetime) {
     @Dep('$host') $host: string;
@@ -34,6 +36,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     isTransitioning: boolean = false;
     leftEdgeScale: number = 0;
     rightEdgeScale: number = 0;
+    isMobile: boolean = false;
 
     get prev(): ICachedMedia {
         return this.cache[this.index - 1] || null;
@@ -50,6 +53,19 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     mounted() {
         this.observe(this.indexFeed, x => this.show(x));
         this.observe(this.$filter.onStateChanged, x => x.source === 'viewer' || this.hide());
+
+        this.isMobile = BreakpointHelper.down(Breakpoints.md);
+        window.addEventListener("resize", this.resizeHandler);
+    }
+
+    beforeDestroy() {
+        window.removeEventListener('resize', this.resizeHandler);
+    }
+
+    @Debounce(50)
+    @Bind()
+    resizeHandler() {
+        this.isMobile = BreakpointHelper.down(Breakpoints.md);
     }
 
     hide() {
@@ -133,6 +149,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
 
     @Watch('shown')
     onShownChanged(value: boolean) {
+        this.isMobile = BreakpointHelper.down(Breakpoints.md);
         document.body.classList.toggle('media-viewer-open', value);
     }
 
@@ -186,7 +203,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     }
     
     @Debounce(20)
-    @Bind
+    @Bind()
     swipe(dir: number) {
         if (this.isTransitioning || !this.cache[this.index - dir]) {
             return;
@@ -197,7 +214,6 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         this.upcomingIndex = Math.min(Math.max(this.index - dir, 0), this.source.length - 1);
     }
     
-
     updateCurrentItem() {
         this.isTransitioning = false;
         this.transitionClass = "transition-initial";
@@ -241,17 +257,22 @@ interface ICachedMedia extends IMedia {
                     @transitionstart.self="isTransitioning = true" 
                     @transitionend.self="updateCurrentItem"
                 >  
-                    <MediaContent :elem="prev" :key="'p' + index"></MediaContent>
-                    <MediaContent 
+                    <media-content :elem="prev" :key="'p' + index"></media-content>
+                    <media-content 
                         :elem="curr" 
                         :hasOverlay="true"
                         :isFirst="!prev"
                         :isLast="!next"
                         v-on:nav="nav($event)"
                         v-on:close="hide()"
-                    ></MediaContent>
-                    <MediaContent :elem="next" :key="'n' + index"></MediaContent>
+                    ></media-content>
+                    <media-content :elem="next" :key="'n' + index"></media-content>
                 </div>
+                <media-details
+                    v-if="isMobile"
+                    :isMobile="true"
+                    :media="curr.media"
+                ></media-details>
             </div>
         </transition>
     </portal>
@@ -268,7 +289,7 @@ interface ICachedMedia extends IMedia {
         background-color: rgba($dark, 0.5);
         top: 0;
         left: 0;
-        height: 100vh;
+        height: 100%;
         width: 100%;
         position: absolute;
         overflow: hidden;
@@ -280,7 +301,7 @@ interface ICachedMedia extends IMedia {
         &__content {
             display: flex;
             justify-content: center;
-            height: 100vh;
+            height: 100%;
             width: 100%;
             box-sizing: border-box;
             touch-action: pan-y;

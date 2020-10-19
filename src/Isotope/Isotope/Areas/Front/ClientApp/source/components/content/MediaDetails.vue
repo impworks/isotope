@@ -11,10 +11,11 @@ import { TagBinding } from "../../vms/TagBinding";
 @Component
 export default class MediaDetails extends Vue {
     @Prop({ required: true }) media: Media;
+    @Prop({ required: false }) isMobile: boolean;
     @Dep('$filter') $filter: FilterStateService;
     
     isOpen: boolean = false;
-    height: number = 0;
+    height: string = 'auto';
 
     $refs: {
         button: HTMLElement,
@@ -22,27 +23,30 @@ export default class MediaDetails extends Vue {
     }
 
     mounted () {
-        this.height = this.$refs.button.clientHeight;
-
-        window.addEventListener("resize", this.resizeHandler);
+        if (!this.isMobile) {
+            this.countHeight();
+            window.addEventListener("resize", this.resizeHandler);
+        }
     }
 
     beforeDestroy() {
-        window.removeEventListener('resize', this.resizeHandler);
+        if (!this.isMobile) {
+            window.removeEventListener('resize', this.resizeHandler);
+        }
     }
-
-    countHeight() {
-        this.height = this.isOpen 
-            ? this.$refs.button.clientHeight + this.$refs.content.clientHeight
-            : this.$refs.button.clientHeight;
-    }
-
+    
     get hasDetails(): boolean {
         if (this.media.date != null || this.media.description != null || this.media.extraTags.length > 0 ) {
             return true;
         } else {
             return false;
         }
+    }
+
+    countHeight() {
+        this.height = this.isOpen 
+            ? this.$refs.button.clientHeight + this.$refs.content.clientHeight + 'px'
+            : this.$refs.button.clientHeight + 'px';
     }
 
     filterByTag(binding: TagBinding) {
@@ -67,16 +71,19 @@ export default class MediaDetails extends Vue {
 
     @Watch('isOpen')
     onOpenChanged() {
-        this.countHeight();
+        if (!this.isMobile) {
+            this.countHeight();
+        }
     }
 }
 </script>
 
 <template>
     <div 
+        v-if="media"
         v-show="hasDetails"
         class="media-details"
-        :style="{height: height + 'px'}" 
+        :style="{height: height}" 
         :class="{ 'media-details_open': isOpen }"
     >
         <div class="media-details__header">
@@ -125,14 +132,23 @@ export default class MediaDetails extends Vue {
     .media-details {
         left: 0;
         bottom: 0;
-        z-index: 2;
         color: $light;
-        min-width: 30%;
-        max-width: 100%;
-        overflow: hidden;
-        position: absolute;
-        min-height: 2.5rem;
-        transition: height 300ms cubic-bezier(.645,.045,.355,1);
+
+        @include media-breakpoint-down(sm) {
+            width: 100%;
+            position: fixed;
+            z-index: $zindex-tooltip;
+        }
+
+        @include media-breakpoint-up(md) {
+            z-index: 2;
+            min-width: 30%;
+            min-height: 2.5rem;
+            max-width: 100%;
+            overflow: hidden;
+            position: absolute;
+            transition: height 300ms cubic-bezier(.645,.045,.355,1);
+        }
 
         $background: rgba(0,0,0, 0.7);
 
@@ -144,7 +160,18 @@ export default class MediaDetails extends Vue {
             }
 
             .media-details__button__arrow {
-                transform: rotate(180deg);
+                transform: rotate(0);
+            }
+        }
+
+        &_mobile {
+
+            @include media-breakpoint-up(md) {
+                display: none;
+            }
+
+            .media-details__header {
+                display:none
             }
         }
 
@@ -160,6 +187,10 @@ export default class MediaDetails extends Vue {
             background-color: $background;
             transition: opacity 200ms linear;
 
+            @include media-breakpoint-down(sm) {
+                display: none;
+            }
+
             &:hover {
                 opacity: 1;
             }
@@ -173,14 +204,18 @@ export default class MediaDetails extends Vue {
             }
 
             &__arrow {
+                transform: rotate(180deg);
                 transition: transform 150ms ease;
             }
         }
 
         &__content {
             padding: 1rem;
-            border-radius: 0 $border-radius 0 0;
             background-color: $background;
+
+            @include media-breakpoint-up(md) {
+                border-radius: 0 $border-radius 0 0;
+            }
         }
 
         &__tags {
