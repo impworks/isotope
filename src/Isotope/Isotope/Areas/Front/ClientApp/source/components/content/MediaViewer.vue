@@ -269,7 +269,7 @@ interface ICachedMedia extends IMedia {
                     <media-content :elem="next" :key="'n' + index"></media-content>
                 </div>
                 <media-details
-                    v-if="isMobile"
+                    v-if="isMobile && curr && !curr.isLoading"
                     :isMobile="true"
                     :media="curr.media"
                 ></media-details>
