@@ -30,14 +30,15 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     cache: ICachedMedia[] = [];
     upcomingIndex: number = null;
     translateX: number = 0;
+    translateY: number = 0;
     maxTranslateX: number = 0;
-    transformStyle = "translateX(0)";
+    maxTranslateY: number = 0;
+    transformStyle = "translate(0, 0)";
     transitionClass = "transition-initial";
     isTransitioning: boolean = false;
-    leftEdgeScale: number = 0;
-    rightEdgeScale: number = 0;
     isMobile: boolean = false;
     isMobileDetailsVisible: boolean = false;
+    isClosing: boolean = false;
 
     get prev(): ICachedMedia {
         return this.cache[this.index - 1] || null;
@@ -166,28 +167,22 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         document.body.classList.toggle('media-viewer-open', value);
     }
 
-    handleTouchEvents(e: any) {
-        if (this.isTransitioning || e.pointerType == 'mouse') {
-            return;
-        }
-
+    handleHorizontalTouchEvents(e: HammerInput) {
         if (
-            (Math.abs(e.deltaX) < 8 || Math.abs(e.deltaY) - Math.abs(e.deltaX) > -1) &&
-            !this.translateX &&
-            !this.leftEdgeScale &&
-            !this.rightEdgeScale
+            this.isTransitioning || 
+            !this.isMobile
         ) {
             return;
         }
         
         if (e.isFinal) {
-            this.handleGestureEnd(e.deltaX);
+            this.handleHorizontalGestureEnd(e.deltaX);
         } else {
-            this.handleGestureMove(e.deltaX);
+            this.handleHorizontalGestureMove(e.deltaX);
         }
     }
 
-    handleGestureMove(deltaX: number) {
+    handleHorizontalGestureMove(deltaX: number) {
         if (Math.abs(deltaX) > Math.abs(this.maxTranslateX)) {
             this.maxTranslateX = deltaX;
         }
@@ -199,19 +194,56 @@ export default class MediaViewer extends Mixins(HasLifetime) {
 
         this.translateX = deltaX;
         this.transitionClass = "transition-initial";
-        this.transformStyle = `translateX(${px}px)`;
+        this.transformStyle = `translate(${px}px, 0)`;
     }
 
-    handleGestureEnd(deltaX: number) {
+    handleHorizontalGestureEnd(deltaX: number) {
         if (
             (!this.prev && deltaX > 0) ||
             (!this.next && deltaX < 0) ||
             (Math.abs(this.translateX) - Math.abs(this.maxTranslateX) < -1)
         ) {
             this.transitionClass = 'transition-item';
-            this.transformStyle = 'translateX(0)';
+            this.transformStyle = 'translate(0, 0)';
         } else if (this.translateX !== 0) {
             this.swipe(Math.sign(this.translateX));
+        }
+    }
+
+    handleVerticalTouchEvents(e: any) {
+        if (
+            this.isTransitioning || 
+            !this.isMobile
+        ) {
+            return;
+        }
+        
+        if (e.isFinal) {
+            this.handleVerticalGestureEnd(e.deltaY);
+        } else {
+            this.handleVerticalGestureMove(e.deltaY);
+        }
+    }
+
+    handleVerticalGestureMove(deltaY: number) {
+        if (Math.abs(deltaY) > Math.abs(this.maxTranslateY)) {
+            this.maxTranslateY = deltaY;
+        }
+
+        this.translateY = deltaY;
+        this.transitionClass = "transition-initial";
+        this.transformStyle = `translate(0, ${deltaY < 0 ? 0 : deltaY}px)`;
+
+        this.isClosing = deltaY > 50;
+    }
+
+    handleVerticalGestureEnd(deltaY: number) {
+        this.transitionClass = "transition-item";
+
+        if (this.isClosing) {
+            this.transformStyle = `translate(0, 100%)`;
+        } else {
+            this.transformStyle = `translate(0, 0)`;
         }
     }
     
@@ -223,7 +255,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         }
 
         this.transitionClass = "transition-item";
-        this.transformStyle = `translateX(${dir * 100}vw)`;
+        this.transformStyle = `translate(${dir * 100}vw, 0)`;
         this.upcomingIndex = Math.min(Math.max(this.index - dir, 0), this.source.length - 1);
     }
 
@@ -234,17 +266,33 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     }
     
     updateCurrentItem() {
+        if (this.isClosing) {
+            this.hide();
+            this.isClosing = false;
+        }
+
         this.isTransitioning = false;
         this.transitionClass = "transition-initial";
-        this.transformStyle = "translateX(0)";
+        this.transformStyle = "translate(0, 0)";
         this.translateX = 0;
         this.maxTranslateX = 0;
+        this.translateY = 0;
+        this.maxTranslateY = 0;
 
         if (this.upcomingIndex !== null && this.upcomingIndex !== this.index) {
             this.show(this.upcomingIndex);
         }
     }
+
+    handleTouchEvents(e: HammerInput) {
+        if ((e.direction == 4 || 2 && Math.abs(e.deltaX) > 8) && this.translateY == 0) {
+            this.handleHorizontalTouchEvents(e);
+        } else if (e.direction == 8 || 16 && Math.abs(e.deltaY) > 8 && this.translateX == 0) {
+            this.handleVerticalTouchEvents(e);
+        }
+    }
 }
+
 
 interface IMedia {
     media?: Media;
@@ -267,8 +315,7 @@ interface ICachedMedia extends IMedia {
             <div class="media-viewer"
                 v-if="shown"
                 v-hammer:pan="handleTouchEvents"
-                v-hammer:swipe.left="handleTouchEvents"
-                v-hammer:swipe.right="handleTouchEvents"
+                :class="{'media-viewer_closing' : isClosing}" 
             >   
                 <div class="media-viewer__content"
                     v-hammer:tap="onTap"
@@ -318,6 +365,11 @@ interface ICachedMedia extends IMedia {
         -moz-user-select: none;    
         -ms-user-select: none;      
         user-select: none;
+        transition: background-color 200ms linear;
+
+        &_closing {
+            background-color: rgba($dark, 0.0);
+        }
         
         &__content {
             display: flex;
