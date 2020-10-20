@@ -111,7 +111,10 @@ export class FilterStateService {
         const newState = cloneDeep(this._state || {}) as IFilterState;
         
         if(this._shareId) {
-            state = { folder: state.folder };
+            delete state.tags;
+            delete state.dateFrom;
+            delete state.dateTo;
+            delete state.searchMode;
         }
         
         for(let key in state) {
@@ -120,6 +123,10 @@ export class FilterStateService {
             
             const newVal = state[key];
             const oldVal = newState[key];
+            
+            if(typeof newVal === "undefined")
+                continue;            
+            
             if(JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
                 isChanged = true;
                 newState[key] = newVal;

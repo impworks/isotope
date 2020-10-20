@@ -83,6 +83,9 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     }
 
     hide() {
+        if(!this.shown)
+            return;
+        
         this.shown = false;
         this.index = null;
         this.clearCache();
