@@ -81,6 +81,11 @@ export default class MediaContent extends Vue {
     onElemChanged(value: boolean) {
         this.conutMaxHeight();
     }
+
+    @Watch('isMobileOverlayVisible')
+    onMobileVisibilityChanged(value: boolean) {
+        this.tappedTag = null;
+    }
 }
 
 interface IMedia {
