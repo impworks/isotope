@@ -7,6 +7,7 @@ import MediaDetails from "./MediaDetails.vue";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
+import { TagBindingWithLocation } from "../../vms/TagBinding";
 
 @Component({
     components: { OverlayTag, MediaDetails }
@@ -17,10 +18,12 @@ export default class MediaContent extends Vue {
     @Prop({ required: false }) isFirst: boolean;
     @Prop({ required: false }) isLast: boolean;
     @Prop({ required: false }) hasOverlay: boolean;
+    @Prop({ required: false }) isMobileOverlayVisible: boolean;
 
     maxHeight: number = 0;
     isMobile: boolean = false;
     isOverlayVisible: boolean = false;
+    tappedTag: TagBindingWithLocation = null;
     
     $refs: {
         card: HTMLElement,
@@ -35,6 +38,10 @@ export default class MediaContent extends Vue {
         this.conutMaxHeight();
         this.isMobile = BreakpointHelper.down(Breakpoints.md);
         window.addEventListener("resize", this.resizeHandler);
+    }
+
+    selectTag(tag: TagBindingWithLocation) {
+        this.tappedTag = tag;
     }
 
     beforeDestroy() {
@@ -121,7 +128,10 @@ interface ICachedMedia extends IMedia {
                                 v-for="t in elem.media.overlayTags"
                                 :key="t.id"
                                 :value="t" 
-                                :show="true"
+                                :tappedTag="tappedTag"
+                                :isMobile="isMobile"
+                                :isMobileOverlayVisible="isMobileOverlayVisible"
+                                v-on:tagTapped="selectTag($event)"
                             ></overlay-tag>
                             <media-details
                                 v-if="!isMobile"

@@ -37,7 +37,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     transitionClass = "transition-initial";
     isTransitioning: boolean = false;
     isMobile: boolean = false;
-    isMobileDetailsVisible: boolean = false;
+    isMobileOverlayVisible: boolean = false;
     isClosing: boolean = false;
 
     get prev(): ICachedMedia {
@@ -259,9 +259,10 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         this.upcomingIndex = Math.min(Math.max(this.index - dir, 0), this.source.length - 1);
     }
 
-    onTap() {
-        if (this.isMobile) {
-            this.isMobileDetailsVisible = !this.isMobileDetailsVisible;
+    onTap(e: HammerInput) {
+        // TO DO: Find a solution to prevent parent event from OverlayTag component.
+        if ((e.target.classList[0] != 'overlay-tag') && (e.target.tagName != 'A') && this.isMobile) {
+            this.isMobileOverlayVisible = !this.isMobileOverlayVisible;
         }
     }
     
@@ -292,7 +293,6 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         }
     }
 }
-
 
 interface IMedia {
     media?: Media;
@@ -325,20 +325,29 @@ interface ICachedMedia extends IMedia {
                     @transitionstart.self="isTransitioning = true" 
                     @transitionend.self="updateCurrentItem"
                 >  
-                    <media-content :elem="prev" :key="'p' + index"></media-content>
+                    <media-content 
+                        :elem="prev" 
+                        :key="'p' + index"
+                        :isMobileOverlayVisible="isMobileOverlayVisible"
+                    ></media-content>
                     <media-content 
                         :elem="curr" 
                         :hasOverlay="true"
                         :isFirst="!prev"
                         :isLast="!next"
+                        :isMobileOverlayVisible="isMobileOverlayVisible"
                         v-on:nav="nav($event)"
                         v-on:close="hide()"
                     ></media-content>
-                    <media-content :elem="next" :key="'n' + index"></media-content>
+                    <media-content 
+                        :elem="next" 
+                        :key="'n' + index"
+                        :isMobileOverlayVisible="isMobileOverlayVisible"
+                    ></media-content>
                 </div>
                 <media-details
                     v-if="isMobile && curr && !curr.isLoading"
-                    :isOpenOnMobile="isMobileDetailsVisible"
+                    :isOpenOnMobile="isMobileOverlayVisible"
                     :isMobile="true"
                     :media="curr.media"
                 ></media-details>
