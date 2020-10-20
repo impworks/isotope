@@ -245,6 +245,8 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         } else {
             this.transformStyle = `translate(0, 0)`;
         }
+        
+        this.translateY = 0;
     }
     
     @Debounce(20)
@@ -318,6 +320,8 @@ interface ICachedMedia extends IMedia {
                 v-hammer:swipe.left.right="handleHorizontalTouchEvents"
                 :class="{'media-viewer_closing' : isClosing}" 
             >   
+            {{translateX}}
+            {{translateY}}
                 <div class="media-viewer__content"
                     v-hammer:tap="onTap"
                     :class="transitionClass" 
