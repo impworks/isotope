@@ -17,6 +17,7 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
     
     isOpen: boolean = false;
     height: number = 0;
+    isTransitioning: boolean = false;
     
     mounted() {
         this.isOpen = !this.$filter.isEmpty(this.$filter.state);
@@ -42,11 +43,19 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
 </script>
 
 <template>
-    <div class="desktop-filters">
+    <div 
+        class="desktop-filters"
+        :class="{ 
+            'desktop-filters_opened': isOpen,
+            'desktop-filters_transitioning': isTransitioning,
+        }"
+    >
         <a 
             class="sidebar-button clickable"
             :class="{ 'sidebar-button_opened': isOpen }"
             @click.prevent="toggleOpen()"
+            @transitionstart.self="isTransitioning = true" 
+            @transitionend.self="isTransitioning = false"
         >
             <div class="sidebar-button__icon">
                 <div class="filter-icon"></div>
@@ -76,10 +85,21 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
         flex: 0 0 auto;
         position: relative;
         z-index: 3;
-        overflow: hidden;
+        
+        &_transitioning {
+            overflow: hidden;
+        }
 
-        .filter:last-child {
+        &:not(.desktop-filters_opened) {
+            overflow: hidden;
+        }
+
+        &_opened {
             border-bottom: 1px solid $gray-300;
+        }
+
+        & + .folder-tree {
+            border-top: 0;
         }
 
         .filter-icon {
