@@ -1,6 +1,9 @@
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
+using Impworks.Utils.Linq;
 using Isotope.Areas.Front.Dto;
 using Isotope.Data;
 using Isotope.Data.Models;
@@ -54,6 +57,12 @@ namespace Isotope.Demo
             ctx.TagFolder(catsFolder, catsTag);
 
             ctx.TagPhoto(cat, kittyTag, TagBindingType.Depicted, "0.2,0.2,0.6,0.7");
+
+            var catsPhoto = ctx.AddPhoto("kittens-1.jpg", catsFolder, descr: "Three kittens on a sleeping mat", date: "2020.10.??");
+            ctx.TagPhoto(catsPhoto, ctx.AddTag("Alpha", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 58, 38, 233, 205));
+            ctx.TagPhoto(catsPhoto, ctx.AddTag("Bravo", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 267, 25, 435, 192));
+            ctx.TagPhoto(catsPhoto, ctx.AddTag("Charlie", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 385, 150, 585, 332));
+            ctx.TagPhoto(catsPhoto, ctx.AddTag("Mutts"));
 
             ctx.AddSharedLink(catsFolder, key: "all-cats", mode: SearchMode.CurrentFolderAndSubfolders);
         }
@@ -111,6 +120,19 @@ namespace Isotope.Demo
             var user = new AppUser {UserName = "admin@example.com"};
             await userMgr.CreateAsync(user, "123456");
             await userMgr.AddToRoleAsync(user, nameof(UserRole.Admin));
+        }
+
+        /// <summary>
+        /// Calculates the relative coordinates from absolute ones.
+        /// </summary>
+        private static string Calc(int width, int height, int x1, int y1, int x2, int y2)
+        {
+            var x = (double) x1 / width;
+            var y = (double) y1 / height;
+            var w = (double) (x2 - x1) / width;
+            var h = (double) (y2 - y1) / height;
+
+            return new[] {x, y, w, h}.Select(p => p.ToString("0.000", CultureInfo.InvariantCulture)).JoinString(",");
         }
 
         /// <summary>
