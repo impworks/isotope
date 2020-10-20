@@ -57,10 +57,22 @@ export default class MediaViewer extends Mixins(HasLifetime) {
 
         this.isMobile = BreakpointHelper.down(Breakpoints.md);
         window.addEventListener("resize", this.resizeHandler);
+        window.addEventListener('orientationchange', this.oriantationHandler);
     }
 
     beforeDestroy() {
         window.removeEventListener('resize', this.resizeHandler);
+        window.removeEventListener('orientationchange', this.oriantationHandler);
+    }
+
+    oriantationHandler() {
+        document.documentElement.style.height = `initial`;
+        setTimeout(() => {
+            document.documentElement.style.height = `100%`;
+            setTimeout(() => {
+                window.scrollTo(0, 1);
+            }, 200);
+        }, 200);
     }
 
     @Debounce(50)
