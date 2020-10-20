@@ -37,6 +37,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     leftEdgeScale: number = 0;
     rightEdgeScale: number = 0;
     isMobile: boolean = false;
+    isMobileDetailsVisible: boolean = false;
 
     get prev(): ICachedMedia {
         return this.cache[this.index - 1] || null;
@@ -213,6 +214,12 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         this.transformStyle = `translateX(${dir * 100}vw)`;
         this.upcomingIndex = Math.min(Math.max(this.index - dir, 0), this.source.length - 1);
     }
+
+    onTap() {
+        if (this.isMobile) {
+            this.isMobileDetailsVisible = !this.isMobileDetailsVisible;
+        }
+    }
     
     updateCurrentItem() {
         this.isTransitioning = false;
@@ -252,6 +259,7 @@ interface ICachedMedia extends IMedia {
                 v-hammer:swipe.right="handleTouchEvents"
             >   
                 <div class="media-viewer__content"
+                    v-hammer:tap="onTap"
                     :class="transitionClass" 
                     :style="{transform: transformStyle}" 
                     @transitionstart.self="isTransitioning = true" 
@@ -270,6 +278,7 @@ interface ICachedMedia extends IMedia {
                 </div>
                 <media-details
                     v-if="isMobile && curr && !curr.isLoading"
+                    :isOpenOnMobile="isMobileDetailsVisible"
                     :isMobile="true"
                     :media="curr.media"
                 ></media-details>

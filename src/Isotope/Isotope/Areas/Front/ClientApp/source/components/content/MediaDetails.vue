@@ -12,10 +12,12 @@ import { TagBinding } from "../../vms/TagBinding";
 export default class MediaDetails extends Vue {
     @Prop({ required: true }) media: Media;
     @Prop({ required: false }) isMobile: boolean;
+    @Prop({ required: false }) isOpenOnMobile: boolean;
     @Dep('$filter') $filter: FilterStateService;
     
-    isOpen: boolean = false;
     height: string = 'auto';
+    isOpen: boolean = false;
+    isTransitioning: boolean = false;
 
     $refs: {
         button: HTMLElement,
@@ -84,7 +86,13 @@ export default class MediaDetails extends Vue {
         v-show="hasDetails"
         class="media-details"
         :style="{height: height}" 
-        :class="{ 'media-details_open': isOpen }"
+        @transitionstart.self="isTransitioning = true" 
+        @transitionend.self="isTransitioning = false"
+        :class="{ 
+            'media-details_open': isOpen || isOpenOnMobile, 
+            'media-details_transitioning': isTransitioning,
+            'media-details_mobile': isMobile
+        }"
     >
         <div class="media-details__header">
             <button 
@@ -135,9 +143,12 @@ export default class MediaDetails extends Vue {
         color: $light;
 
         @include media-breakpoint-down(sm) {
+            opacity: 0;
             width: 100%;
             position: fixed;
             z-index: $zindex-tooltip;
+            visibility: hidden;
+            transition: opacity 200ms linear;
         }
 
         @include media-breakpoint-up(md) {
@@ -155,6 +166,11 @@ export default class MediaDetails extends Vue {
         &_open {
             z-index: $zindex-tooltip;
 
+            @include media-breakpoint-down(sm) {
+                opacity: 1;
+                visibility: visible;
+            }
+
             .media-details__button {
                 opacity: 1;
             }
@@ -162,6 +178,10 @@ export default class MediaDetails extends Vue {
             .media-details__button__arrow {
                 transform: rotate(0);
             }
+        }
+
+        &_transitioning {
+            visibility: visible;
         }
 
         &_mobile {
