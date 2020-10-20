@@ -54,7 +54,7 @@ namespace Isotope.Areas.Front.Services
                 if (!string.IsNullOrEmpty(ctx.Link.Tags))
                 {
                     var tagIds = ctx.Link.Tags.TryParseList<int>(",");
-                    if(!media.Tags.Any(x => tagIds.Contains(x.Id)))
+                    if(!media.Tags.Any(x => tagIds.Contains(x.TagId)))
                         throw new NotFoundException(errorKey);
                 }
 
