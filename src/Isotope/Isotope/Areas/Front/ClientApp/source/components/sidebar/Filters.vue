@@ -46,7 +46,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
 </script>
 
 <template>
-    <div>
+    <fragment>
         <div class="filter">
             <h6>Tags</h6>
             <v-select
@@ -147,7 +147,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
                 </label>
             </div>
         </div>
-    </div>
+    </fragment>
 </template>
 
 <style lang="scss">

@@ -1,21 +1,22 @@
 <script lang="ts">
-import { Component, Mixins, Vue } from "vue-property-decorator";
+import { Component, Mixins, Vue, Watch } from "vue-property-decorator";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
-import TransitionExpand from '../utils/TransitionExpand.vue';
 import Filters from "./Filters.vue";
 import { HasLifetime } from "../mixins/HasLifetime";
 
 @Component({
-    components: {
-        Filters, 
-        TransitionExpand
-    }
+    components: { Filters }
 })
 export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
+
+    $refs: {
+        content: HTMLElement
+    }
     
     isOpen: boolean = false;
+    height: number = 0;
     
     mounted() {
         this.isOpen = !this.$filter.isEmpty(this.$filter.state);
@@ -29,6 +30,13 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
         if(this.isOpen)
             this.$filter.clear('filters');
         this.isOpen = !this.isOpen;
+    }
+
+    @Watch('isOpen')
+    onOpenChanged(value: boolean) {
+        this.height = this.isOpen 
+            ? this.$refs.content.clientHeight
+            : 0;
     }
 }
 </script>
@@ -50,9 +58,14 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
                 <i class="icon icon-arrow"></i>
             </div>
         </a>
-        <transition-expand>
-            <Filters v-if="isOpen"></Filters>
-        </transition-expand>
+        <div 
+            class="desktop-filters__content"
+            :style="{height: height + 'px'}" 
+        >
+            <div ref="content">
+                <filters></filters>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -63,6 +76,7 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
         flex: 0 0 auto;
         position: relative;
         z-index: 3;
+        overflow: hidden;
 
         .filter:last-child {
             border-bottom: 1px solid $gray-300;
@@ -70,6 +84,10 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
 
         .filter-icon {
             background-image: url(../../../images/filter.svg);
+        }
+
+        &__content {
+            transition: height 400ms cubic-bezier(.645,.045,.355,1);
         }
     }
 </style>
