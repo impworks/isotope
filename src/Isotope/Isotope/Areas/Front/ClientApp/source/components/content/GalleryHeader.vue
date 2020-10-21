@@ -20,7 +20,7 @@ export default class GalleryHeader extends Mixins(HasLifetime) {
     folderTree: Folder[] = [];
     crumbs: Crumb[] = [];
     currentFolder: string = null;
-    isShareLinkVisible: boolean = true;
+    isShareLinkVisible: boolean = false;
     
     async mounted() {
         try {
