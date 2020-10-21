@@ -92,6 +92,7 @@ export default class Sidebar extends Mixins(HasLifetime) {
                 >
                     <div class="btn-header__content">
                         <i class="icon icon-filter"></i>
+                        <div v-if="isFilterActive" class="btn-header__badge"></div>
                     </div>
                 </button>
             </div>
