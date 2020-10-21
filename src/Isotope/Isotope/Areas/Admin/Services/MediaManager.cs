@@ -188,6 +188,21 @@ namespace Isotope.Areas.Admin.Services
         }
 
         /// <summary>
+        /// Returns the thumbnail locations of a photo.
+        /// </summary>
+        public async Task<RectVM> GetThumbnailAsync(string key)
+        {
+            var media = await _db.Media
+                                 .Include(x => x.Tags)
+                                 .FirstOrDefaultAsync(x => x.Key == key);
+            
+            if(media == null)
+                throw new OperationException($"Media '{key}' does not exist.");
+
+            return _mapper.Map<RectVM>(media.ThumbnailRect);
+        }
+
+        /// <summary>
         /// Updates the square rectangle of the media.
         /// </summary>
         public async Task UpdateThumbnailAsync(string key, RectVM vm)
