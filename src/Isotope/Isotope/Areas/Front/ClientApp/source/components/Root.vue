@@ -63,7 +63,6 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
         </div>
         <router-view v-else></router-view>
         <portal-target name="overlay"></portal-target>
-        <portal-target name="modal"></portal-target>
     </loading>
 </template>
 

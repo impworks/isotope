@@ -12,11 +12,11 @@ import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { SearchMode } from "../../vms/SearchMode";
 import { IObservable } from "../../utils/Interfaces";
 import { Observable } from "../../utils/Observable";
-import Breadcrumbs from './Breadcrumbs.vue';
+import GalleryHeader from './GalleryHeader.vue';
 import MediaViewer from "./MediaViewer.vue";
 
 @Component({
-    components: { MediaViewer, Breadcrumbs }
+    components: { MediaViewer, GalleryHeader }
 })
 export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
     @Dep('$host') $host: string;
@@ -88,9 +88,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
 
 <template>
     <div class="gallery">
-        <div class="gallery__header">
-            <breadcrumbs></breadcrumbs>
-        </div>
+        <gallery-header></gallery-header>
         <loading 
             :is-full-page="true"
             :is-loading="asyncState.isLoading"
@@ -147,7 +145,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                         </div>
                     </div>
                 </div>
-                
             </simplebar>
         </loading>
         <div v-if="!asyncState.isLoading && isEmpty" class="gallery__error">
@@ -176,17 +173,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
         flex: 1 1 auto;
         display: flex;
         flex-direction: column;
-
-        &__header {
-            flex: 0 1 auto;
-            background: $white;
-            border-bottom: 1px solid $gray-300;
-
-            @include media-breakpoint-down(sm) {
-                margin-top: -1px;
-                border-top: 1px solid $gray-300;
-            }
-        }
 
         &__content {
             width: 100%;

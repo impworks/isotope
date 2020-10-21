@@ -156,11 +156,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
     @import "./node_modules/bootstrap/scss/variables";
     
     .filter {
-        padding: 0 1rem 1rem;
-    
-        &:first-child {
-            padding-top: 1rem;
-        }
+        padding-bottom: 1rem;
     
         h6 {
             color: $gray-900;

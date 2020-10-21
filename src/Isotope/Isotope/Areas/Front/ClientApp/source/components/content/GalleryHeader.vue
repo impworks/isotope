@@ -6,9 +6,13 @@ import { FilterStateService } from "../../services/FilterStateService";
 import { HasLifetime } from "../mixins/HasLifetime";
 import { Folder } from "../../vms/Folder";
 import { GalleryInfo } from "../../vms/GalleryInfo";
+import ModalWindow from "../utils/ModalWindow.vue";
+import ShareLink from "./ShareLink.vue";
 
-@Component
-export default class Breadcrumbs extends Mixins(HasLifetime) {
+@Component({
+    components: { ModalWindow, ShareLink }
+})
+export default class GalleryHeader extends Mixins(HasLifetime) {
     @Dep('$api') $api: ApiService;
     @Dep('$filter') $filter: FilterStateService;
     
@@ -16,6 +20,7 @@ export default class Breadcrumbs extends Mixins(HasLifetime) {
     folderTree: Folder[] = [];
     crumbs: Crumb[] = [];
     currentFolder: string = null;
+    isShareLinkVisible: boolean = true;
     
     async mounted() {
         try {
@@ -64,23 +69,38 @@ interface Crumb {
 </script>
 
 <template>
-    <div>
-        <ul class="breadcrumbs">
-            <li 
-                class="breadcrumbs__item"
-                v-for="c in crumbs"
-            >
-                <a 
-                    href="#" 
-                    @click.prevent="selectFolder(c)"
+    <div class="gallery__header">
+        <div class="desktop-navigation">
+            <div class="desktop-navigation__content">
+                <ul class="breadcrumbs">
+                    <li 
+                        class="breadcrumbs__item"
+                        v-for="(c, i) in crumbs"
+                        :key="i"
+                    >
+                        <a 
+                            href="#" 
+                            @click.prevent="selectFolder(c)"
+                        >
+                            {{c.caption}}
+                        </a>
+                    </li>
+                    <li class="breadcrumbs__item breadcrumbs__item_active">
+                        {{currentFolder}}
+                    </li>
+                </ul>
+            </div>
+            <div class="desktop-navigation__actions">
+                <button 
+                    class="btn-header"
+                    @click.prevent="isShareLinkVisible = !isShareLinkVisible"
                 >
-                    {{c.caption}}
-                </a>
-            </li>
-            <li class="breadcrumbs__item breadcrumbs__item_active">
-                {{currentFolder}}
-            </li>
-        </ul>
+                    <div class="btn-header__content">
+                        <i class="icon icon-share"></i> 
+                    </div>
+                </button>
+            </div>
+        </div>
         <div class="mobile-navigation">
             <div 
                 class="mobile-navigation__actions"
@@ -99,13 +119,17 @@ interface Crumb {
                 {{currentFolder}}
             </div>
             <div class="mobile-navigation__actions">
-                <button class="btn-header">
+                <button 
+                    class="btn-header"
+                    @click.prevent="isShareLinkVisible = !isShareLinkVisible"
+                >
                     <div class="btn-header__content">
                         <i class="icon icon-share"></i>
                     </div>
                 </button>
             </div>
         </div>
+        <share-link v-model="isShareLinkVisible"></share-link>
     </div>
 </template>
 
@@ -115,45 +139,34 @@ interface Crumb {
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";
 
-    .breadcrumbs {
-        list-style-type: none;
-        margin: 0;
-        padding: 1rem;
+    .gallery__header {
+        flex: 0 1 auto;
+        background: $white;
+        border-bottom: 1px solid $gray-300;
+
+        @include media-breakpoint-down(sm) {
+            margin-top: -1px;
+            border-top: 1px solid $gray-300;
+        }
+    }
+
+    .desktop-navigation {
+        flex: 0 0 auto;
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
-        line-height: 1.625;
-        
+        justify-content: space-between;
+
         @include media-breakpoint-down(sm) {
             display: none;
         }
 
-        &__item {
-            position: relative;
-            padding: 0 2em 0 0;
-            white-space: nowrap;
-            
-            a {
-                color: $gray-700;
-
-                &:hover {
-                    color: $gray-800;
-                }
-            }
-            
-            &:not(:last-child):after {
-                top: 0;
-                right: 0;
-                width: 2em;
-                content: '>';
-                color: $gray-400;
-                position: absolute;
-                text-align: center;
-                display: inline-block;
+        &__actions {
+            &:first-child .btn-header {
+                padding-left: 1rem;
             }
 
-            &_active {
-                font-weight: 500;
+            &:last-child .btn-header {
+                padding-right: 1rem;
             }
         }
     }
@@ -205,6 +218,45 @@ interface Crumb {
 
             &:last-child .btn-header {
                 padding-right: 1rem;
+            }
+        }
+    }
+
+    .breadcrumbs {
+        list-style-type: none;
+        margin: 0;
+        padding: 1rem;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        line-height: 1.625;
+
+        &__item {
+            position: relative;
+            padding: 0 2em 0 0;
+            white-space: nowrap;
+            
+            a {
+                color: $gray-700;
+
+                &:hover {
+                    color: $gray-800;
+                }
+            }
+            
+            &:not(:last-child):after {
+                top: 0;
+                right: 0;
+                width: 2em;
+                content: '>';
+                color: $gray-400;
+                position: absolute;
+                text-align: center;
+                display: inline-block;
+            }
+
+            &_active {
+                font-weight: 500;
             }
         }
     }

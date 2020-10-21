@@ -108,6 +108,14 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
 
         &__content {
             transition: height 400ms cubic-bezier(.645,.045,.355,1);
+
+            .filter {
+                padding: 0 1rem 1rem;
+
+                &:first-child {
+                    padding-top: 1rem;
+                }
+            }
         }
     }
 </style>

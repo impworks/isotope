@@ -3,14 +3,18 @@ import { Vue, Component, Mixins } from "vue-property-decorator";
 import { Dep } from "../../utils/VueInjectDecorator";
 import { FilterStateService, IFilterStateChangedEvent } from "../../services/FilterStateService";
 import DesktopFiltersWrapper from "./DesktopFiltersWrapper.vue";
-import MobileFiltersWrapper from "./MobileFiltersWrapper.vue";
 import Folders from './Folders.vue';
 import { IObservable } from "../../utils/Interfaces";
 import { Observable } from "../../utils/Observable";
 import { HasLifetime } from "../mixins/HasLifetime";
+import ModalWindow from "../utils/ModalWindow.vue";
+import Filters from "./Filters.vue";
+import { Bind } from 'lodash-decorators';
+import { Debounce } from 'lodash-decorators';
+import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
 
 @Component({
-    components: { DesktopFiltersWrapper, Folders, MobileFiltersWrapper }
+    components: { DesktopFiltersWrapper, Folders, ModalWindow, Filters }
 })
 export default class Sidebar extends Mixins(HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
@@ -26,6 +30,7 @@ export default class Sidebar extends Mixins(HasLifetime) {
     async mounted() {
         this.observe(this.$filter.onStateChanged, x => this.refresh(x));
         await this.refresh({ ...this.$filter.state, source: null });
+        window.addEventListener("resize", this.resizeHandler);
     }
 
     refresh(state: IFilterStateChangedEvent) {
@@ -35,8 +40,24 @@ export default class Sidebar extends Mixins(HasLifetime) {
         this.isFilterActive = !this.$filter.isEmpty(state);
     }
 
+    resetFilters() {
+        this.$filter.clear('filters');
+    }
+
     goToRoot() {
         this.$filter.update('logo', { folder: '/', tags: null, dateFrom: null, dateTo: null });
+    }
+
+    beforeDestroy() {
+        window.removeEventListener('resize', this.resizeHandler);
+    }
+
+    @Debounce(50)
+    @Bind()
+    resizeHandler() {
+        if (BreakpointHelper.up(Breakpoints.md)) {
+            this.isMobileFiltersVisible = false;
+        }
     }
 } 
 </script>
@@ -65,21 +86,51 @@ export default class Sidebar extends Mixins(HasLifetime) {
                     </div>
                 </button>
                 <button
+                    v-if="isFilterShown"
                     class="sidebar__filter-button btn-header"
                     @click.prevent="isMobileFiltersVisible = !isMobileFiltersVisible"
                 >
                     <div class="btn-header__content">
                         <i class="icon icon-filter"></i>
-                        <div v-if="isFilterActive" class="btn-header__badge"></div>
-                        <MobileFiltersWrapper v-model="isMobileFiltersVisible"></MobileFiltersWrapper>
                     </div>
                 </button>
             </div>
         </div>
         <div class="sidebar__content">
-            <DesktopFiltersWrapper v-if="isFilterShown"></DesktopFiltersWrapper>
-            <Folders></Folders>
+            <desktop-filters-wrapper v-if="isFilterShown"></desktop-filters-wrapper>
+            <folders></folders>
         </div>
+        <modal-window 
+            v-model="isMobileFiltersVisible"
+            :isMobileOnly="true"
+        >
+            <template v-slot:header>
+                <div class="modal-window__header__caption">Filters</div>
+                <div class="modal-window__header__actions">
+                    <button
+                        href="#" 
+                        class="btn-header btn-header_danger" 
+                        @click.prevent="resetFilters"
+                    >
+                        <div class="btn-header__content">
+                            Clear
+                        </div>
+                    </button>
+                </div>
+            </template>
+            <template v-slot:content>
+                <filters></filters>
+            </template>
+            <template v-slot:footer>
+                <button 
+                    type="button" 
+                    class="btn btn-block btn-primary"
+                    @click.prevent="isMobileFiltersVisible =! isMobileFiltersVisible"
+                >
+                    Ok
+                </button>
+            </template>
+        </modal-window>
     </div>
 </template>
 
