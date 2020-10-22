@@ -12,11 +12,12 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
 
     $refs: {
+        wrapper: HTMLElement,
         content: HTMLElement
     }
     
     isOpen: boolean = false;
-    height: number = 0;
+    height: string = '0px';
     isTransitioning: boolean = false;
     
     mounted() {
@@ -35,9 +36,22 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
 
     @Watch('isOpen')
     onOpenChanged(value: boolean) {
-        this.height = this.isOpen 
-            ? this.$refs.content.clientHeight
-            : 0;
+        const wrapper = this.$refs.wrapper;
+        const content = this.$refs.content;
+
+        if (value) {
+            this.height = content.clientHeight == 0 
+                ? 'auto' 
+                : content.clientHeight + 'px';
+            return;
+        }
+        
+        if (wrapper.style.height == 'auto') {
+            this.height = content.clientHeight + 'px';
+            setTimeout(() => this.height = '0px', 1);
+        } else {
+            this.height = '0px';
+        }
     }
 }
 </script>
@@ -54,8 +68,6 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
             class="sidebar-button clickable"
             :class="{ 'sidebar-button_opened': isOpen }"
             @click.prevent="toggleOpen()"
-            @transitionstart.self="isTransitioning = true" 
-            @transitionend.self="isTransitioning = false"
         >
             <div class="sidebar-button__icon">
                 <div class="filter-icon"></div>
@@ -68,8 +80,11 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
             </div>
         </a>
         <div 
+            ref="wrapper"
             class="desktop-filters__content"
-            :style="{height: height + 'px'}" 
+            :style="{ height: height }"
+            @transitionstart.self="isTransitioning = true" 
+            @transitionend.self="isTransitioning = false"
         >
             <div ref="content">
                 <filters></filters>
@@ -85,17 +100,16 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
         flex: 0 0 auto;
         position: relative;
         z-index: 3;
-        
-        &_transitioning {
-            overflow: hidden;
-        }
-
-        &:not(.desktop-filters_opened) {
-            overflow: hidden;
-        }
 
         &_opened {
             border-bottom: 1px solid $gray-300;
+        }
+
+        &_transitioning,
+        &:not(.desktop-filters_opened)  {
+            .desktop-filters__content {
+                overflow: hidden;
+            }
         }
 
         & + .folder-tree {
