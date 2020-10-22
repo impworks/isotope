@@ -65,6 +65,13 @@ export default class FolderTreeItem extends Vue {
     position: relative;
     padding-left: 1em;
 
+    &_root {
+        &:before,
+        &:after {
+            display: none;
+        }
+    }
+
     &:before,
     &:after {
         content:'';
