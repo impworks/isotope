@@ -53,6 +53,13 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
             this.height = '0px';
         }
     }
+
+    @Watch('isTransitioning')
+    onTransitioningChanged(value: boolean) {
+        if (!value && this.isOpen) {
+            this.height = 'auto';
+        }
+    }
 }
 </script>
 
