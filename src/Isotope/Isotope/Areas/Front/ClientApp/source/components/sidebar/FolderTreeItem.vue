@@ -25,8 +25,8 @@ export default class FolderTreeItem extends Vue {
     
     @Watch('currentPath')
     refreshState() {
-        this.expanded = this.currentPath.startsWith(this.folder.path);
         this.active = this.currentPath === this.folder.path;
+        this.expanded = this.active || this.currentPath.startsWith(this.folder.path + '/');
     }
 }
 </script>
