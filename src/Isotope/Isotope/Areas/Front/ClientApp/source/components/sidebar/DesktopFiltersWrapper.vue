@@ -112,10 +112,6 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
             }
         }
 
-        & + .folder-tree {
-            border-top: 0;
-        }
-
         .filter-icon {
             background-image: url(../../../images/filter.svg);
         }

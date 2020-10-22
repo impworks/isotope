@@ -32,20 +32,28 @@ export default class FolderTreeItem extends Vue {
 </script>
 
 <template>
-    <fragment>
+    <div 
+        class="folder-tree-item"
+        :class="{'folder-tree-item_root': depth == 1}"
+    >
         <a
-            class="folder-tree-item clickable"
-            :class="{active: active}"
+            class="folder-tree-link clickable"
+            :class="{
+                'folder-tree-link_active': active, 
+                'folder-tree-link_styled': depth > 1, 
+                'folder-tree-link_expanded': expanded
+            }"
             :key="folder.path"
+            :style="{marginLeft: depth * -1 + 'em', paddingLeft: depth * 1 + 'em'}"
             @click.prevent="selectFolder()"
         >
-            <div class="folder-tree-item__icon" :style="{marginLeft: depth * 0.7 + 'em'}"></div>
-            <div class="folder-tree-item__name">{{ folder.caption }}</div>
+            <div class="folder-tree-link__icon"></div>
+            <div class="folder-tree-link__name">{{ folder.caption }}</div>
         </a>
-        <div v-if="folder.subfolders && folder.subfolders.length && expanded">
+        <fragment v-if="folder.subfolders && folder.subfolders.length && expanded">
             <FolderTreeItem v-for="s in folder.subfolders" :folder="s" :key="s.path" :depth="depth + 1" :current-path="currentPath" />
-        </div>
-    </fragment>
+        </fragment>
+    </div>
 </template>
 
 <style lang="scss">
@@ -54,20 +62,62 @@ export default class FolderTreeItem extends Vue {
 @import "./node_modules/bootstrap/scss/variables";
 
 .folder-tree-item {
+    position: relative;
+    padding-left: 1em;
+
+    &:before,
+    &:after {
+        content:'';
+        left: 0.4em;
+        bottom: 0;
+        z-index: 1;
+        position: absolute;
+        background-color: $gray-400;
+    }
+
+    &:before {
+        width: 1px;
+        height: 100%;
+        top: 0;
+    }
+
+    &:after {
+        width: 0.4em;
+        height: 1px;
+        top: 1.2em;
+    }
+
+    &:last-child:before {
+        height: 1.2em;
+    }
+
+    &:last-child:before {
+        height: 1.2em;
+    }
+}
+
+.folder-tree-link {
     display: flex;
     flex-direction: row;
     padding: 0.5em 1em;
     color: $gray-800;
-    border-top: 1px solid $gray-200;
+    position: relative;
 
-    &:first-of-type {
-        border-top-color: rgba(0,0,0,0);
-    }
-
-    &:hover {
+    &:hover:not(#{&}_active) {
         color: $gray-800;
         text-decoration: none;
         background-color: $gray-200;
+    }
+
+    &:before{
+        content:'';
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0);
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
     }
 
     &-icon,
@@ -92,18 +142,17 @@ export default class FolderTreeItem extends Vue {
         flex: 0 1 auto;
     }
     
-    &.active {
+    &_active #{&}__icon ,
+    &_expanded #{&}__icon {
+        background-position: 0 100%;
+    }
+
+    &_active,
+    &_active:hover {
         color: $white;
         background-color: $primary;
         border-color: $primary;
-
-        & + .folder-tree-item {
-            border-top-color: rgba(0,0,0,0);
-        }
-
-        .folder-tree-item__icon {
-            background-position: 0 100%;
-        }
+        text-decoration: none;
     }
 }
 </style>
