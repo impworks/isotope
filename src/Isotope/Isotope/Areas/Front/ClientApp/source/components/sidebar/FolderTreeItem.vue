@@ -32,10 +32,7 @@ export default class FolderTreeItem extends Vue {
 </script>
 
 <template>
-    <div 
-        class="folder-tree-item"
-        :class="{'folder-tree-item_root': depth == 1}"
-    >
+    <div class="folder-tree-item">
         <a
             class="folder-tree-link clickable"
             :class="{
@@ -44,10 +41,9 @@ export default class FolderTreeItem extends Vue {
                 'folder-tree-link_expanded': expanded
             }"
             :key="folder.path"
-            :style="{marginLeft: depth * -1 + 'em', paddingLeft: depth * 1 + 'em'}"
             @click.prevent="selectFolder()"
         >
-            <div class="folder-tree-link__icon"></div>
+            <div class="folder-tree-link__icon" :style="{marginLeft: depth * 0.7 + 'em'}"></div>
             <div class="folder-tree-link__name">{{ folder.caption }}</div>
         </a>
         <fragment v-if="folder.subfolders && folder.subfolders.length && expanded">
@@ -60,48 +56,6 @@ export default class FolderTreeItem extends Vue {
 @import "../../../styles/variables";
 @import "./node_modules/bootstrap/scss/functions";
 @import "./node_modules/bootstrap/scss/variables";
-
-.folder-tree-item {
-    position: relative;
-    padding-left: 1em;
-
-    &_root {
-        &:before,
-        &:after {
-            display: none;
-        }
-    }
-
-    &:before,
-    &:after {
-        content:'';
-        left: 0.4em;
-        bottom: 0;
-        z-index: 1;
-        position: absolute;
-        background-color: $gray-400;
-    }
-
-    &:before {
-        width: 1px;
-        height: 100%;
-        top: 0;
-    }
-
-    &:after {
-        width: 0.4em;
-        height: 1px;
-        top: 1.2em;
-    }
-
-    &:last-child:before {
-        height: 1.2em;
-    }
-
-    &:last-child:before {
-        height: 1.2em;
-    }
-}
 
 .folder-tree-link {
     display: flex;
