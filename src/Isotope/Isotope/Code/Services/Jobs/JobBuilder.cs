@@ -19,6 +19,7 @@ namespace Isotope.Code.Services.Jobs
         
         public Type Type { get; }
         public object Args { get; private set; }
+        public bool IsSuperseding { get; private set; }
 
         /// <summary>
         /// Adds arguments to the job.
@@ -26,6 +27,15 @@ namespace Isotope.Code.Services.Jobs
         public JobBuilder WithArgs(object args)
         {
             Args = args;
+            return this;
+        }
+
+        /// <summary>
+        /// Terminates all other jobs of this kind before running this one.
+        /// </summary>
+        public JobBuilder SupersedeAll()
+        {
+            IsSuperseding = true;
             return this;
         }
     }

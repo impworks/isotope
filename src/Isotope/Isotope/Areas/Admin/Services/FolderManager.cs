@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Impworks.Utils.Linq;
 using Impworks.Utils.Strings;
 using Isotope.Areas.Admin.Dto;
+using Isotope.Areas.Admin.Services.Jobs;
 using Isotope.Areas.Admin.Utils;
+using Isotope.Code.Services.Jobs;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
@@ -21,14 +23,16 @@ namespace Isotope.Areas.Admin.Services
     /// </summary>
     public class FolderManager
     {
-        public FolderManager(AppDbContext db, IMapper mapper)
+        public FolderManager(AppDbContext db, IMapper mapper, IBackgroundJobService jobSvc)
         {
             _db = db;
             _mapper = mapper;
+            _jobSvc = jobSvc;
         }
         
         private readonly AppDbContext _db;
         private readonly IMapper _mapper;
+        private readonly IBackgroundJobService _jobSvc;
 
         /// <summary>
         /// Returns the entire folder tree for display.
@@ -246,8 +250,8 @@ namespace Isotope.Areas.Admin.Services
             
             if (oldTags.SequenceEqual(newTags))
                 return;
-            
-            // todo: recalculate everything
+
+            await _jobSvc.RunAsync(JobBuilder.For<RebuildInheritedTagsJob>().SupersedeAll());
         }
     }
 }

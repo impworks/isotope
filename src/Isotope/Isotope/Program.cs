@@ -43,6 +43,7 @@ namespace Isotope
                        .ConfigureServices(services =>
                        {
                            services.AddSingleton<BackgroundJobService>();
+                           services.AddSingleton<IBackgroundJobService>(sp => sp.GetService<BackgroundJobService>());
                            services.AddHostedService(sp => sp.GetService<BackgroundJobService>());
                        });
         }

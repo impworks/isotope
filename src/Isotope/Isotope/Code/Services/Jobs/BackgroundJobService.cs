@@ -19,7 +19,7 @@ namespace Isotope.Code.Services.Jobs
     /// <summary>
     /// Background job runner and manager.
     /// </summary>
-    public class BackgroundJobService: IHostedService
+    public class BackgroundJobService: IHostedService, IBackgroundJobService
     {
         public BackgroundJobService(IServiceScopeFactory scopeFactory, ILogger logger)
         {
@@ -62,6 +62,10 @@ namespace Isotope.Code.Services.Jobs
         public async Task RunAsync(JobBuilder jb)
         {
             var def = await CreateDescriptorAsync(jb);
+            
+            if(jb.IsSuperseding)
+                Cancel(def.ResourceKey);
+            
             await ExecuteJobAsync(def);
         }
 
@@ -70,6 +74,9 @@ namespace Isotope.Code.Services.Jobs
         /// </summary>
         public void Cancel(string key)
         {
+            if(key == null)
+                throw new ArgumentNullException(nameof(key));
+            
             var jobsToTerminate = _jobs.Values.Where(x => x.ResourceKey == key).ToList();
             foreach (var job in jobsToTerminate)
                 job.Cancellation.Cancel();
