@@ -62,23 +62,11 @@ export default class FolderTreeItem extends Vue {
     flex-direction: row;
     padding: 0.5em 1em;
     color: $gray-800;
-    position: relative;
 
     &:hover:not(#{&}_active) {
         color: $gray-800;
         text-decoration: none;
         background-color: $gray-200;
-    }
-
-    &:before{
-        content:'';
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0);
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 2;
     }
 
     &-icon,

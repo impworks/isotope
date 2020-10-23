@@ -12,14 +12,14 @@ import Filters from "./Filters.vue";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
+import UserDropdown from "./UserDropdown.vue";
 
 @Component({
-    components: { DesktopFiltersWrapper, Folders, ModalWindow, Filters }
+    components: { DesktopFiltersWrapper, Folders, ModalWindow, Filters, UserDropdown }
 })
 export default class Sidebar extends Mixins(HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
 
-    avatar: string = null;
     isMobileFiltersVisible: boolean = false;
     isFilterActive : boolean = false;
     
@@ -72,19 +72,7 @@ export default class Sidebar extends Mixins(HasLifetime) {
                 isotope
             </a>
             <div class="sidebar__header__actions">
-                <button class="btn-header">
-                    <div class="btn-header__content">
-                        <i 
-                            class="icon icon-user"
-                            v-if="!avatar" 
-                        ></i>
-                        <div 
-                            class="avatar"
-                            v-else 
-                            style="background-image: url('../../../images/avatar.jpg')"
-                        ></div>
-                    </div>
-                </button>
+                <user-dropdown></user-dropdown>
                 <button
                     v-if="isFilterShown"
                     class="sidebar__filter-button btn-header"
