@@ -41,15 +41,17 @@
                 ></div>
             </div>
         </button>
-        <div 
-            class="user-dropdown__content" 
-            v-if="isOpen"
-        >
-            <ul>
-                <li><a href="#">Admin panel</a></li>
-                <li><a href="#">Log out</a></li>
-            </ul>
-        </div>
+        <transition name="user-dropdown__transition">
+            <div 
+                class="user-dropdown__content" 
+                v-if="isOpen"
+            >
+                <ul>
+                    <li><a href="#">Admin panel</a></li>
+                    <li><a href="#">Log out</a></li>
+                </ul>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -61,6 +63,20 @@
     
     .user-dropdown {
         position: relative;
+
+        &__transition {
+            
+            &-enter-active, 
+            &-leave-active {
+                transition: opacity 200ms ease,
+                            transform 200ms ease;
+            }
+
+            &-enter, &-leave-to {
+                opacity: 0;
+                transform: translateY(-0.5rem);
+            }
+        }
 
         &__content {
             width: 11rem;
