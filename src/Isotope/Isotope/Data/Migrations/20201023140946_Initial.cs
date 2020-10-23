@@ -61,6 +61,24 @@ namespace Isotope.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "JobStates",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Type = table.Column<string>(nullable: true),
+                    ArgumentsType = table.Column<string>(nullable: true),
+                    Arguments = table.Column<string>(nullable: true),
+                    StartDate = table.Column<DateTime>(nullable: false),
+                    FinishDate = table.Column<DateTime>(nullable: true),
+                    Success = table.Column<bool>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobStates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
@@ -489,6 +507,9 @@ namespace Isotope.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "FolderTags");
+
+            migrationBuilder.DropTable(
+                name: "JobStates");
 
             migrationBuilder.DropTable(
                 name: "MediaTags");

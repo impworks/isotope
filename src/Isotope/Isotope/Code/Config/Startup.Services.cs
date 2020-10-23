@@ -16,7 +16,7 @@ namespace Isotope.Code.Config
         {
             // global
             services.AddSingleton<CacheService>();
-            
+
             // frontend
             services.AddScoped<AuthService>();
             services.AddScoped<ConfigService>();

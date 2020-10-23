@@ -58,7 +58,7 @@ namespace Isotope.Code.Config
 
             InitDatabase(app);
             
-            app.UseForwardedHeaders(GetforwardedHeadersOptions())
+            app.UseForwardedHeaders(GetForwardedHeadersOptions())
                .UseStaticFiles()
                .UseRouting()
                .UseAuthentication()
@@ -74,7 +74,7 @@ namespace Isotope.Code.Config
         /// <summary>
         /// Configures the options for header forwarding.
         /// </summary>
-        private ForwardedHeadersOptions GetforwardedHeadersOptions()
+        private ForwardedHeadersOptions GetForwardedHeadersOptions()
         {
             var opts = new ForwardedHeadersOptions
             {

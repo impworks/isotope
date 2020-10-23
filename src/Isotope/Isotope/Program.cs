@@ -2,7 +2,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using Isotope.Code.Config;
+using Isotope.Code.Services.Jobs;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
@@ -37,6 +39,11 @@ namespace Isotope
                                              .WriteTo.File(path, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7);
                                      })
                                      .UseStartup<Startup>();
+                       })
+                       .ConfigureServices(services =>
+                       {
+                           services.AddSingleton<BackgroundJobService>();
+                           services.AddHostedService(sp => sp.GetService<BackgroundJobService>());
                        });
         }
     }

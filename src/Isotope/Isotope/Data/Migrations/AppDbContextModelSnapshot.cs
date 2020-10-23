@@ -156,6 +156,35 @@ namespace Isotope.Data.Migrations
                     b.ToTable("FolderTags");
                 });
 
+            modelBuilder.Entity("Isotope.Data.Models.JobState", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Arguments")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ArgumentsType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("FinishDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool?>("Success")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JobStates");
+                });
+
             modelBuilder.Entity("Isotope.Data.Models.Media", b =>
                 {
                     b.Property<string>("Key")

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Isotope.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201018171532_Initial")]
+    [Migration("20201023140946_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -156,6 +156,35 @@ namespace Isotope.Data.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("FolderTags");
+                });
+
+            modelBuilder.Entity("Isotope.Data.Models.JobState", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Arguments")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ArgumentsType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("FinishDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool?>("Success")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JobStates");
                 });
 
             modelBuilder.Entity("Isotope.Data.Models.Media", b =>

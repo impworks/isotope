@@ -10,16 +10,22 @@ namespace Isotope.Code.Utils.Helpers
     /// </summary>
     public static class RuntimeHelper
     {
-        /// <summary>
-        /// Enumerates all assemblies related to current one.
-        /// </summary>
-        public static IEnumerable<Assembly> GetOwnAssemblies()
+        static RuntimeHelper()
         {
             var rootAsm = Assembly.GetEntryAssembly();
             var namePrefix = rootAsm.FullName.Split(new[] {", "}, StringSplitOptions.None)[0];
             ForceLoadReferences(rootAsm, namePrefix);
-            return AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName?.StartsWith(namePrefix) == true);
+            OwnAssemblies = AppDomain.CurrentDomain
+                                     .GetAssemblies()
+                                     .Where(x => x.FullName?.StartsWith(namePrefix) == true).ToList();
         }
+
+        /// <summary>
+        /// List of all assemblies defined in the current project.
+        /// </summary>
+        public static readonly IReadOnlyList<Assembly> OwnAssemblies;
+
+        public static IEnumerable<Type> OwnTypes => OwnAssemblies.SelectMany(x => x.GetTypes());
 
         /// <summary>
         /// Instantiates and returns instances of all matching types in all own assemblies.
@@ -27,14 +33,19 @@ namespace Isotope.Code.Utils.Helpers
         public static IEnumerable<T> GetAllInstances<T>()
         {
             var targetType = typeof(T);
-            foreach (var asm in GetOwnAssemblies())
-            {
-                var types = asm.GetTypes().Where(x => x.IsConcrete() && targetType.IsAssignableFrom(x));
-                foreach (var type in types)
-                {
+            
+            foreach (var type in OwnTypes)
+                if(type.IsConcrete() && targetType.IsAssignableFrom(type))
                     yield return (T) Activator.CreateInstance(type);
-                }
-            }
+        }
+
+        /// <summary>
+        /// Finds a type by full name.
+        /// </summary>
+        public static Type FindType(string name)
+        {
+            return OwnTypes.FirstOrDefault(x => x.FullName == name) ??
+                throw new Exception($"Type '{name}' was not found.");
         }
 
         /// <summary>

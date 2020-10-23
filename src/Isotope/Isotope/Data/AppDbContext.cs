@@ -25,6 +25,7 @@ namespace Isotope.Data
         public DbSet<SharedLink> SharedLinks => Set<SharedLink>();
 
         public DbSet<DynamicConfigWrapper> DynamicConfig => Set<DynamicConfigWrapper>();
+        public DbSet<JobState> JobStates => Set<JobState>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
