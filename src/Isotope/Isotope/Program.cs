@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Isotope.Areas.Admin.Services.Jobs;
 using Isotope.Code.Config;
 using Isotope.Code.Services.Jobs;
 using Microsoft.AspNetCore.Hosting;
@@ -45,6 +46,8 @@ namespace Isotope
                            services.AddSingleton<BackgroundJobService>();
                            services.AddSingleton<IBackgroundJobService>(sp => sp.GetService<BackgroundJobService>());
                            services.AddHostedService(sp => sp.GetService<BackgroundJobService>());
+
+                           services.AddTransient<RebuildInheritedTagsJob>();
                        });
         }
     }
