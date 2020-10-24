@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
 using Isotope.Code.Utils.Exceptions;
 using Isotope.Code.Utils.Helpers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
@@ -42,6 +45,20 @@ namespace Isotope.Code.Config
                             ClockSkew = TimeSpan.Zero
                         };
                     });
+
+            services.ConfigureApplicationCookie(x =>
+            {
+                x.LoginPath = new PathString("/");
+                x.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToLogin = ctx =>
+                    {
+                        ctx.Response.Clear();
+                        ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             services.AddMvc(x =>
                     {

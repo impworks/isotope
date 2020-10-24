@@ -4,7 +4,7 @@ import { Observable } from "../utils/Observable";
 
 export class AuthService {
     
-    public constructor() {
+    constructor() {
         this._user = this.getStoredUser();
         this._onUserChanged = new Observable<UserInfo>();
     }

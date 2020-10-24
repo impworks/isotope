@@ -27,7 +27,7 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
             await this.showLoading(async () => {
                 const result = await this.$api.authorize({ username: this.username, password: this.password});
                 if(result.success) {
-                    this.$userState.user = result.user;
+                    this.$auth.user = result.user;
                 } else {
                     this.error = result.errorMessage;
                 }

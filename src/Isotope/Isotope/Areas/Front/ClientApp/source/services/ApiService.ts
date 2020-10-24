@@ -9,8 +9,9 @@ import { Media } from "../vms/Media";
 import { LoginRequest } from "../vms/LoginRequest";
 import { LoginResponse } from "../vms/LoginResponse";
 import { GalleryInfo } from "../vms/GalleryInfo";
-import { FilterStateService } from "./FilterStateService";
+import { FilterStateService, IFilterState } from "./FilterStateService";
 import { ILookup } from "../utils/Interfaces";
+import { KeyResult } from "../vms/KeyResult";
 
 export class ApiService {
     // -----------------------------------
@@ -64,6 +65,15 @@ export class ApiService {
      */
     getMedia(key: string): Promise<Media> {
         return this.invoke<Media>('media', { key: key });
+    }
+
+    /**
+     * Creates a new shared link.
+     */
+    async createSharedLink(state: IFilterState): Promise<string> {
+        const url = this.getRequestUrl('admin/shared-links');
+        const response = await axios.post<KeyResult>(url, state);
+        return response.data.key;
     }
 
     /**

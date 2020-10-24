@@ -4,6 +4,7 @@ import { Route } from "vue-router";
 import { Func2, IObservable } from "../utils/Interfaces";
 import { Observable } from "../utils/Observable";
 import { StaticHelper } from "../utils/StaticHelper";
+import { DateHelper } from "../utils/DateHelper";
 
 export interface IFilterState {
     folder: string;
@@ -53,17 +54,13 @@ export class FilterStateService {
         const s = this._state;
         const query = StaticHelper.getQuery({
             tags: s.tags && s.tags.length ? s.tags.join(',') : null,
-            dateFrom: fmtDate(s.dateFrom),
-            dateTo: fmtDate(s.dateTo),
+            dateFrom: DateHelper.format(s.dateFrom),
+            dateTo: DateHelper.format(s.dateTo),
             searchMode: this.isEmpty(s) ? null : s.searchMode,
             sh: this.shareId
         });
         
         return s.folder + (query ? '?' + query : '') + (s.mediaKey ? '#m:' + s.mediaKey : '');
-        
-        function fmtDate(d: Date) {
-            return d ? JSON.stringify(d).substr(1, 10) : null;
-        }
     }
 
     // -----------------------------------

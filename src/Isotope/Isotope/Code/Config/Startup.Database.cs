@@ -20,7 +20,7 @@ namespace Isotope.Code.Config
         private void ConfigureDatabaseServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(opts => opts.UseSqlite(Configuration.Database.ConnectionString));
-
+            
             services.AddIdentity<AppUser, IdentityRole>(opts =>
                     {
                         opts.Password.RequiredLength = 6;
