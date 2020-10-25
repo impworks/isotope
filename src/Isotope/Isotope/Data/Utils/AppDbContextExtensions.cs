@@ -71,7 +71,7 @@ namespace Isotope.Data.Utils
                     Value = JsonConvert.SerializeObject(new DynamicConfig
                     {
                         Title = "Isotope",
-                        AllowGuests = true
+                        AllowGuests = false
                     })
                 });
             }

@@ -25,7 +25,7 @@ namespace Isotope
             return Host.CreateDefaultBuilder(args)
                        .ConfigureWebHostDefaults(webBuilder =>
                        {
-                           webBuilder.UseKestrel()
+                           webBuilder.UseKestrel(x => x.ListenAnyIP(5000))
                                      .UseContentRoot(Directory.GetCurrentDirectory())
                                      .UseIIS()
                                      .UseSerilog((context, config) =>

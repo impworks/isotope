@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Isotope.Areas.Front.Dto;
 using Isotope.Code.Services.Config;
@@ -22,19 +23,19 @@ namespace Isotope.Areas.Front.Services
         public async Task<GalleryInfoVM> GetInfoAsync(UserContext ctx)
         {
             var cfg = _cfg.GetDynamicConfig();
+
+            bool? linkValid = null;
+            if (!string.IsNullOrEmpty(ctx.LinkId))
+                linkValid = ctx.Link != null;
             
-            var info = new GalleryInfoVM
+            return new GalleryInfoVM
             {
                 Caption = cfg.Title,
                 AllowGuests = cfg.AllowGuests,
-                IsAuthorized = ctx.User != null,
-                IsAdmin = ctx.User?.IsAdmin
+                IsAuthorized = ctx.User != null || linkValid == true,
+                IsAdmin = ctx.User?.IsAdmin,
+                IsLinkValid = linkValid
             };
-            
-            if (!string.IsNullOrEmpty(ctx.LinkId))
-                info.IsLinkValid = ctx.Link != null;
-
-            return info;
         }
     }
 }

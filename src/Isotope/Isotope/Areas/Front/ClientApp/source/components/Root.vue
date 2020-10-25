@@ -20,8 +20,9 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
     info: GalleryInfo = null;
     error: string = null;
     authRequired: boolean = true;
+    loaded: boolean = false;
     
-    async mounted() {
+    async created() {
         this.$filter.updateFromRoute(this.$route);
         this.observe(this.$auth.onUserChanged, x => this.authRequired = !x);
         this.observe(this.$filter.onUrlChanged, x => this.$router.replace(x));
@@ -37,6 +38,8 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
             })
         } catch(e) {
             this.error = 'Gallery is unavailable.'
+        } finally {
+            this.loaded = true;
         }
     }
 }
@@ -50,7 +53,7 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
     >
         <div 
             class="root__centered-content" 
-            v-if="error || authRequired"
+            v-if="loaded && (error || authRequired)"
         >
             <div 
                 class="alert alert-danger"

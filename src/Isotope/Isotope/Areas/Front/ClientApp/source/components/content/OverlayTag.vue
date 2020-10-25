@@ -16,7 +16,7 @@ export default class OverlayTag extends Vue {
     isTransitioning: boolean = false;
     isTapped: boolean = false;
     
-    get hasFilter() {
+    get canFilter() {
         return !this.$filter.shareId;
     }
     
@@ -41,6 +41,9 @@ export default class OverlayTag extends Vue {
     }
     
     filterByTag() {
+        if(!this.canFilter)
+            return;
+        
         this.$filter.update(
             'tag', 
             {
@@ -93,15 +96,13 @@ export default class OverlayTag extends Vue {
             placement="bottom" 
         >
             <a 
-                v-if="hasFilter" 
+                v-if="canFilter" 
                 class="clickable" 
                 @click.prevent="filterByTag()"
             >
                 {{value.tag.caption}}
             </a>
-            <span 
-                v-if="!hasFilter"
-            >
+            <span v-else>
                 {{value.tag.caption}}
             </span>
         </b-popover>

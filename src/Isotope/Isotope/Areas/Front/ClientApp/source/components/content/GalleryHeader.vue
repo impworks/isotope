@@ -20,6 +20,7 @@ export default class GalleryHeader extends Mixins(HasLifetime) {
     folderTree: Folder[] = [];
     crumbs: Crumb[] = [];
     currentFolder: string = null;
+    
     isShareLinkVisible: boolean = false;
     
     async mounted() {
@@ -93,7 +94,7 @@ interface Crumb {
             <div class="desktop-navigation__actions">
                 <button 
                     class="btn-header"
-                    v-if="info && info.isAdmin"
+                    v-if="info && info.isAdmin && info.isLinkValid === null"
                     @click.prevent="isShareLinkVisible = !isShareLinkVisible"
                 >
                     <div class="btn-header__content">

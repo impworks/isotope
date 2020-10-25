@@ -42,7 +42,7 @@
 
 <template>
     <div class="user-dropdown" 
-         v-if="info && info.isAuthorized">
+         v-if="info && info.isAuthorized && info.isLinkValid === null">
         <button 
             class="btn-header"
             @click="isOpen = !isOpen"

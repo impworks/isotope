@@ -7,21 +7,29 @@ import { Dep } from "../../utils/VueInjectDecorator";
 import { FilterStateService } from "../../services/FilterStateService";
 import { SearchScope } from "../../vms/SearchScope";
 import { TagBinding } from "../../vms/TagBinding";
+import { ApiService } from "../../services/ApiService";
+import { GalleryInfo } from "../../vms/GalleryInfo";
 
 @Component
 export default class MediaDetails extends Vue {
     @Prop({ required: true }) media: Media;
     @Prop({ required: false }) isMobile: boolean;
     @Prop({ required: false }) isOpenOnMobile: boolean;
+    
     @Dep('$filter') $filter: FilterStateService;
     
     height: string = 'auto';
     isOpen: boolean = false;
     isTransitioning: boolean = false;
+    info: GalleryInfo = null;
 
     $refs: {
         button: HTMLElement,
         content: HTMLElement
+    }
+    
+    get canFilter() {
+        return !this.$filter.shareId;
     }
 
     mounted () {
@@ -52,6 +60,9 @@ export default class MediaDetails extends Vue {
     }
 
     filterByTag(binding: TagBinding) {
+        if(!this.canFilter)
+            return;
+        
         this.$filter.update(
             'tag', 
             {
@@ -118,14 +129,21 @@ export default class MediaDetails extends Vue {
                 class="media-details__tags"
                 v-if="media.extraTags.length"
             >
-                <a 
-                    class="media-details__tags__item clickable" 
-                    v-for="t in media.extraTags" 
-                    :key="t.tag.id"
-                    @click.prevent="filterByTag(t)"
-                >
-                    {{t.tag.caption}}
-                </a>
+                <template v-for="t in media.extraTags">
+                    <a 
+                        class="media-details__tags__item clickable" 
+                        v-if="canFilter" 
+                        :key="t.tag.id"
+                        @click.prevent="filterByTag(t)"
+                    >
+                        {{t.tag.caption}}
+                    </a>
+                    <span v-else
+                          class="media-details__tags__item"
+                          :key="t.tag.id">
+                        {{t.tag.caption}}
+                    </span>
+                </template>
             </div>
         </div>
     </div>
