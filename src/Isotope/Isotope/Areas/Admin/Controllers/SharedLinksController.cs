@@ -32,7 +32,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Creates a new shared link.
         /// </summary>
         [HttpPost, Route("")]
-        public Task<KeyResultVM> Create(SharedLinkVM vm)
+        public Task<KeyResultVM> Create([FromBody] SharedLinkVM vm)
         {
             return _smMgr.CreateAsync(vm);
         }

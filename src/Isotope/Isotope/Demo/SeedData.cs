@@ -64,7 +64,7 @@ namespace Isotope.Demo
             ctx.TagPhoto(catsPhoto, ctx.AddTag("Charlie", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 385, 150, 585, 332));
             ctx.TagPhoto(catsPhoto, ctx.AddTag("Mutts"));
 
-            ctx.AddSharedLink(catsFolder, key: "all-cats", mode: SearchMode.CurrentFolderAndSubfolders);
+            ctx.AddSharedLink(catsFolder, key: "all-cats", mode: SearchScope.CurrentFolderAndSubfolders);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Isotope.Demo
         /// </summary>
         private static async Task SeedDefaultUserAsync(UserManager<AppUser> userMgr)
         {
-            var user = new AppUser {UserName = "admin@example.com"};
+            var user = new AppUser {UserName = "admin@example.com", IsAdmin = true};
             await userMgr.CreateAsync(user, "123456");
             await userMgr.AddToRoleAsync(user, nameof(UserRole.Admin));
         }

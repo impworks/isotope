@@ -93,6 +93,7 @@ interface Crumb {
             <div class="desktop-navigation__actions">
                 <button 
                     class="btn-header"
+                    v-if="info && info.isAdmin"
                     @click.prevent="isShareLinkVisible = !isShareLinkVisible"
                 >
                     <div class="btn-header__content">

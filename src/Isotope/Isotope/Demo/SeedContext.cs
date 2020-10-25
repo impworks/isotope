@@ -171,7 +171,7 @@ namespace Isotope.Demo
         /// <summary>
         /// Adds a new shared link.
         /// </summary>
-        public SharedLink AddSharedLink(Folder folder = null, int[] tagIds = null, SearchMode? mode = null, string dateFrom = null, string dateTo = null, string key = null)
+        public SharedLink AddSharedLink(Folder folder = null, int[] tagIds = null, SearchScope? mode = null, string dateFrom = null, string dateTo = null, string key = null)
         {
             var link = new SharedLink
             {
@@ -179,7 +179,7 @@ namespace Isotope.Demo
                 Folder = folder,
                 DateFrom = dateFrom,
                 DateTo = dateTo,
-                Mode = mode ?? SearchMode.CurrentFolder,
+                Scope = mode ?? SearchScope.CurrentFolder,
                 Tags = tagIds?.JoinString(",")
             };
 

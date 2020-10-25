@@ -3,7 +3,7 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { TagBindingWithLocation } from "../../vms/TagBinding";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
-import { SearchMode } from "../../vms/SearchMode";
+import { SearchScope } from "../../vms/SearchScope";
 
 @Component
 export default class OverlayTag extends Vue {
@@ -46,10 +46,10 @@ export default class OverlayTag extends Vue {
             {
                 folder: '/',
                 tags: [ this.value.tag.id ],
-                dateFrom: null,
-                dateTo: null,
+                from: null,
+                to: null,
                 mediaKey: null,
-                searchMode: SearchMode.CurrentFolderAndSubfolders
+                scope: SearchScope.CurrentFolderAndSubfolders
             }
         );
     }

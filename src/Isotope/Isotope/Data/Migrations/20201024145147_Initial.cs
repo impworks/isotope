@@ -354,7 +354,7 @@ namespace Isotope.Data.Migrations
                 {
                     Key = table.Column<string>(maxLength: 50, nullable: false),
                     FolderKey = table.Column<string>(nullable: true),
-                    Mode = table.Column<int>(nullable: false),
+                    Scope = table.Column<int>(nullable: false),
                     Tags = table.Column<string>(nullable: true),
                     DateFrom = table.Column<string>(nullable: true),
                     DateTo = table.Column<string>(nullable: true),

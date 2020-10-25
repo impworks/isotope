@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Isotope.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201023140946_Initial")]
+    [Migration("20201024145147_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -276,7 +276,7 @@ namespace Isotope.Data.Migrations
                     b.Property<string>("FolderKey")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Mode")
+                    b.Property<int>("Scope")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Tags")

@@ -5,7 +5,7 @@ import { HasAsyncState } from "../mixins/HasAsyncState";
 import { Dep } from "../../utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService, IFilterState } from "../../services/FilterStateService";
-import { SearchMode } from "../../vms/SearchMode";
+import { SearchScope } from "../../vms/SearchScope";
 import { Tag } from "../../vms/Tag";
 
 @Component
@@ -13,7 +13,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
     @Dep('$api') $api: ApiService;
     @Dep('$filter') $filter: FilterStateService;
 
-    filter: Partial<IFilterState> = { searchMode: SearchMode.CurrentFolderAndSubfolders };
+    filter: Partial<IFilterState> = { scope: SearchScope.CurrentFolderAndSubfolders };
     tags: Tag[] = [];
 
     async mounted() {
@@ -37,9 +37,9 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
     updateFromState(state: IFilterState) {
         this.filter = {
             tags: state.tags,
-            searchMode: state.searchMode || SearchMode.CurrentFolderAndSubfolders,
-            dateFrom: state.dateFrom,
-            dateTo: state.dateTo
+            scope: state.scope || SearchScope.CurrentFolderAndSubfolders,
+            from: state.from,
+            to: state.to
         };
     }
 }
@@ -70,7 +70,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <datepicker
-                        v-model="filter.dateFrom"
+                        v-model="filter.from"
                         :typeable="true"
                         :bootstrap-styling="true"
                     />
@@ -78,7 +78,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
                 <div class="px-1">—</div>
                 <div>
                     <datepicker
-                        v-model="filter.dateTo"
+                        v-model="filter.to"
                         :typeable="true"
                         :bootstrap-styling="true"
                     />
@@ -106,7 +106,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
                     type="radio"
                     id="sm-current-folder"
                     class="custom-control-input"
-                    v-model="filter.searchMode"
+                    v-model="filter.scope"
                     :value="1"
                 >
                 <label
@@ -121,7 +121,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
                     type="radio"
                     id="sm-current-folder-nested"
                     class="custom-control-input"
-                    v-model="filter.searchMode"
+                    v-model="filter.scope"
                     :value="2"
                 >
                 <label
@@ -136,7 +136,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
                     id="sm-everywhere"
                     type="radio"
                     class="custom-control-input"
-                    v-model="filter.searchMode"
+                    v-model="filter.scope"
                     :value="3"
                 >
                 <label

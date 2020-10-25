@@ -81,24 +81,19 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         private async Task ValidateAsync(SharedLinkVM vm)
         {
-            if(!string.IsNullOrEmpty(vm.DateFrom) && vm.DateFrom.TryParse<DateTime>() == null)
-                throw new OperationException($"Date '{vm.DateFrom}' is not valid.");
+            if(!string.IsNullOrEmpty(vm.From) && vm.From.TryParse<DateTime>() == null)
+                throw new OperationException($"Date '{vm.From}' is not valid.");
             
-            if(!string.IsNullOrEmpty(vm.DateTo) && vm.DateTo.TryParse<DateTime>() == null)
-                throw new OperationException($"Date '{vm.DateTo}' is not valid.");
+            if(!string.IsNullOrEmpty(vm.To) && vm.To.TryParse<DateTime>() == null)
+                throw new OperationException($"Date '{vm.To}' is not valid.");
             
-            if(!Enum.IsDefined(typeof(SearchMode), vm.Mode))
-                throw new OperationException($"Search mode '{vm.Mode}' is not supported.");
+            if(!Enum.IsDefined(typeof(SearchScope), vm.Scope))
+                throw new OperationException($"Search mode '{vm.Scope}' is not supported.");
 
-            if (!string.IsNullOrEmpty(vm.Tags))
+            if (vm.Tags?.Length > 0)
             {
-                var tagIdsRaw = vm.Tags.Split(",");
-                var tagIds = vm.Tags.TryParseList<int>(",");
-                if(tagIdsRaw.Length != tagIds.Count)
-                    throw new OperationException($"Tags format is invalid: '{vm.Tags}' is not a comma-separated list of integers.");
-
-                var existingCount = await _db.Tags.CountAsync(x => tagIds.Contains(x.Id));
-                if(existingCount != tagIds.Count)
+                var existingCount = await _db.Tags.CountAsync(x => vm.Tags.Contains(x.Id));
+                if(existingCount != vm.Tags.Length)
                     throw new OperationException($"Some tags of the specified list '{vm.Tags}' do not exist!");
             }
         }

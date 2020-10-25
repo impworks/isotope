@@ -9,7 +9,7 @@ import { ApiService } from "../../services/ApiService";
 import { Folder } from "../../vms/Folder";
 import { TagBinding } from "../../vms/TagBinding";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
-import { SearchMode } from "../../vms/SearchMode";
+import { SearchScope } from "../../vms/SearchScope";
 import { IObservable } from "../../utils/Interfaces";
 import { Observable } from "../../utils/Observable";
 import GalleryHeader from './GalleryHeader.vue';
@@ -51,9 +51,9 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             await this.showLoading(async () => {
                 this.contents = await this.$api.getFolderContents({
                     folder: state.folder,
-                    searchMode: state.searchMode,
-                    dateFrom: state.dateFrom,
-                    dateTo: state.dateTo,
+                    scope: state.scope,
+                    from: state.from,
+                    to: state.to,
                     tags: state.tags ? state.tags.join(',') : null
                 });
             });
@@ -73,7 +73,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
     }
     
     filterByTag(t: TagBinding) {
-        this.$filter.update('list', { folder: '/', searchMode: SearchMode.Everywhere, tags: [t.tag.id] });
+        this.$filter.update('list', { folder: '/', scope: SearchScope.Everywhere, tags: [t.tag.id] });
     }
     
     showMedia(idx: number) {

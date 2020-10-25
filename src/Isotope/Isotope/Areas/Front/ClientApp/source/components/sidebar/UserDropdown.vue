@@ -1,13 +1,26 @@
 <script lang="ts">
     import { Vue, Component } from "vue-property-decorator";
-
+    import { GalleryInfo } from "../../vms/GalleryInfo";
+    import { Dep } from "../../utils/VueInjectDecorator";
+    import { ApiService } from "../../services/ApiService";
+    import { AuthService } from "../../services/AuthService";
 
     @Component
     export default class UserDropdown extends Vue {
+        @Dep('$api') $api: ApiService;
+        @Dep('$auth') $auth: AuthService;
+        
         avatar: string = null;
         isOpen: boolean = false;
+        
+        info: GalleryInfo = null;
 
-        mounted() {
+        async mounted() {
+            try {
+                this.info = await this.$api.getInfo();
+            } catch {
+            }
+            
             window.addEventListener("click", this.clickHandler);
         }
 
@@ -20,11 +33,16 @@
                 this.isOpen = false;
             }
         }
+        
+        logout() {
+            this.$auth.user = null;
+        }
     }
 </script>
 
 <template>
-    <div class="user-dropdown">
+    <div class="user-dropdown" 
+         v-if="info && info.isAuthorized">
         <button 
             class="btn-header"
             @click="isOpen = !isOpen"
@@ -47,8 +65,8 @@
                 v-if="isOpen"
             >
                 <ul>
-                    <li><a href="#">Admin panel</a></li>
-                    <li><a href="#">Log out</a></li>
+                    <li><a href="/@admin" v-if="info.isAdmin">Admin panel</a></li>
+                    <li><a class="clickable" @click.prevent="logout">Log out</a></li>
                 </ul>
             </div>
         </transition>

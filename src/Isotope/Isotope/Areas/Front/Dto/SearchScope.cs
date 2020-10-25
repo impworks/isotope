@@ -3,7 +3,7 @@ namespace Isotope.Areas.Front.Dto
     /// <summary>
     /// Known search modes.
     /// </summary>
-    public enum SearchMode
+    public enum SearchScope
     {
         /// <summary>
         /// Only include media from current folder.

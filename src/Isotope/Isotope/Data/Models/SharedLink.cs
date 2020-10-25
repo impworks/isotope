@@ -26,7 +26,7 @@ namespace Isotope.Data.Models
         /// Flag indicating that subfolders are also displayed when viewing this link.
         /// Otherwise, only media immediately inside this folder are available. 
         /// </summary>
-        public SearchMode Mode { get; set; }
+        public SearchScope Scope { get; set; }
         
         /// <summary>
         /// List of tag IDs, comma-separated.

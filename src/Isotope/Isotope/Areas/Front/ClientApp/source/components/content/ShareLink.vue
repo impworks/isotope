@@ -4,7 +4,7 @@ import { Dep } from "../../utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService, IFilterState } from "../../services/FilterStateService";
 import { HasAsyncState } from "../mixins/HasAsyncState";
-import { SearchMode } from "../../vms/SearchMode";
+import { SearchScope } from "../../vms/SearchScope";
 import { ArrayHelper } from "../../utils/ArrayHelper";
 import { DateHelper } from "../../utils/DateHelper";
 
@@ -48,8 +48,7 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
     }
     
     get canCreate(): boolean {
-        return !this.error
-            && !this.link
+        return this.state == 'new'
             && !this.asyncState.isLoading
             && !this.asyncState.isSaving;
     }
@@ -91,7 +90,7 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
      * Returns the folder name for filter display.
      */
     private async getFolderName(state: IFilterState): Promise<string> {
-        if(state.searchMode === SearchMode.Everywhere || (state.searchMode === SearchMode.CurrentFolderAndSubfolders && state.folder === '/'))
+        if(state.scope === SearchScope.Everywhere || (state.scope === SearchScope.CurrentFolderAndSubfolders && state.folder === '/'))
             return 'Everywhere';
         
         const tree = await this.$api.getFolderTree();
@@ -99,7 +98,7 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
         if(!folder)
             throw Error('Folder not found');
         
-        return 'Folder "' + folder.caption + '"' + (state.searchMode === SearchMode.CurrentFolder ? '' : ' and subfolders');
+        return 'Folder "' + folder.caption + '"' + (state.scope === SearchScope.CurrentFolder ? '' : ' and subfolders');
     }
 
     /**
@@ -118,10 +117,10 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
      */
     private getDateDescription(state: IFilterState): string {
         const parts: string[] = [];
-        if(state.dateFrom)
-            parts.push('from ' + DateHelper.format(state.dateFrom));
-        if(state.dateTo)
-            parts.push('to ' + DateHelper.format(state.dateTo));
+        if(state.from)
+            parts.push('from ' + DateHelper.format(state.from));
+        if(state.to)
+            parts.push('to ' + DateHelper.format(state.to));
         
         return parts.length ? parts.join(' ') : null;
     }

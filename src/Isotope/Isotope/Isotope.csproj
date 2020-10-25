@@ -64,7 +64,7 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Media.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\MediaThumbnail.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\MediaType.ts" />
-    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\SearchMode.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\SearchScope.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Tag.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagBinding.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagBindingLocation.ts" />

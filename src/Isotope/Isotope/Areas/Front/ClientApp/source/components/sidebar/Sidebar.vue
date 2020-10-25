@@ -13,13 +13,15 @@ import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
 import UserDropdown from "./UserDropdown.vue";
+import { GalleryInfo } from "../../vms/GalleryInfo";
+import { ApiService } from "../../services/ApiService";
 
 @Component({
     components: { DesktopFiltersWrapper, Folders, ModalWindow, Filters, UserDropdown }
 })
 export default class Sidebar extends Mixins(HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
-
+    
     isMobileFiltersVisible: boolean = false;
     isFilterActive : boolean = false;
     
@@ -27,9 +29,9 @@ export default class Sidebar extends Mixins(HasLifetime) {
         return !this.$filter.shareId;
     }
 
-    async mounted() {
+    mounted() {
         this.observe(this.$filter.onStateChanged, x => this.refresh(x));
-        await this.refresh({ ...this.$filter.state, source: null });
+        this.refresh({ ...this.$filter.state, source: null });
         window.addEventListener("resize", this.resizeHandler);
     }
 

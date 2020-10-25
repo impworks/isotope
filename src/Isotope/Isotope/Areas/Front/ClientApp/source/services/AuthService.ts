@@ -51,7 +51,11 @@ export class AuthService {
      */
     private setStoredUser(user: UserInfo) {
         const ls = window.localStorage;
-        const raw = JSON.stringify(user);
-        ls.setItem(AuthService.USER_KEY, raw);
+        if(user) {
+            const raw = JSON.stringify(user);
+            ls.setItem(AuthService.USER_KEY, raw);
+        } else {
+            ls.removeItem(AuthService.USER_KEY);
+        }
     }
 }

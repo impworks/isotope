@@ -5,7 +5,7 @@ import { Debounce } from 'lodash-decorators';
 import { Media } from "../../vms/Media";
 import { Dep } from "../../utils/VueInjectDecorator";
 import { FilterStateService } from "../../services/FilterStateService";
-import { SearchMode } from "../../vms/SearchMode";
+import { SearchScope } from "../../vms/SearchScope";
 import { TagBinding } from "../../vms/TagBinding";
 
 @Component
@@ -57,10 +57,10 @@ export default class MediaDetails extends Vue {
             {
                 folder: '/',
                 tags: [ binding.tag.id ],
-                dateFrom: null,
-                dateTo: null,
+                from: null,
+                to: null,
                 mediaKey: null,
-                searchMode: SearchMode.CurrentFolderAndSubfolders
+                scope: SearchScope.CurrentFolderAndSubfolders
             }
         );
     }

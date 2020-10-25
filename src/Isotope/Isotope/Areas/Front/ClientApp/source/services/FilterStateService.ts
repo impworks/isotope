@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.cloneDeep';
-import { SearchMode } from "../vms/SearchMode";
+import { SearchScope } from "../vms/SearchScope";
 import { Route } from "vue-router";
 import { Func2, IObservable } from "../utils/Interfaces";
 import { Observable } from "../utils/Observable";
@@ -9,9 +9,9 @@ import { DateHelper } from "../utils/DateHelper";
 export interface IFilterState {
     folder: string;
     tags: number[];
-    dateFrom: Date;
-    dateTo: Date;
-    searchMode: SearchMode;
+    from: Date;
+    to: Date;
+    mode: SearchScope;
     mediaKey: string;
     
     [key: string]: any;
@@ -54,9 +54,9 @@ export class FilterStateService {
         const s = this._state;
         const query = StaticHelper.getQuery({
             tags: s.tags && s.tags.length ? s.tags.join(',') : null,
-            dateFrom: DateHelper.format(s.dateFrom),
-            dateTo: DateHelper.format(s.dateTo),
-            searchMode: this.isEmpty(s) ? null : s.searchMode,
+            from: DateHelper.format(s.from),
+            to: DateHelper.format(s.to),
+            scope: this.isEmpty(s) ? null : s.scope,
             sh: this.shareId
         });
         
@@ -76,9 +76,9 @@ export class FilterStateService {
         this.update(null, {
             folder: route.path,
             tags: getVal('tags', x => x.split(',').map(y => parseInt(y)).filter(y => y > 0)),
-            dateFrom: getDate('dateFrom'),
-            dateTo: getDate('dateTo'),
-            searchMode: getVal('searchMode', x => parseInt(x)) || SearchMode.CurrentFolderAndSubfolders,
+            from: getDate('from'),
+            to: getDate('to'),
+            scope: getVal('scope', x => parseInt(x)) || SearchScope.CurrentFolderAndSubfolders,
             mediaKey: route.hash?.startsWith('#m:') ? route.hash.substr(3) : null
         });
         
@@ -109,9 +109,9 @@ export class FilterStateService {
         
         if(this._shareId) {
             delete state.tags;
-            delete state.dateFrom;
-            delete state.dateTo;
-            delete state.searchMode;
+            delete state.from;
+            delete state.to;
+            delete state.scope;
         }
         
         for(let key in state) {
@@ -144,7 +144,7 @@ export class FilterStateService {
      * Clears the filter form.
      */
     clear(source: string) {
-        this.update(source, { tags: null, dateFrom: null, dateTo: null, searchMode: SearchMode.CurrentFolderAndSubfolders });
+        this.update(source, { tags: null, dateFrom: null, dateTo: null, searchMode: SearchScope.CurrentFolderAndSubfolders });
     }
 
     /**

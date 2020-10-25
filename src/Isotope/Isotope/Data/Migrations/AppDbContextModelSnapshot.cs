@@ -274,7 +274,7 @@ namespace Isotope.Data.Migrations
                     b.Property<string>("FolderKey")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Mode")
+                    b.Property<int>("Scope")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Tags")

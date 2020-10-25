@@ -1,4 +1,4 @@
-import { SearchMode } from "./SearchMode";
+import { SearchScope as SearchMode } from "./SearchScope";
 
 export interface FolderContentsRequest {
     folder: string;

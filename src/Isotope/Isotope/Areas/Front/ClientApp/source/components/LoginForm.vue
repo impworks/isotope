@@ -14,6 +14,16 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
     password: string = null;
     error: string = null;
     
+    caption: string = 'isotope';
+    
+    async mounted() {
+        try {
+            const info = await this.$api.getInfo();
+            this.caption = info.caption;
+        } catch {
+        }
+    }
+    
     get canSignIn(): boolean {
         return !!this.username && !!this.password;
     }
@@ -43,7 +53,7 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
     <form @submit.prevent="signIn()">
         <div class="card shadow-sm">
             <div class="card-header bg-white">
-                <div class="logotype">isotope</div>
+                <div class="logotype">{{ caption }}</div>
             </div>
             <div class="card-body">
                 <div class="form-group">
@@ -56,7 +66,7 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
                         v-autofocus
                     />
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-0">
                     <input 
                         type="password" 
                         v-model="password" 
@@ -66,7 +76,7 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
                     />
                 </div>
                 <div 
-                    class="alert alert-danger m-0" 
+                    class="alert alert-danger m-0 mt-3" 
                     v-if="error"
                 >
                     {{error}}

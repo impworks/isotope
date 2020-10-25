@@ -46,7 +46,7 @@ namespace Isotope.Areas.Front.Services
             
             if (ctx.Link is SharedLink link)
             {
-                if(link.Mode == SearchMode.CurrentFolder)
+                if(link.Scope == SearchScope.CurrentFolder)
                     return new FolderVM[0];
 
                 baseFolder = link.Folder;
@@ -94,7 +94,7 @@ namespace Isotope.Areas.Front.Services
         public async Task<FolderContentsVM> GetFolderContentsAsync(FolderContentsRequestVM request, UserContext ctx)
         {
             var req = CombineRequest(request, ctx);
-            var hasFilter = req.Tags != null || req.DateFrom != null || req.DateTo != null;
+            var hasFilter = req.Tags != null || req.From != null || req.To != null;
             return hasFilter
                 ? await GetFolderFilteredContentsAsync(req)
                 : await GetFolderSimpleContentsAsync(req, ctx);
@@ -118,8 +118,8 @@ namespace Isotope.Areas.Front.Services
             {
                 Folder = hasFilter ? rootPath : PathHelper.Combine(rootPath, request.Folder),
                 Tags = link.Tags,
-                DateFrom = link.DateFrom,
-                DateTo = link.DateTo
+                From = link.DateFrom,
+                To = link.DateTo
             };
         }
 
@@ -134,7 +134,7 @@ namespace Isotope.Areas.Front.Services
                                   .ThenInclude(x => x.Tag)
                                   .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
 
-            var canShowSubfolders = ctx.Link == null || ctx.Link.Mode == SearchMode.CurrentFolderAndSubfolders;
+            var canShowSubfolders = ctx.Link == null || ctx.Link.Scope == SearchScope.CurrentFolderAndSubfolders;
             var subfolders = canShowSubfolders
                 ? await _db.Folders
                            .AsNoTracking()
@@ -176,9 +176,9 @@ namespace Isotope.Areas.Front.Services
             foreach (var tagId in request.Tags.TryParseList<int>(","))
                 query = query.Where(x => x.Tags.Any(y => y.Tag.Id == tagId));
             
-            if (request.SearchMode == SearchMode.CurrentFolder)
+            if (request.Scope == SearchScope.CurrentFolder)
                 query = query.Where(x => x.FolderKey == folder.Key);
-            else if (request.SearchMode == SearchMode.CurrentFolderAndSubfolders)
+            else if (request.Scope == SearchScope.CurrentFolderAndSubfolders)
                 query = query.Where(x => x.Folder.Path.StartsWith(folder.Path));
 
             var media = await query.OrderBy(x => x.Order)
@@ -197,8 +197,8 @@ namespace Isotope.Areas.Front.Services
         /// </summary>
         private IReadOnlyList<Media> TryFilterMediaByDate(FolderContentsRequestVM request, IReadOnlyList<Media> source)
         {
-            var dateFrom = TryParse(request.DateFrom);
-            var dateTo = TryParse(request.DateTo);
+            var dateFrom = TryParse(request.From);
+            var dateTo = TryParse(request.To);
 
             if (dateFrom == null && dateTo == null)
                 return source;

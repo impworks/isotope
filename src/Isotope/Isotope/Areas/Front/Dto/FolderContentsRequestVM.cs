@@ -18,16 +18,16 @@ namespace Isotope.Areas.Front.Dto
         /// <summary>
         /// Current search mode to use.
         /// </summary>
-        public SearchMode? SearchMode { get; set; }
+        public SearchScope? Scope { get; set; }
         
         /// <summary>
         /// Earliest date in the range.
         /// </summary>
-        public string DateFrom { get; set; }
+        public string From { get; set; }
         
         /// <summary>
         /// Latest date in the range.
         /// </summary>
-        public string DateTo { get; set; }
+        public string To { get; set; }
     }
 }
