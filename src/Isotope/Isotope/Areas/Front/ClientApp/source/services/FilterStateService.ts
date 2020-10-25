@@ -11,7 +11,7 @@ export interface IFilterState {
     tags: number[];
     from: Date;
     to: Date;
-    mode: SearchScope;
+    scope: SearchScope;
     mediaKey: string;
     
     [key: string]: any;

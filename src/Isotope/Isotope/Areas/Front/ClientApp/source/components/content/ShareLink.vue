@@ -90,13 +90,21 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
      * Returns the folder name for filter display.
      */
     private async getFolderName(state: IFilterState): Promise<string> {
-        if(state.scope === SearchScope.Everywhere || (state.scope === SearchScope.CurrentFolderAndSubfolders && state.folder === '/'))
-            return 'Everywhere';
-        
+        const empty = this.$filter.isEmpty(state);
+        const root = state.folder === '/';
         const tree = await this.$api.getFolderTree();
         const folder = ArrayHelper.findRecursive(tree, x => x.path === state.folder, x => x.subfolders);
-        if(!folder)
+        if(!folder && !root)
             throw Error('Folder not found');
+        
+        if(empty)
+            return root ? 'Everywhere' : 'Folder "' + folder.caption + '" and subfolders';
+        
+        if(state.scope === SearchScope.Everywhere || (root && state.scope === SearchScope.CurrentFolderAndSubfolders))
+            return 'Everywhere';
+        
+        if(root && state.scope === SearchScope.CurrentFolder)
+            return "Root folder";
         
         return 'Folder "' + folder.caption + '"' + (state.scope === SearchScope.CurrentFolder ? '' : ' and subfolders');
     }
