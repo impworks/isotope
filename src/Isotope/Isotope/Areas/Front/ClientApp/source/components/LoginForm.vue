@@ -17,11 +17,7 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
     caption: string = 'isotope';
     
     async mounted() {
-        try {
-            const info = await this.$api.getInfo();
-            this.caption = info.caption;
-        } catch {
-        }
+        this.caption = (await this.$api.getInfo()).caption;
     }
     
     get canSignIn(): boolean {

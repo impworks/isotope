@@ -11,6 +11,7 @@ using Isotope.Data;
 using Isotope.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Isotope.Code.Services
 {
@@ -60,23 +61,43 @@ namespace Isotope.Code.Services
         }
 
         /// <summary>
+        /// Checks if the token is valid.
+        /// Returns the ClaimsPrincipal if everything is OK.
+        /// </summary>
+        public ClaimsPrincipal ValidateToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var args = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = JwtHelper.GetSigningCredentials().Key,
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+            return handler.ValidateToken(token, args, out _);
+        }
+
+        /// <summary>
         /// Generates the JWT token for an authorized user.
         /// </summary>
         private string GenerateToken(AppUser user, IEnumerable<string> roles)
         {
+            var handler = new JwtSecurityTokenHandler();
             var claims = roles.Select(x => new Claim(ClaimTypes.Role, x)).ToList();
-            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.UserName));
-            
-            var token = new JwtSecurityToken(
-                issuer: JwtHelper.Issuer,
-                audience: JwtHelper.Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddDays(10),
-                notBefore: DateTime.UtcNow,
-                signingCredentials: JwtHelper.GetSigningCredentials()
+            claims.Add(new Claim(ClaimTypes.Name, user.UserName));
+
+            var token = handler.CreateToken(
+                new SecurityTokenDescriptor
+                {
+                    Issuer = JwtHelper.Issuer,
+                    Audience = JwtHelper.Audience,
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.UtcNow.AddDays(10),
+                    SigningCredentials = JwtHelper.GetSigningCredentials()
+                }
             );
             
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return handler.WriteToken(token);
         }
     }
 }

@@ -24,6 +24,7 @@ export class ApiService {
         private $filter: FilterStateService
     ) {
         this._cache = {};
+        $auth.onUserChanged.subscribe(() => this._cache = {});
     }
     
     private _cache: ILookup<Promise<any>>;

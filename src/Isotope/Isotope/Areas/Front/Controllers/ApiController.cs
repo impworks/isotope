@@ -10,7 +10,7 @@ namespace Isotope.Areas.Front.Controllers
     /// General controller for frontend API methods.
     /// </summary>
     [Route("~/@api"), ApiController]
-    [ServiceFilter(typeof(TryAuthorizeFilter))]
+    [JwtAuthorize]
     public class ApiController: ControllerBase
     {
         public ApiController(GalleryInfoPresenter info, FolderPresenter folders, TagsPresenter tags, MediaPresenter media, UserContextManager ucm)

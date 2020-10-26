@@ -17,7 +17,6 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
     @Dep('$auth') $auth: AuthService;
     @Dep('$filter') $filter: FilterStateService;
     
-    info: GalleryInfo = null;
     error: string = null;
     authRequired: boolean = true;
     loaded: boolean = false;
@@ -29,15 +28,15 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
         
         try {
             await this.showLoading(async () => {
-                this.info = await this.$api.getInfo();
-                document.title = this.info.caption;
-                this.authRequired = !this.info.allowGuests && !this.info.isAuthorized;
-                if(this.info.isLinkValid === false) {
+                const info = await this.$api.getInfo();
+                document.title = info.caption;
+                this.authRequired = !info.allowGuests && !info.isAuthorized && info.isLinkValid === null;
+                if(info.isLinkValid === false) {
                     this.error = 'The specified share link is invalid.';
                 }
             })
         } catch(e) {
-            this.error = 'Gallery is unavailable.'
+            this.error = 'Gallery is unavailable.';
         } finally {
             this.loaded = true;
         }

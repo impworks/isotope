@@ -23,9 +23,21 @@ namespace Isotope.Areas.Front.Controllers
         /// Attempts to authorize the user.
         /// </summary> 
         [HttpPost, Route("login")]
-        public async Task<LoginResponseVM> Login([FromBody] LoginRequestVM request)
+        public Task<LoginResponseVM> Login([FromBody] LoginRequestVM request)
         {
-            return await _auth.TryLoginAsync(request);
+            var result = _auth.TryLoginAsync(request);
+            ClearCookie();
+            return result;
+        }
+
+        /// <summary>
+        /// Removes the auth cookie.
+        /// </summary>
+        private void ClearCookie()
+        {
+            // hack: SignInManager always implicitly sets cookies on successful authorization
+            // so we need to explicitly clear them from the response in order to properly use JWT authorization
+            Response.Cookies.Delete(".AspNetCore.Identity.Application");
         }
     }
 }

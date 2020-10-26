@@ -27,24 +27,9 @@ namespace Isotope.Code.Config
         {
             services.AddSingleton(p => Configuration);
             services.AddSingleton(p => Log.Logger);
-            services.AddScoped<TryAuthorizeFilter>();
-
-            var jwtKey = JwtHelper.GetKey();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(opts =>
-                    {
-                        opts.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = true,
-                            ValidateAudience = true,
-                            ValidateLifetime = true,
-                            ValidateIssuerSigningKey = true,
-                            ValidIssuer = JwtHelper.Issuer,
-                            ValidAudience = JwtHelper.Audience,
-                            IssuerSigningKey = jwtKey,
-                            ClockSkew = TimeSpan.Zero
-                        };
-                    });
+            services.AddScoped<JwtAuthorizeFilter>();
+            
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 
             services.ConfigureApplicationCookie(x =>
             {
