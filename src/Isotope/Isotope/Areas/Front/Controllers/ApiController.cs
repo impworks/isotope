@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Isotope.Areas.Front.Dto;
 using Isotope.Areas.Front.Services;
 using Isotope.Code.Utils;
+using Isotope.Code.Utils.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotope.Areas.Front.Controllers

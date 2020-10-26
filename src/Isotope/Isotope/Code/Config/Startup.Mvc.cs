@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
 using Isotope.Code.Utils.Exceptions;
+using Isotope.Code.Utils.Filters;
 using Isotope.Code.Utils.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

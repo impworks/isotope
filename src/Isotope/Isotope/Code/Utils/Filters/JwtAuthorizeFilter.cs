@@ -2,7 +2,7 @@ using System;
 using Isotope.Code.Services;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Isotope.Code.Utils
+namespace Isotope.Code.Utils.Filters
 {
     /// <summary>
     /// Retrieves authorization info from the bearer token, if one is specified.

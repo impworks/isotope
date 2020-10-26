@@ -1,11 +1,12 @@
 using System.Diagnostics;
 using Isotope.Areas.Admin.Dto;
 using Isotope.Areas.Admin.Utils;
+using Isotope.Code.Utils.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
 
-namespace Isotope.Code.Utils.Exceptions
+namespace Isotope.Code.Utils.Filters
 {
     /// <summary>
     /// Filter for handling\logging common exceptions.
