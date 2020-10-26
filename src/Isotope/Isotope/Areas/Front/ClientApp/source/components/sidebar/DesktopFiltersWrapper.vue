@@ -18,6 +18,7 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
     
     isOpen: boolean = false;
     height: string = '0px';
+    overflow: string = 'hidden';
     isTransitioning: boolean = false;
     
     mounted() {
@@ -38,11 +39,16 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
     onOpenChanged(value: boolean) {
         const wrapper = this.$refs.wrapper;
         const content = this.$refs.content;
+        this.overflow = 'hidden';
 
         if (value) {
-            this.height = content.clientHeight == 0 
-                ? 'auto' 
-                : content.clientHeight + 'px';
+            if(content.clientHeight == 0 ) {
+                this.height = 'auto';
+                this.overflow = null;
+            } else {
+                this.height = content.clientHeight + 'px';
+            }
+
             return;
         }
         
@@ -58,6 +64,7 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
     onTransitioningChanged(value: boolean) {
         if (!value && this.isOpen) {
             this.height = 'auto';
+            this.overflow = null;
         }
     }
 }
@@ -67,8 +74,7 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
     <div 
         class="desktop-filters"
         :class="{ 
-            'desktop-filters_opened': isOpen,
-            'desktop-filters_transitioning': isTransitioning,
+            'desktop-filters_opened': isOpen
         }"
     >
         <a 
@@ -89,7 +95,7 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
         <div 
             ref="wrapper"
             class="desktop-filters__content"
-            :style="{ height: height }"
+            :style="{ height: height, overflow: overflow }"
             @transitionstart.self="isTransitioning = true" 
             @transitionend.self="isTransitioning = false"
         >
@@ -110,13 +116,6 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
 
         &_opened {
             border-bottom: 1px solid $gray-300;
-        }
-
-        &_transitioning,
-        &:not(.desktop-filters_opened)  {
-            .desktop-filters__content {
-                overflow: hidden;
-            }
         }
 
         .filter-icon {
