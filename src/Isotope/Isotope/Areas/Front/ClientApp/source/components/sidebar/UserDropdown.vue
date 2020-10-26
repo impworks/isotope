@@ -107,32 +107,6 @@
                 right: 0;
             }
 
-            &:after, 
-            &:before {
-                bottom: 100%;
-                right: 1.5rem;
-                border: solid transparent;
-                content: "";
-                height: 0;
-                width: 0;
-                position: absolute;
-                pointer-events: none;
-            }
-
-            &:after {
-                border-color: rgba(0, 0, 0, 0);
-                border-bottom-color: $white;
-                border-width: 0.5rem;
-                margin-right: -0.5rem;
-            }
-
-            &:before {
-                border-color: rgba(0, 0, 0, 0);
-                border-bottom-color: $gray-400;
-                border-width: calc(0.5rem + 1px);
-                margin-right: calc(-0.5rem - 1px);
-            }
-
             ul {
                 box-shadow: $box-shadow;
                 background-color: $white;
@@ -144,9 +118,50 @@
                 text-align: left;
                 position: relative;
                 margin-top: -1px;
-                overflow: hidden;
 
                 li {
+
+                    &:first-child {
+
+                        a {
+                            border-radius: 0.25rem 0.25rem 0 0;
+
+                            &:after, 
+                            &:before {
+                                bottom: 100%;
+                                right: 1.5rem;
+                                border: solid transparent;
+                                content: "";
+                                height: 0;
+                                width: 0;
+                                position: absolute;
+                                pointer-events: none;
+                            }
+
+                            &:after {
+                                border-color: rgba(0, 0, 0, 0);
+                                border-bottom-color: $white;
+                                border-width: 0.5rem;
+                                margin-right: -0.5rem;
+                            }
+
+                            &:before {
+                                border-color: rgba(0, 0, 0, 0);
+                                border-bottom-color: $gray-400;
+                                border-width: calc(0.5rem + 1px);
+                                margin-right: calc(-0.5rem - 1px);
+                            }
+
+                            &:hover:after {
+                                border-bottom-color: $gray-200;
+                            }
+                        }
+                    }
+
+                    &:last-child a {
+                        border-radius: 0 0 0.25rem 0.25rem;
+                    }
+
                     &:not(:last-child) a {
                         border-bottom: 1px solid $gray-300;
                     }
