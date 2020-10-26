@@ -1,5 +1,6 @@
 using System.Globalization;
 using Isotope.Code.Services.Config;
+using Isotope.Code.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -48,6 +49,9 @@ namespace Isotope.Code.Config
             {
                 app.UseSerilogRequestLogging();
                 app.UseCors();
+
+                if (Configuration.Debug.Latency > 0)
+                    app.UseMiddleware<SimulatedLatencyMiddleware>(Configuration.Debug.Latency.Value);
             }
 
             if (Configuration.WebServer.RequireHttps)

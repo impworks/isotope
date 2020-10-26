@@ -25,6 +25,7 @@
     public class DebugConfig
     {
         public bool DetailedExceptions { get; set; }
+        public int? Latency { get; set; }
     }
 
     /// <summary>
