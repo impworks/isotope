@@ -47,25 +47,26 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
 
 <template>
     <loading 
-        class="root" 
         :is-loading="asyncState.isLoading" 
         :is-full-page="true"
     >
-        <div 
-            class="root__centered-content" 
-            v-if="loaded && (error || authRequired)"
-        >
+        <div class="root">
             <div 
-                class="alert alert-danger"
-                v-if="error" 
+                class="root__centered-content" 
+                v-if="loaded && (error || authRequired)"
             >
-                <strong>Error</strong><br />
-                <span>{{error}}</span>
+                <div 
+                    class="alert alert-danger"
+                    v-if="error" 
+                >
+                    <strong>Error</strong><br />
+                    <span>{{error}}</span>
+                </div>
+                <LoginForm v-if="!error && authRequired" />
             </div>
-            <LoginForm v-if="!error && authRequired" />
+            <router-view v-else></router-view>
+            <portal-target name="overlay"></portal-target>
         </div>
-        <router-view v-else></router-view>
-        <portal-target name="overlay"></portal-target>
     </loading>
 </template>
 

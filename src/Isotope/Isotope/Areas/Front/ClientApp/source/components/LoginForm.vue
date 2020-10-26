@@ -52,7 +52,7 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
 <template>
     <form @submit.prevent="signIn()">
         <div class="card shadow-sm">
-            <div class="card-header bg-white">
+            <div class="card-header bg-white py-0">
                 <div class="logotype">{{ caption }}</div>
             </div>
             <div class="card-body">
