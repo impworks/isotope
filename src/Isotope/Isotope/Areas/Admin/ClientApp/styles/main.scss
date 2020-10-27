@@ -1,0 +1,12 @@
+@import "./node_modules/bootstrap/scss/bootstrap";
+@import "./node_modules/vue-select/src/scss/vue-select";
+
+html, body {
+  height: 100%;
+  color: $gray-800;
+  background: $gray-200;
+
+  @include media-breakpoint-down(sm) {
+    background: $gray-100;
+  }
+}

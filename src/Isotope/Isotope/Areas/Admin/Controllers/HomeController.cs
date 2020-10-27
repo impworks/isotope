@@ -9,12 +9,21 @@ namespace Isotope.Areas.Admin.Controllers
     public class HomeController: ControllerBase
     {
         /// <summary>
-        /// Catch-all method for displaying SPA.
+        /// Hack to workaround regex not matching an empty string.
         /// </summary>
-        [Route("{**path}")]
+        [Route("")]
         public IActionResult Index()
         {
-            return Ok("Admin SPA");
+            return File("~/@assets/admin.html", "text/html");
+        }
+
+        /// <summary>
+        /// Catch-all method for displaying SPA.
+        /// </summary>
+        [Route("{**path:regex(^(?!@))}")]
+        public IActionResult Index(string path)
+        {
+            return File("~/@assets/admin.html", "text/html");
         }
     }
 }
