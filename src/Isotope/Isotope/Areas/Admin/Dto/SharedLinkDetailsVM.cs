@@ -11,7 +11,7 @@ namespace Isotope.Areas.Admin.Dto
     {
         public string Key { get; set; }
         public string FolderCaption { get; set; }
-        public string TagCount { get; set; }
+        public int TagCount { get; set; }
 
         public override void Configure(TypeAdapterConfig config)
         {
