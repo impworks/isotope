@@ -1,12 +1,12 @@
 ﻿<script lang="ts">
-    import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop } from "vue-property-decorator";
 
-    @Component
-    export default class Loading extends Vue {
-        @Prop({ type: Boolean }) isLoading: boolean;
-        @Prop({ type: Boolean }) isFullPage: boolean;
-        @Prop({ type: String }) text: string;
-    }
+@Component
+export default class Loading extends Vue {
+    @Prop({ type: Boolean }) isLoading: boolean;
+    @Prop({ type: Boolean }) isFullPage: boolean;
+    @Prop({ type: String }) text: string;
+}
 </script>
 
 <template>

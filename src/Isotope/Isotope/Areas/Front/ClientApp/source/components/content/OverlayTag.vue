@@ -3,7 +3,7 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { TagBindingWithLocation } from "../../vms/TagBinding";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
-import { SearchScope } from "../../vms/SearchScope";
+import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
 
 @Component
 export default class OverlayTag extends Vue {

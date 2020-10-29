@@ -1,4 +1,4 @@
-import { SearchScope } from "../../../../Front/ClientApp/source/vms/SearchScope";
+import { SearchScope } from "../../../../Common/source/vms/SearchScope";
 
 export interface SharedLink {
     folder: string;

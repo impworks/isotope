@@ -1,4 +1,4 @@
-import { TagBindingType } from "../../../../Front/ClientApp/source/vms/TagBindingType";
+import { TagBindingType } from "../../../../Common/source/vms/TagBindingType";
 
 export interface TagBinding {
     tagId: number;

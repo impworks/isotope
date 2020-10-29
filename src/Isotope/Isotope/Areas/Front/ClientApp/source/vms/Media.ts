@@ -1,5 +1,5 @@
-import { MediaType } from "./MediaType";
 import { TagBindingWithLocation, TagBindingWithType } from "./TagBinding";
+import { MediaType } from "../../../../Common/source/vms/MediaType";
 
 export interface Media {
     key: string;

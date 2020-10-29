@@ -1,43 +1,43 @@
 <script lang="ts">
-    import { Vue, Component } from "vue-property-decorator";
-    import { GalleryInfo } from "../../vms/GalleryInfo";
-    import { Dep } from "../../utils/VueInjectDecorator";
-    import { ApiService } from "../../services/ApiService";
-    import { AuthService } from "../../services/AuthService";
+import { Vue, Component } from "vue-property-decorator";
+import { GalleryInfo } from "../../vms/GalleryInfo";
+import { Dep } from "../../utils/VueInjectDecorator";
+import { ApiService } from "../../services/ApiService";
+import { AuthService } from "../../services/AuthService";
 
-    @Component
-    export default class UserDropdown extends Vue {
-        @Dep('$api') $api: ApiService;
-        @Dep('$auth') $auth: AuthService;
-        
-        avatar: string = null;
-        isOpen: boolean = false;
-        
-        info: GalleryInfo = null;
+@Component
+export default class UserDropdown extends Vue {
+    @Dep('$api') $api: ApiService;
+    @Dep('$auth') $auth: AuthService;
+    
+    avatar: string = null;
+    isOpen: boolean = false;
+    
+    info: GalleryInfo = null;
 
-        async mounted() {
-            try {
-                this.info = await this.$api.getInfo();
-            } catch {
-            }
-            
-            window.addEventListener("click", this.clickHandler);
-        }
-
-        beforeDestroy() {
-            window.removeEventListener('click', this.clickHandler);
-        }
-
-        clickHandler(e: any) {
-            if (this.isOpen && !this.$el.contains(e.target)) {
-                this.isOpen = false;
-            }
+    async mounted() {
+        try {
+            this.info = await this.$api.getInfo();
+        } catch {
         }
         
-        logout() {
-            this.$auth.user = null;
+        window.addEventListener("click", this.clickHandler);
+    }
+
+    beforeDestroy() {
+        window.removeEventListener('click', this.clickHandler);
+    }
+
+    clickHandler(e: any) {
+        if (this.isOpen && !this.$el.contains(e.target)) {
+            this.isOpen = false;
         }
     }
+    
+    logout() {
+        this.$auth.user = null;
+    }
+}
 </script>
 
 <template>

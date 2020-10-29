@@ -1,6 +1,6 @@
 import { Tag } from "./Tag";
-import { TagBindingType } from "./TagBindingType";
-import { TagBindingLocation } from "./TagBindingLocation";
+import { TagBindingType } from "../../../../Common/source/vms/TagBindingType";
+import { Rect } from "../../../../Common/source/vms/Rect";
 
 export interface TagBinding {
     id: number;
@@ -12,5 +12,5 @@ export interface TagBindingWithType extends TagBinding {
 }
 
 export interface TagBindingWithLocation extends TagBindingWithType {
-    location: TagBindingLocation;
+    location: Rect;
 }

@@ -4,15 +4,14 @@ import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { IObservable } from "../../utils/Interfaces";
 import { Media } from "../../vms/Media";
 import { HasLifetime } from "../mixins/HasLifetime";
-import { HasAsyncState } from "../mixins/HasAsyncState";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../utils/VueInjectDecorator";
-import MediaContent from "./MediaContent.vue";
-import MediaDetails from "./MediaDetails.vue";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
+import MediaContent from "./MediaContent.vue";
+import MediaDetails from "./MediaDetails.vue";
 
 @Component({
     components: { MediaContent, MediaDetails }

@@ -1,4 +1,4 @@
-import { MediaType } from "../../../../Front/ClientApp/source/vms/MediaType";
+import { MediaType } from "../../../../Common/source/vms/MediaType";
 
 export interface MediaThumbnail {
     key: string;

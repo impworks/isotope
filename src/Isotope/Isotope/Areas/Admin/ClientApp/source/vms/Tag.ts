@@ -1,4 +1,4 @@
-import { TagType } from "../../../../Front/ClientApp/source/vms/TagType";
+import { TagType } from "../../../../Common/source/vms/TagType";
 
 export interface Tag {
     id: number;

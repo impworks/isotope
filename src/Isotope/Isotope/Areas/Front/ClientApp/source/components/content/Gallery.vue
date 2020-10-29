@@ -9,7 +9,7 @@ import { ApiService } from "../../services/ApiService";
 import { Folder } from "../../vms/Folder";
 import { TagBinding } from "../../vms/TagBinding";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
-import { SearchScope } from "../../vms/SearchScope";
+import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
 import { IObservable } from "../../utils/Interfaces";
 import { Observable } from "../../utils/Observable";
 import GalleryHeader from './GalleryHeader.vue';

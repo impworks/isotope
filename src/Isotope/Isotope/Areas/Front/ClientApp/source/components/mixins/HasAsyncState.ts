@@ -1,5 +1,5 @@
 ﻿import { Vue, Component } from 'vue-property-decorator';
-import { Func} from "../../utils/Interfaces";
+import { Func } from "../../utils/Interfaces";
 
 /**
  * Default properties of a component.

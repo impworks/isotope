@@ -4,9 +4,9 @@ import { Dep } from "../../utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService, IFilterState } from "../../services/FilterStateService";
 import { HasAsyncState } from "../mixins/HasAsyncState";
-import { SearchScope } from "../../vms/SearchScope";
 import { ArrayHelper } from "../../utils/ArrayHelper";
 import { DateHelper } from "../../utils/DateHelper";
+import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
 
 import ModalWindow from "../utils/ModalWindow.vue";
 

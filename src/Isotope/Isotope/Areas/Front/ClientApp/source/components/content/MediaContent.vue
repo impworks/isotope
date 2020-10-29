@@ -2,12 +2,12 @@
 import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import { Media } from "../../vms/Media";
 import { Dep } from "../../utils/VueInjectDecorator";
-import OverlayTag from "./OverlayTag.vue";
-import MediaDetails from "./MediaDetails.vue";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
 import { TagBindingWithLocation } from "../../vms/TagBinding";
+import OverlayTag from "./OverlayTag.vue";
+import MediaDetails from "./MediaDetails.vue";
 
 @Component({
     components: { OverlayTag, MediaDetails }

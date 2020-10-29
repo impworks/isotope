@@ -5,8 +5,8 @@ import { HasAsyncState } from "../mixins/HasAsyncState";
 import { Dep } from "../../utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService, IFilterState } from "../../services/FilterStateService";
-import { SearchScope } from "../../vms/SearchScope";
 import { Tag } from "../../vms/Tag";
+import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
 
 @Component
 export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {

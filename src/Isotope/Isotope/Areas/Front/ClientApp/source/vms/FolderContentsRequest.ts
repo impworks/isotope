@@ -1,9 +1,9 @@
-import { SearchScope as SearchMode } from "./SearchScope";
+import { SearchScope } from "../../../../Common/source/vms/SearchScope";
 
 export interface FolderContentsRequest {
     folder: string;
     tags?: string;
-    searchMode?: SearchMode;
+    scope?: SearchScope;
     dateFrom?: string;
     dateTo?: string;
 }

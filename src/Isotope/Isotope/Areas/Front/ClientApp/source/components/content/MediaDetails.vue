@@ -5,10 +5,9 @@ import { Debounce } from 'lodash-decorators';
 import { Media } from "../../vms/Media";
 import { Dep } from "../../utils/VueInjectDecorator";
 import { FilterStateService } from "../../services/FilterStateService";
-import { SearchScope } from "../../vms/SearchScope";
 import { TagBinding } from "../../vms/TagBinding";
-import { ApiService } from "../../services/ApiService";
 import { GalleryInfo } from "../../vms/GalleryInfo";
+import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
 
 @Component
 export default class MediaDetails extends Vue {

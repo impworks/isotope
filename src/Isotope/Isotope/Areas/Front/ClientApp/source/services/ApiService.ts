@@ -11,7 +11,7 @@ import { LoginResponse } from "../vms/LoginResponse";
 import { GalleryInfo } from "../vms/GalleryInfo";
 import { FilterStateService, IFilterState } from "./FilterStateService";
 import { ILookup } from "../utils/Interfaces";
-import { KeyResult } from "../vms/KeyResult";
+import { KeyResult } from "../../../../Common/source/vms/KeyResult";
 
 export class ApiService {
     // -----------------------------------
