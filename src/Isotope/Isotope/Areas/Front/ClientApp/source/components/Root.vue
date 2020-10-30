@@ -1,7 +1,6 @@
 ﻿<script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
-import { Dep } from "../utils/VueInjectDecorator";
-import { GalleryInfo } from "../vms/GalleryInfo";
+import { Dep } from "../../../../Common/source/utils/VueInjectDecorator";
 import { HasAsyncState } from "./mixins/HasAsyncState";
 import { HasLifetime } from "./mixins/HasLifetime";
 import { ApiService } from "../services/ApiService";

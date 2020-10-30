@@ -33,3 +33,13 @@ Vue.component('datepicker', {
 
 import { PopoverPlugin } from 'bootstrap-vue';
 Vue.use(PopoverPlugin);
+
+// -----------------------------------
+// Custom components
+// -----------------------------------
+
+import Loading from "../../../../Common/source/components/Loading.vue";
+Vue.component("loading", Loading);
+
+import Autofocus from "../../../../Common/source/components/Autofocus";
+Vue.directive('autofocus', Autofocus);

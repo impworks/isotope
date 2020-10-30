@@ -3,7 +3,7 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { Media } from "../../vms/Media";
-import { Dep } from "../../utils/VueInjectDecorator";
+import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { FilterStateService } from "../../services/FilterStateService";
 import { TagBinding } from "../../vms/TagBinding";
 import { GalleryInfo } from "../../vms/GalleryInfo";

@@ -1,8 +1,5 @@
 <script lang="ts">
 import { Component, Model, Prop, Vue, Watch } from "vue-property-decorator";
-import { FilterStateService } from "../../services/FilterStateService";
-import { Dep } from "../../utils/VueInjectDecorator";
-import Filters from './Filters.vue';
 
 @Component
 export default class ModalWindow extends Vue {

@@ -1,6 +1,6 @@
 ﻿import { Vue, Component } from "vue-property-decorator";
-import { CompositeDisposable } from "../../utils/CompositeDisposable";
-import { IObservable, Action } from "../../utils/Interfaces";
+import { CompositeDisposable } from "../../../../../Common/source/utils/CompositeDisposable";
+import { Action, IObservable } from "../../../../../Common/source/utils/Interfaces";
 
 /**
  * Mixin for handling subscriptions to events and automatic unsubscription on component dispose.

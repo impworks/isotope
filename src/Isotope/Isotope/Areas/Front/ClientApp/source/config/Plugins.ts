@@ -41,8 +41,8 @@ Vue.use(VueHammer);
 // Custom components
 // -----------------------------------
 
-import Loading from "../components/utils/Loading.vue";
+import Loading from "../../../../Common/source/components/Loading.vue";
 Vue.component("loading", Loading);
 
-import Autofocus from "../components/utils/Autofocus";
+import Autofocus from "../../../../Common/source/components/Autofocus";
 Vue.directive('autofocus', Autofocus);

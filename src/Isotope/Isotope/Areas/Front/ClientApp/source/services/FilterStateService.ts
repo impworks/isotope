@@ -1,10 +1,10 @@
 import cloneDeep from 'lodash.cloneDeep';
 import { Route } from "vue-router";
-import { Func2, IObservable } from "../utils/Interfaces";
-import { Observable } from "../utils/Observable";
-import { StaticHelper } from "../utils/StaticHelper";
-import { DateHelper } from "../utils/DateHelper";
 import { SearchScope } from "../../../../Common/source/vms/SearchScope";
+import { Observable } from "../../../../Common/source/utils/Observable";
+import { Func2, IObservable } from "../../../../Common/source/utils/Interfaces";
+import { StaticHelper } from "../../../../Common/source/utils/StaticHelper";
+import { DateHelper } from "../../../../Common/source/utils/DateHelper";
 
 export interface IFilterState {
     folder: string;

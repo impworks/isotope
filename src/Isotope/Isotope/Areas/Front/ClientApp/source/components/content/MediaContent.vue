@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import { Media } from "../../vms/Media";
-import { Dep } from "../../utils/VueInjectDecorator";
+import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";

@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
 import { GalleryInfo } from "../../vms/GalleryInfo";
-import { Dep } from "../../utils/VueInjectDecorator";
+import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { AuthService } from "../../services/AuthService";
 

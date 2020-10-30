@@ -1,20 +1,16 @@
 <script lang="ts">
-import { Vue, Component, Mixins } from "vue-property-decorator";
-import { Dep } from "../../utils/VueInjectDecorator";
+import { Component, Mixins } from "vue-property-decorator";
+import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { FilterStateService, IFilterStateChangedEvent } from "../../services/FilterStateService";
-import DesktopFiltersWrapper from "./DesktopFiltersWrapper.vue";
-import Folders from './Folders.vue';
-import { IObservable } from "../../utils/Interfaces";
-import { Observable } from "../../utils/Observable";
 import { HasLifetime } from "../mixins/HasLifetime";
-import ModalWindow from "../utils/ModalWindow.vue";
-import Filters from "./Filters.vue";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
 import UserDropdown from "./UserDropdown.vue";
-import { GalleryInfo } from "../../vms/GalleryInfo";
-import { ApiService } from "../../services/ApiService";
+import ModalWindow from "../utils/ModalWindow.vue";
+import Filters from "./Filters.vue";
+import DesktopFiltersWrapper from "./DesktopFiltersWrapper.vue";
+import Folders from './Folders.vue';
 
 @Component({
     components: { DesktopFiltersWrapper, Folders, ModalWindow, Filters, UserDropdown }

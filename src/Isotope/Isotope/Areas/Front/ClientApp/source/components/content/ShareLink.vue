@@ -1,13 +1,12 @@
 <script lang="ts">
 import { Component, Mixins, Model, Watch } from "vue-property-decorator";
-import { Dep } from "../../utils/VueInjectDecorator";
+import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService, IFilterState } from "../../services/FilterStateService";
 import { HasAsyncState } from "../mixins/HasAsyncState";
-import { ArrayHelper } from "../../utils/ArrayHelper";
-import { DateHelper } from "../../utils/DateHelper";
 import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
-
+import { ArrayHelper } from "../../../../../Common/source/utils/ArrayHelper";
+import { DateHelper } from "../../../../../Common/source/utils/DateHelper";
 import ModalWindow from "../utils/ModalWindow.vue";
 
 @Component({

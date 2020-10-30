@@ -4,14 +4,14 @@ import { HasLifetime } from "../mixins/HasLifetime";
 import { HasAsyncState } from "../mixins/HasAsyncState";
 import { FilterStateService, IFilterStateChangedEvent } from "../../services/FilterStateService";
 import { FolderContents } from "../../vms/FolderContents";
-import { Dep } from "../../utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { Folder } from "../../vms/Folder";
 import { TagBinding } from "../../vms/TagBinding";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
-import { IObservable } from "../../utils/Interfaces";
-import { Observable } from "../../utils/Observable";
+import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
+import { IObservable } from "../../../../../Common/source/utils/Interfaces";
+import { Observable } from "../../../../../Common/source/utils/Observable";
 import GalleryHeader from './GalleryHeader.vue';
 import MediaViewer from "./MediaViewer.vue";
 
@@ -52,8 +52,8 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 this.contents = await this.$api.getFolderContents({
                     folder: state.folder,
                     scope: state.scope,
-                    from: state.from,
-                    to: state.to,
+                    from: state.from.toISOString(),
+                    to: state.to.toISOString(),
                     tags: state.tags ? state.tags.join(',') : null
                 });
             });

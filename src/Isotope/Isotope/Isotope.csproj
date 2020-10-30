@@ -65,6 +65,8 @@
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\vms\User.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\vms\UserCreation.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\vms\UserPassword.ts" />
+    <TypeScriptCompile Include="Areas\Common\source\utils\ArrayHelper.ts" />
+    <TypeScriptCompile Include="Areas\Common\source\utils\DateHelper.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\KeyResult.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\MediaType.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\Rect.ts" />
@@ -79,8 +81,6 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\ApiService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\AuthService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\FilterStateService.ts" />
-    <TypeScriptCompile Include="Areas\Front\ClientApp\source\utils\ArrayHelper.ts" />
-    <TypeScriptCompile Include="Areas\Front\ClientApp\source\utils\DateHelper.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Folder.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContents.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContentsRequest.ts" />

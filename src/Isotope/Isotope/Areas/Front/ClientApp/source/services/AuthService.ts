@@ -1,6 +1,6 @@
 import { UserInfo } from "../vms/UserInfo";
-import { IObservable } from "../utils/Interfaces";
-import { Observable } from "../utils/Observable";
+import { Observable } from "../../../../Common/source/utils/Observable";
+import { IObservable } from "../../../../Common/source/utils/Interfaces";
 
 export class AuthService {
     

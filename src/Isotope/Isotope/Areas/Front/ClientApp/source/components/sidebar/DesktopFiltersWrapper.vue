@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Component, Mixins, Watch } from "vue-property-decorator";
 import { FilterStateService } from "../../services/FilterStateService";
-import { Dep } from "../../utils/VueInjectDecorator";
+import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { HasLifetime } from "../mixins/HasLifetime";
 
 import Filters from "./Filters.vue";

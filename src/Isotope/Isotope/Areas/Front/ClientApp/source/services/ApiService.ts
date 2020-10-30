@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { AuthService } from "./AuthService";
 import { Folder } from "../vms/Folder";
-import { StaticHelper } from "../utils/StaticHelper";
 import { FolderContentsRequest } from "../vms/FolderContentsRequest";
 import { FolderContents } from "../vms/FolderContents";
 import { Tag } from "../vms/Tag";
@@ -10,8 +9,9 @@ import { LoginRequest } from "../vms/LoginRequest";
 import { LoginResponse } from "../vms/LoginResponse";
 import { GalleryInfo } from "../vms/GalleryInfo";
 import { FilterStateService, IFilterState } from "./FilterStateService";
-import { ILookup } from "../utils/Interfaces";
 import { KeyResult } from "../../../../Common/source/vms/KeyResult";
+import { ILookup } from "../../../../Common/source/utils/Interfaces";
+import { StaticHelper } from "../../../../Common/source/utils/StaticHelper";
 
 export class ApiService {
     // -----------------------------------

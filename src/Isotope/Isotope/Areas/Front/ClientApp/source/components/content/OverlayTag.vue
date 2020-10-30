@@ -2,7 +2,7 @@
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { TagBindingWithLocation } from "../../vms/TagBinding";
 import { FilterStateService } from "../../services/FilterStateService";
-import { Dep } from "../../utils/VueInjectDecorator";
+import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
 
 @Component

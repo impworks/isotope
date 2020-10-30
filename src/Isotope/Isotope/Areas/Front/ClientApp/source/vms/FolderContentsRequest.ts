@@ -4,6 +4,6 @@ export interface FolderContentsRequest {
     folder: string;
     tags?: string;
     scope?: SearchScope;
-    dateFrom?: string;
-    dateTo?: string;
+    from?: string;
+    to?: string;
 }

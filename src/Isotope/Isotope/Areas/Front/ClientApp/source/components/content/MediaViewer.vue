@@ -1,15 +1,14 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Vue, Watch } from "vue-property-decorator";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
-import { IObservable } from "../../utils/Interfaces";
 import { Media } from "../../vms/Media";
 import { HasLifetime } from "../mixins/HasLifetime";
 import { ApiService } from "../../services/ApiService";
 import { FilterStateService } from "../../services/FilterStateService";
-import { Dep } from "../../utils/VueInjectDecorator";
-import { Bind } from 'lodash-decorators';
-import { Debounce } from 'lodash-decorators';
+import { Bind, Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
+import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
+import { IObservable } from "../../../../../Common/source/utils/Interfaces";
 import MediaContent from "./MediaContent.vue";
 import MediaDetails from "./MediaDetails.vue";
 
