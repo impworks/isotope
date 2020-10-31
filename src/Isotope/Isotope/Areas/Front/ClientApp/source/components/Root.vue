@@ -5,7 +5,8 @@ import { HasAsyncState } from "./mixins/HasAsyncState";
 import { HasLifetime } from "./mixins/HasLifetime";
 import { ApiService } from "../services/ApiService";
 import { FilterStateService } from "../services/FilterStateService";
-import { AuthService } from "../services/AuthService";
+import { AuthService } from "../../../../Common/source/services/AuthService";
+
 import LoginForm from "./LoginForm.vue";
 
 @Component({

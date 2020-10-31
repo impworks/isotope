@@ -31,7 +31,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Updates the configuration state.
         /// </summary>
         [HttpPut, Route("")]
-        public Task Set(ConfigVM vm)
+        public Task Set([FromBody] ConfigVM vm)
         {
             return _cfgMgr.SetAsync(vm);
         }

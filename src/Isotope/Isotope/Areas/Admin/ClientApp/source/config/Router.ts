@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import ConfigPage from "../components/config/ConfigPage.vue";
 
 Vue.use(VueRouter);
 
@@ -14,6 +15,6 @@ export default new VueRouter({
         { path: '/tags' },
         { path: '/shared-links' },
         { path: '/users' },
-        { path: '/config' }
+        { path: '/config', component: ConfigPage }
     ]
 })

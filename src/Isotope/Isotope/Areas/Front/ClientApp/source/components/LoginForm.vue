@@ -3,7 +3,7 @@ import { Component, Mixins } from "vue-property-decorator";
 import { HasAsyncState } from "./mixins/HasAsyncState";
 import { Dep } from "../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../services/ApiService";
-import { AuthService } from "../services/AuthService";
+import { AuthService } from "../../../../Common/source/services/AuthService";
 
 @Component
 export default class LoginForm extends Mixins(HasAsyncState()) {

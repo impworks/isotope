@@ -17,7 +17,9 @@ export default class Root extends Vue {
             </div>
             <div class="col-sm-10">
                 <div class="card">
-                    <div class="card-body">Content here</div>
+                    <div class="card-body">
+                        <router-view></router-view>
+                    </div>
                 </div>
             </div>
         </div>

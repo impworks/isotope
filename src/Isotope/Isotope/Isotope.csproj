@@ -47,9 +47,13 @@
     
   <ItemGroup>
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\admin-main.ts" />
+    <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\mixins\HasAsyncState.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Injector.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Plugins.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Router.ts" />
+    <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\ApiClientBase.ts" />
+    <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\ConfigApiClient.ts" />
+    <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\ApiService.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\vms\Config.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\vms\Error.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\vms\Folder.ts" />
@@ -65,6 +69,7 @@
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\vms\User.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\vms\UserCreation.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\vms\UserPassword.ts" />
+    <TypeScriptCompile Include="Areas\Common\source\services\AuthService.ts" />
     <TypeScriptCompile Include="Areas\Common\source\utils\ArrayHelper.ts" />
     <TypeScriptCompile Include="Areas\Common\source\utils\DateHelper.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\KeyResult.ts" />
@@ -73,13 +78,13 @@
     <TypeScriptCompile Include="Areas\Common\source\vms\SearchScope.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\TagBindingType.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\TagType.ts" />
+    <TypeScriptCompile Include="Areas\Common\source\vms\UserInfo.ts" />
     <TypeScriptCompile Include="Areas\Common\types\vue-fragment.d.ts" />
     <TypeScriptCompile Include="Areas\Common\types\vue-global-events.d.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\config\Injector.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\config\Router.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\front-main.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\ApiService.ts" />
-    <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\AuthService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\FilterStateService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Folder.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContents.ts" />
@@ -91,7 +96,6 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\MediaThumbnail.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Tag.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\TagBinding.ts" />
-    <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\UserInfo.ts" />
   </ItemGroup>
     
   <ItemGroup>

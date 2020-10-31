@@ -30,7 +30,7 @@ namespace Isotope.Areas.Admin.Services
         public async Task<ConfigVM> GetAsync()
         {
             var wrapper = await _db.DynamicConfig.FirstOrDefaultAsync();
-            var config = JsonConvert.DeserializeObject(wrapper.Value);
+            var config = JsonConvert.DeserializeObject<DynamicConfig>(wrapper.Value);
             return _mapper.Map<ConfigVM>(config);
         }
 

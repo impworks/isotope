@@ -52,8 +52,8 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 this.contents = await this.$api.getFolderContents({
                     folder: state.folder,
                     scope: state.scope,
-                    from: state.from.toISOString(),
-                    to: state.to.toISOString(),
+                    from: state.from?.toISOString(),
+                    to: state.to?.toISOString(),
                     tags: state.tags ? state.tags.join(',') : null
                 });
             });
