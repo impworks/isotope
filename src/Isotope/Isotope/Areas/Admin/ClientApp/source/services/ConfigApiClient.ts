@@ -4,14 +4,14 @@ import { Config } from "../vms/Config";
 
 export class ConfigApiClient extends ApiClientBase {
     constructor($host: string, $auth: AuthService) {
-        super($host, $auth);        
+        super($host, $auth, 'config');        
     }
     
     async get(): Promise<Config> {
-        return this.invoke<Config>({ verb: 'get', method: 'config' });
+        return this.restGet<Config>();
     }
 
     async set(value: Config) {
-        return this.invoke({ verb: 'put', method: 'config', data: value });
+        return this.restPut(null, value)
     }
 }

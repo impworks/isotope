@@ -3,52 +3,63 @@ import { AuthService } from "../../../../Common/source/services/AuthService";
 import { StaticHelper } from "../../../../Common/source/utils/StaticHelper";
 import { AxiosRequestConfig } from "axios";
 
-export type HttpVerb = 'get' | 'post' | 'put' | 'delete';
-export type Request = {
-    verb: HttpVerb;
-    method: string;
-    query?: any;
-    data?: any;
-}
-
 /**
  * Base class for API clients for each data section.
  */
 export class ApiClientBase {
     constructor(
         protected $host: string,
-        protected $auth: AuthService
+        protected $auth: AuthService,
+        section: string
     ) {
-        
+        this._section = section;
+    }
+    
+    protected _section: string;
+
+    /**
+     * Sends a GET request.
+     */
+    protected async restGet<T>(key?: string, query?: any): Promise<T> {
+        const url = this.getUrl(key, query);
+        const cfg = this.getCfg();
+        return (await axios.get<T>(url, cfg)).data;
     }
 
     /**
-     * Invokes the HTTP api.
+     * Sends a POST request.
      */
-    protected async invoke<T>(req: Request): Promise<T> {
-        const url = this.getUrl(req.method, req.query);
+    protected async restPost<T>(body: any, query?: any): Promise<T> {
+        const url = this.getUrl(null, query);
         const cfg = this.getCfg();
-        
-        if(req.verb === 'get')
-            return (await axios.get<T>(url, cfg)).data;
-        
-        if(req.verb === 'post')
-            return (await axios.post<T>(url, req.data, cfg)).data;
-            
-        if(req.verb === 'put')
-            return (await axios.put<T>(url, req.data, cfg)).data;
-        
-        if(req.verb === 'delete')
-            return (await axios.delete(url, cfg)).data;
-        
-        throw Error('Unsupported http verb: ' + req.verb);
+        return (await axios.post<T>(url, body, cfg)).data;
     }
 
+    /**
+     * Sends a PUT request.
+     */
+    protected async restPut<T>(key: string, body: any, query?: any): Promise<T> {
+        const url = this.getUrl(key, query);
+        const cfg = this.getCfg();
+        return (await axios.put<T>(url, body, cfg)).data;
+    }
+
+    /**
+     * Sends a DELETE request.
+     */
+    protected async restDelete(key: string, query?: any): Promise<void> {
+        const url = this.getUrl(key, query);
+        const cfg = this.getCfg();
+        await axios.delete(url, cfg);
+    }
+    
     /**
      * Returns the URL for invoking a method.
      */
-    protected getUrl(method: string, query?: any): string {
-        let path = this.$host + '/@api/admin/' + method;
+    protected getUrl(key?: string, query?: any): string {
+        let path = this.$host + '/@api/admin/' + this._section;
+        if(key)
+            path += '/' + key;
         if(query)
             path += '?' + StaticHelper.getQuery(query);
         return path;
