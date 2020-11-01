@@ -29,8 +29,8 @@ export class ApiClientBase {
     /**
      * Sends a POST request.
      */
-    protected async restPost<T>(body: any, query?: any): Promise<T> {
-        const url = this.getUrl(null, query);
+    protected async restPost<T>(body: any, key?: string, query?: any): Promise<T> {
+        const url = this.getUrl(key, query);
         const cfg = this.getCfg();
         return (await axios.post<T>(url, body, cfg)).data;
     }
