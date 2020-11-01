@@ -38,10 +38,10 @@ export class ApiClientBase {
     /**
      * Sends a PUT request.
      */
-    protected async restPut<T>(key: string, body: any, query?: any): Promise<T> {
+    protected async restPut(key: string, body: any, query?: any): Promise<void> {
         const url = this.getUrl(key, query);
         const cfg = this.getCfg();
-        return (await axios.put<T>(url, body, cfg)).data;
+        await axios.put(url, body, cfg);
     }
 
     /**

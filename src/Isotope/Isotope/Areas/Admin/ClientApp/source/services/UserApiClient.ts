@@ -9,23 +9,23 @@ export class UserApiClient extends ApiClientBase {
         super($host, $auth, 'users');
     }
 
-    async get(): Promise<User[]> {
+    async get() {
         return this.restGet<User[]>();
     }
 
-    async create(value: UserCreation): Promise<User> {
+    async create(value: UserCreation) {
         return this.restPost<User>(value);
     }
 
-    async update(id: string, value: User): Promise<void> {
+    async update(id: string, value: User) {
         return this.restPut(id, value);
     }
 
-    async updatePassword(id: string, value: UserPassword): Promise<void> {
+    async updatePassword(id: string, value: UserPassword) {
         return this.restPut(id + '/password', value);
     }
 
-    async remove(id: string): Promise<void> {
+    async remove(id: string) {
         return this.restDelete(id);
     }
 }

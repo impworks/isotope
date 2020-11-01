@@ -7,11 +7,11 @@ export class SharedLinkApiClient extends ApiClientBase {
         super($host, $auth, 'shared-links');
     }
     
-    async getList(): Promise<SharedLinkDetails[]> {
+    async getList() {
         return this.restGet<SharedLinkDetails[]>();
     }
     
-    async remove(key: string): Promise<void> {
+    async remove(key: string) {
         return this.restDelete(key);
     }
 }

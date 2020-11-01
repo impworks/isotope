@@ -7,15 +7,15 @@ export class TagApiClient extends ApiClientBase {
         super($host, $auth, 'tags');
     }
     
-    async get(): Promise<Tag[]> {
+    async get() {
         return this.restGet<Tag[]>();
     }
     
-    async create(value: Tag): Promise<Tag> {
+    async create(value: Tag) {
         return this.restPost<Tag>(value);
     }
     
-    async update(id: number, value: Tag): Promise<Tag> {
+    async update(id: number, value: Tag) {
         return this.restPut(id.toString(), value);
     }
     

@@ -55,6 +55,7 @@
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\ConfigApiClient.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\ApiService.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\FolderApiClient.ts" />
+    <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\MediaApiClient.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\SharedLinkApiClient.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\TagApiClient.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\UserApiClient.ts" />

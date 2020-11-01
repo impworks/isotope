@@ -8,23 +8,23 @@ export class FolderApiClient extends ApiClientBase {
         super($host, $auth, 'folders');
     }
     
-    async getTree(): Promise<FolderTitle[]> {
+    async getTree() {
         return this.restGet<FolderTitle[]>();
     }
     
-    async create(key: string, data: Folder): Promise<FolderTitle> {
+    async create(key: string, data: Folder) {
         return this.restPost<FolderTitle>(data, key)
     }
 
-    async get(key: string): Promise<Folder> {
+    async get(key: string) {
         return this.restGet<Folder>(key);
     }
     
-    async update(key: string, data: Folder): Promise<void> {
+    async update(key: string, data: Folder) {
         return this.restPut(key, data);
     }
     
-    async remove(key: string): Promise<void> {
+    async remove(key: string) {
         return this.restDelete(key);
     }
 }

@@ -7,11 +7,11 @@ export class ConfigApiClient extends ApiClientBase {
         super($host, $auth, 'config');        
     }
     
-    async get(): Promise<Config> {
+    async get() {
         return this.restGet<Config>();
     }
 
-    async set(value: Config) {
+    async update(value: Config) {
         return this.restPut(null, value)
     }
 }
