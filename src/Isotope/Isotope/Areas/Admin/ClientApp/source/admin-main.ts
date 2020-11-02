@@ -5,6 +5,7 @@ import "./config/Injector";
 import Router from './config/Router';
 
 import '../../../../node_modules/toastr/toastr.scss';
+import '../../../../node_modules/font-awesome/scss/font-awesome.scss';
 import '../styles/main.scss';
 
 import Root from './components/Root.vue';

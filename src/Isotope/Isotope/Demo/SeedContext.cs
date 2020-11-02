@@ -176,6 +176,7 @@ namespace Isotope.Demo
             var link = new SharedLink
             {
                 Key = key ?? UniqueKey.Get(),
+                CreationDate = DateTime.Now,
                 Folder = folder,
                 DateFrom = dateFrom,
                 DateTo = dateTo,

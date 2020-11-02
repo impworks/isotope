@@ -30,6 +30,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.5.2",
     "bootstrap-vue": "^2.17.3",
+    "font-awesome": "^4.7.0",
     "jquery": "^3.4.0",
     "lodash": "^4.17.20",
     "lodash-decorators": "^6.0.1",

@@ -43,3 +43,6 @@ Vue.component("loading", Loading);
 
 import Autofocus from "../../../../Common/source/components/Autofocus";
 Vue.directive('autofocus', Autofocus);
+
+import { createActionRowDirective } from "../directives/ActionRow";
+Vue.directive('action-row', createActionRowDirective());
