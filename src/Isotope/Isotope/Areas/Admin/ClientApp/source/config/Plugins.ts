@@ -34,6 +34,9 @@ Vue.component('datepicker', {
 import { PopoverPlugin } from 'bootstrap-vue';
 Vue.use(PopoverPlugin);
 
+import * as ModalDialogs from 'vue-modal-dialogs';
+Vue.use(ModalDialogs);
+
 // -----------------------------------
 // Custom components
 // -----------------------------------

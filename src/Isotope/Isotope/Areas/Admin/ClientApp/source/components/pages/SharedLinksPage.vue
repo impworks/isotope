@@ -1,9 +1,14 @@
 <script lang="ts">
+import toastr from 'toastr';
 import { Component, Mixins } from "vue-property-decorator";
 import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { HasAsyncState } from "../mixins/HasAsyncState";
 import { SharedLinkDetails } from "../../vms/SharedLinkDetails";
+import { create } from "vue-modal-dialogs";
+import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
+
+const confirmation = create<{text: string}>(ConfirmationDlg);
 
 @Component
 export default class SharedLinksPage extends Mixins(HasAsyncState()) {
@@ -12,10 +17,23 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
     links: SharedLinkDetails[] = [];
 
     async mounted() {
+        await this.load();
+    }
+    
+    async load() {
         await this.showLoading(
             async () => this.links = await this.$api.sharedLinks.getList(),
             'Failed to load config state!'
         );
+    }
+    
+    async remove(l: SharedLinkDetails) {
+        if(!await confirmation({text: 'Are you sure you want to remove this shared link?'}))
+            return;
+        
+        await this.$api.sharedLinks.remove(l.key);
+        await this.load();
+        toastr.success('Shared link removed.');
     }
 }
 </script>
