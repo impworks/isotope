@@ -7,7 +7,7 @@ export class TagApiClient extends ApiClientBase {
         super($host, $auth, 'tags');
     }
     
-    async get() {
+    async getList() {
         return this.restGet<Tag[]>();
     }
     

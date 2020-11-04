@@ -48,4 +48,14 @@ html, body {
 
 .hover-actions {
   width: 1px;
+  white-space: nowrap;
+  
+  td:last-of-type {
+    padding: 0;
+    padding-top: 5px;
+  }
+  
+  .hover-action {
+    font-size: 24px;
+  }
 }
