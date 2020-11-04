@@ -24,7 +24,10 @@ export default class ConfigPage extends Mixins(HasAsyncState()) {
     
     async save() {
         await this.showSaving(
-            async () => await this.$api.config.update({ ...this.value }),
+            async () => {
+                await this.$api.config.update({ ...this.value });
+                this.$toast.success('Config updated');
+            },
             'Failed to update config state!'
         );
     }

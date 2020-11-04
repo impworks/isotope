@@ -1,11 +1,11 @@
 <script lang="ts">
-import toastr from 'toastr';
 import { Component, Mixins } from "vue-property-decorator";
 import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { HasAsyncState } from "../mixins/HasAsyncState";
 import { SharedLinkDetails } from "../../vms/SharedLinkDetails";
 import { create } from "vue-modal-dialogs";
+
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
@@ -33,7 +33,7 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
         
         await this.$api.sharedLinks.remove(l.key);
         await this.load();
-        toastr.success('Shared link removed.');
+        this.$toast.success('Shared link removed.');
     }
 }
 </script>

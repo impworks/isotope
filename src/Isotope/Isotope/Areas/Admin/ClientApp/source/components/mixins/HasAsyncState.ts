@@ -1,4 +1,3 @@
-import toastr from 'toastr';
 import { Vue, Component } from 'vue-property-decorator';
 import { Func } from "../../../../../Common/source/utils/Interfaces";
 
@@ -55,8 +54,7 @@ export function HasAsyncState<T>(arg?: T) {
             try {
                 await action();
             } catch (e) {
-                toastr.error(error);
-                console.log(error, e);
+                this.$toast.error(error, e);
             } finally {
                 Vue.set(this.asyncState, propName, false);
             }
