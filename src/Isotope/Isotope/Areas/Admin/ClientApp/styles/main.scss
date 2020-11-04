@@ -46,6 +46,10 @@ html, body {
   opacity: 0;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 .hover-actions {
   width: 1px;
   white-space: nowrap;
