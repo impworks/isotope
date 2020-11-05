@@ -2,13 +2,15 @@
 import { Component, Mixins } from "vue-property-decorator";
 import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
-import { HasAsyncState } from "../mixins/HasAsyncState";
+import { HasAsyncState } from "../mixins";
+import { Tag } from "../../vms/Tag";
 import { create } from "vue-modal-dialogs";
 
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
-import { Tag } from "../../vms/Tag";
+import TagEditorDlg from "./TagEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
+const editor = create<{tag: Tag}>(TagEditorDlg);
 
 @Component
 export default class TagsPage extends Mixins(HasAsyncState()) {
@@ -37,11 +39,13 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
     }
     
     async create() {
-        
+        if(await editor({tag: null}))
+            await this.load();
     }
     
     async edit(t: Tag) {
-        
+        if(await editor({tag: t}))
+            await this.load();
     }
 }
 </script>

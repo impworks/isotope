@@ -32,7 +32,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Adds a new tag.
         /// </summary>
         [HttpPost, Route("")]
-        public Task<TagVM> Create(TagVM tag)
+        public Task<TagVM> Create([FromBody] TagVM tag)
         {
             return _tagMgr.CreateAsync(tag);
         }
@@ -41,7 +41,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Updates an existing tag.
         /// </summary>
         [HttpPut, Route("{id:int}")]
-        public Task Update(int id, TagVM tag)
+        public Task Update(int id, [FromBody] TagVM tag)
         {
             return _tagMgr.UpdateAsync(id, tag);
         }

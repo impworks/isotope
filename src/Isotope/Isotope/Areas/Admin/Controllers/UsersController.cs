@@ -32,7 +32,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Adds a new tag.
         /// </summary>
         [HttpPost, Route("")]
-        public Task<UserVM> Create(UserCreationVM vm)
+        public Task<UserVM> Create([FromBody] UserCreationVM vm)
         {
             return _userMgr.CreateAsync(vm);
         }
@@ -41,7 +41,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Updates an existing user.
         /// </summary>
         [HttpPut, Route("{id}")]
-        public Task Update(string id, UserVM vm)
+        public Task Update(string id, [FromBody] UserVM vm)
         {
             return _userMgr.UpdateProfileAsync(id, vm);
         }
@@ -50,7 +50,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Updates an existing user's password.
         /// </summary>
         [HttpPut, Route("{id}/password")]
-        public Task Update(string id, UserPasswordVM vm)
+        public Task Update(string id, [FromBody] UserPasswordVM vm)
         {
             return _userMgr.UpdatePasswordAsync(id, vm);
         }

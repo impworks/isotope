@@ -51,7 +51,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Updates existing media file properties.
         /// </summary>
         [HttpPut, Route("{key}")]
-        public Task Update(string key, MediaVM vm)
+        public Task Update(string key, [FromBody] MediaVM vm)
         {
             return _mediaMgr.UpdateAsync(key, vm);
         }
@@ -69,7 +69,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Updates thumbnail location.
         /// </summary>
         [HttpPut, Route("{key}/thumb")]
-        public Task UpdateThumbnail(string key, RectVM rect)
+        public Task UpdateThumbnail(string key, [FromBody] RectVM rect)
         {
             return _mediaMgr.UpdateThumbnailAsync(key, rect);
         }

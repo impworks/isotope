@@ -30,9 +30,3 @@ export default class ConfirmationDlg extends Vue {
         </div>
     </div>
 </template>
-
-<style scoped lang="scss">
-.modal {
-    display: block;
-}
-</style>

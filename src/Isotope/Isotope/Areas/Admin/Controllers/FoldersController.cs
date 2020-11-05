@@ -50,7 +50,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Updates an existing folder.
         /// </summary>
         [HttpPut, Route("{key}")]
-        public Task Update(string key, FolderVM vm)
+        public Task Update(string key, [FromBody] FolderVM vm)
         {
             return _folderMgr.UpdateAsync(key, vm);
         }

@@ -48,6 +48,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\admin-main.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\mixins\HasAsyncState.ts" />
+    <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\mixins\index.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Injector.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Plugins.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Router.ts" />
