@@ -9,7 +9,7 @@ export class UserApiClient extends ApiClientBase {
         super($host, $auth, 'users');
     }
 
-    async get() {
+    async getList() {
         return this.restGet<User[]>();
     }
 

@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 import SharedLinksPage from "../components/shared-links/SharedLinksPage.vue";
 import ConfigPage from "../components/config/ConfigPage.vue";
 import TagsPage from "../components/tags/TagsPage.vue";
+import UsersPage from "../components/users/UsersPage.vue";
 
 Vue.use(VueRouter);
 
@@ -16,7 +17,7 @@ export default new VueRouter({
         { path: '/media' },
         { path: '/tags', component: TagsPage },
         { path: '/shared-links', component: SharedLinksPage },
-        { path: '/users' },
+        { path: '/users', component: UsersPage },
         { path: '/config', component: ConfigPage }
     ]
 })
