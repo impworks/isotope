@@ -54,7 +54,11 @@ export function HasAsyncState<T>(arg?: T) {
             try {
                 await action();
             } catch (e) {
-                this.$toast.error(error, e);
+                if(e.response?.status === 400) {
+                    this.$toast.error(e.response.data.error);
+                } else {
+                    this.$toast.error(error, e);
+                }
             } finally {
                 Vue.set(this.asyncState, propName, false);
             }

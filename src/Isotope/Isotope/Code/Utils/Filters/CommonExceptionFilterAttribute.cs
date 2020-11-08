@@ -39,6 +39,7 @@ namespace Isotope.Code.Utils.Filters
             if (context.Exception is OperationException oe)
             {
                 context.Result = new ObjectResult(new ErrorVM { Error = oe.Message }) { StatusCode = 400 };
+                return;
             }
             
             _logger.Error(context.Exception.Demystify(), "Unhandled exception at " + context.ActionDescriptor.DisplayName);

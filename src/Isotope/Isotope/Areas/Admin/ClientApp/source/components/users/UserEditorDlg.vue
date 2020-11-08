@@ -4,33 +4,31 @@ import { HasAsyncState } from "../mixins";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { DialogComponent } from "vue-modal-dialogs";
-import { UserPassword } from "../../vms/UserPassword";
 import { User } from "../../vms/User";
 
 @Component
-export default class UserPasswordDlg extends Mixins(HasAsyncState(), DialogComponent) {
+export default class UserEditorDlg extends Mixins(HasAsyncState(), DialogComponent) {
     @Dep('$api') $api: ApiService;
     @Prop({ required: true }) user: User;
     
-    value: UserPassword = { password: null, passwordConfirmation: null };
-
-    get canSave(): boolean {
-        return !this.asyncState.isSaving
-            && !!this.value.password
-            && this.value.password === this.value.passwordConfirmation;
+    value: User = null;
+    accessLevels: { caption: string, isAdmin: boolean }[] = [
+        { caption: 'Admin', isAdmin: true },
+        { caption: 'User', isAdmin: false },
+    ]
+    
+    async mounted() {
+        this.value = { ...this.user };
     }
-
+    
     async save() {
-        if (!this.canSave)
-            return;
-
         await this.showSaving(
             async () => {
-                await this.$api.users.updatePassword(this.user.id, { ...this.value });
-                this.$toast.success('User password updated');
+                await this.$api.users.update(this.user.id, { ...this.value });
+                this.$toast.success('User updated');
                 this.$close(true);
             },
-            'Failed to update password!'
+            'Failed to update user!'
         );
     }
 }
@@ -43,25 +41,25 @@ export default class UserPasswordDlg extends Mixins(HasAsyncState(), DialogCompo
                 <div class="modal-dialog" v-if="value">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Update password for {{user.userName}}</h5>
+                            <h5 class="modal-title">Update user {{user.userName}}</h5>
                         </div>
                         <div class="modal-body">
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Password</label>
-                                <div class="col-sm-9">
-                                    <input type="password" class="form-control" v-model="value.password" v-autofocus />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Confirmation</label>
-                                <div class="col-sm-9">
-                                    <input type="password" class="form-control" v-model="value.passwordConfirmation"
-                                           :class="{'is-invalid': !!value.passwordConfirmation && value.passwordConfirmation !== value.password }"/>
+                                <label class="col-sm-2 col-form-label">Access</label>
+                                <div class="col-sm-10">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                                v-for="al in accessLevels"
+                                                :class="{active: al.isAdmin === value.isAdmin}"
+                                                @click="value.isAdmin = al.isAdmin">
+                                            {{al.caption}}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" :disabled="!canSave">
+                            <button type="submit" class="btn btn-primary">
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Save</span>
                             </button>

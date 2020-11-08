@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,9 +49,10 @@ namespace Isotope.Areas.Admin.Services
             await ValidateAsync(vm.PasswordInfo);
 
             var user = _mapper.Map<AppUser>(vm.UserInfo);
+            user.Id = Guid.NewGuid().ToString();
             var result = await _userMgr.CreateAsync(user, vm.PasswordInfo.Password);
             if(!result.Succeeded)
-                throw new OperationException("User creation failed, please try again!");
+                throw new OperationException(result.Errors.First().Description);
 
             return _mapper.Map<UserVM>(user);
         }

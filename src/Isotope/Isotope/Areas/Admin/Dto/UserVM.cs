@@ -18,7 +18,6 @@ namespace Isotope.Areas.Admin.Dto
                   .Map(x => x.IsAdmin, x => x.IsAdmin);
             
             config.NewConfig<UserVM, AppUser>()
-                  .Map(x => x.UserName, x => x.UserName)
                   .Map(x => x.IsAdmin, x => x.IsAdmin);
         }
     }

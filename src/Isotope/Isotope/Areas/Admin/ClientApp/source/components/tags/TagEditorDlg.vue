@@ -37,12 +37,21 @@ export default class TagEditorDlg extends Mixins(HasAsyncState(), DialogComponen
         if(!this.canSave)
             return;
         
-        if(this.isNew) {
-            await this.showSaving(async () => this.$api.tags.create(this.value), "Failed to create tag")
-        } else {
-            await this.showSaving(async () => this.$api.tags.update(this.value.id, this.value), "Failed to update tag")
-        }
-        this.$close(true);
+        await this.showSaving(
+            async () => {
+                if(this.isNew) {
+                    await this.$api.tags.create(this.value)
+                    this.$toast.success('Tag created');
+                }
+                else {
+                    await this.$api.tags.update(this.value.id, this.value);
+                    this.$toast.success('Tag updated');
+                }
+                
+                this.$close(true);
+            },
+            this.isNew ? 'Failed to create tag' : 'Failed to update tag'
+        )
     }
 }
 </script>
@@ -63,7 +72,7 @@ export default class TagEditorDlg extends Mixins(HasAsyncState(), DialogComponen
                             <div class="form-group row">
                                 <label class="col-sm-2 col-form-label">Caption</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" v-model="value.caption" />
+                                    <input type="text" class="form-control" v-model="value.caption" v-autofocus />
                                 </div>
                             </div>
                             <div class="form-group row">

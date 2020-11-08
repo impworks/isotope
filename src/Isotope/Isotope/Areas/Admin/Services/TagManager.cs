@@ -86,7 +86,7 @@ namespace Isotope.Areas.Admin.Services
             if(!Enum.IsDefined(typeof(TagType), vm.Type))
                 throw new OperationException($"Tag type '{vm.Type}' is unknown.");
             
-            if(await _db.Tags.AnyAsync(x => x.Caption == vm.Caption && x.Id != id))
+            if(await _db.Tags.AnyAsync(x => x.Caption.ToLower() == vm.Caption.ToLower() && x.Id != id))
                 throw new OperationException($"Tag '{vm.Caption}' already exists.");
         }
     }
