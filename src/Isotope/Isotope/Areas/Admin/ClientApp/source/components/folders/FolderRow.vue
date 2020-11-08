@@ -1,11 +1,16 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { FolderTitle } from "../../vms/FolderTitle";
+import { Action } from "../../../../../Common/source/utils/Interfaces";
 
 @Component
 export default class FolderRow extends Vue {
     @Prop({ required: true }) folder: FolderTitle;
     @Prop({ required: true}) depth: number;
+    
+    @Prop({ required: true }) create: Action<FolderTitle>;
+    @Prop({ required: true }) remove: Action<FolderTitle>;
+    @Prop({ required: true }) edit: Action<FolderTitle>;
 }
 </script>
 
@@ -33,6 +38,6 @@ export default class FolderRow extends Vue {
                 </a>
             </td>
         </tr>
-        <FolderRow v-for="s in folder.subfolders" :folder="s" :depth="depth + 1"></FolderRow>
+        <FolderRow v-for="s in folder.subfolders" :folder="s" :depth="depth + 1" :create="create" :edit="edit" :remove="remove"></FolderRow>
     </fragment>
 </template>

@@ -8,6 +8,10 @@ import { FolderTitle } from "../../vms/FolderTitle";
 import { create } from "vue-modal-dialogs";
 
 import FolderRow from "./FolderRow.vue";
+import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
+
+const confirmation = create<{text: string}>(ConfirmationDlg);
+
 @Component({
     components: { FolderRow }
 })
@@ -27,13 +31,28 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
         );
     }
 
-    async remove(f: FolderTitle) {
+    async create(root: FolderTitle) {
+        alert('create');
     }
 
-    async create(root: FolderTitle) {
+    async remove(f: FolderTitle) {
+        const hint = 'Are you sure you want to remove folder "<b>' + f.caption + '</b>", with all subfolders and media inside?<br/><br/>This operation cannot be undone!';
+        if(!await confirmation({ text: hint }))
+            return;
+        
+        await this.showSaving(
+            async () => {
+                await this.$api.folders.remove(f.key);
+                await this.load();
+                
+                this.$toast.success('Folder removed');
+            },
+            'Failed to remove folder'
+        );
     }
 
     async edit(f: FolderTitle) {
+        alert('edit');
     }
 }
 </script>
@@ -64,7 +83,7 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
             </tr>
             </tbody>
             <tbody v-else>
-                <FolderRow v-for="f in folders" :folder="f" :depth="0"></FolderRow>
+                <FolderRow v-for="f in folders" :folder="f" :depth="0" :create="create" :edit="edit" :remove="remove"></FolderRow>
             </tbody>
         </table>
     </loading>

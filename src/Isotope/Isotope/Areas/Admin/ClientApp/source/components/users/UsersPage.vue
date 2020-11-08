@@ -34,7 +34,8 @@ export default class UsersPage extends Mixins(HasAsyncState()) {
     }
 
     async remove(user: User) {
-        if (!await confirmation({ text: 'Are you sure you want to remove the user "' + user.userName + '"?' }))
+        const hint = 'Are you sure you want to remove the user "<b>' + user.userName + '"</b>?<br/><br/>This operation cannot be undone.';
+        if (!await confirmation({ text: hint }))
             return;
         
         await this.$api.users.remove(user.id);

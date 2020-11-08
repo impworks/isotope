@@ -30,7 +30,8 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
     }
 
     async remove(tag: Tag) {
-        if(!await confirmation({text: 'Are you sure you want to remove the tag "' + tag.caption + '"?'}))
+        const hint = 'Are you sure you want to remove the tag "<b>' + tag.caption + '</b>"?<br/><br/>This operation cannot be undone.';
+        if(!await confirmation({text: hint}))
             return;
 
         await this.$api.tags.remove(tag.id);

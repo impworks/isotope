@@ -2,7 +2,7 @@
 import { Component, Mixins } from "vue-property-decorator";
 import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
-import { HasAsyncState } from "../mixins/HasAsyncState";
+import { HasAsyncState } from "../mixins";
 import { SharedLinkDetails } from "../../vms/SharedLinkDetails";
 import { create } from "vue-modal-dialogs";
 
@@ -28,7 +28,8 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
     }
     
     async remove(l: SharedLinkDetails) {
-        if(!await confirmation({text: 'Are you sure you want to remove this shared link?'}))
+        const hint = 'Are you sure you want to remove this shared link?<br/><br/>This operation cannot be undone.';
+        if(!await confirmation({text: hint}))
             return;
         
         await this.$api.sharedLinks.remove(l.key);
