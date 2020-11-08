@@ -31,7 +31,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// <summary>
         /// Creates a new folder.
         /// </summary>
-        [HttpPost, Route("{key}")]
+        [HttpPost, Route("{key?}")]
         public Task<FolderTitleVM> Create(string key, [FromBody] FolderVM vm)
         {
             return _folderMgr.CreateAsync(key, vm);

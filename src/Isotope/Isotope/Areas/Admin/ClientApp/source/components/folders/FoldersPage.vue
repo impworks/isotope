@@ -9,8 +9,10 @@ import { create } from "vue-modal-dialogs";
 
 import FolderRow from "./FolderRow.vue";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
+import FolderEditorDlg from "./FolderEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
+const editor = create<{folder: FolderTitle, parent: FolderTitle}>(FolderEditorDlg);
 
 @Component({
     components: { FolderRow }
@@ -32,7 +34,8 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
     }
 
     async create(root: FolderTitle) {
-        alert('create');
+        if(await editor({ parent: root }))
+            await this.load();
     }
 
     async remove(f: FolderTitle) {
@@ -52,7 +55,8 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
     }
 
     async edit(f: FolderTitle) {
-        alert('edit');
+        if(await editor({ folder: f }))
+            await this.load();
     }
 }
 </script>

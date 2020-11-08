@@ -90,6 +90,7 @@ namespace Isotope.Areas.Admin.Services
         {
             var folder = await _db.Folders
                                   .AsNoTracking()
+                                  .Include(x => x.Tags)
                                   .FirstOrDefaultAsync(x => x.Key == key);
             
             if(folder == null)
@@ -166,7 +167,7 @@ namespace Isotope.Areas.Admin.Services
             if (!Regex.IsMatch(vm.Slug, "^[a-z0-9-]+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                 throw new OperationException("Slug contains invalid characters. Only English letters, numbers and a hyphen are allowed.");
                 
-            if (vm.ThumbnailKey != null)
+            if (!string.IsNullOrEmpty(vm.ThumbnailKey))
             {
                 var exists = await _db.Media.AnyAsync(x => x.Key == vm.ThumbnailKey);
                 if(!exists)

@@ -24,7 +24,8 @@ export default class FolderRow extends Vue {
                 </router-link>
             </td>
             <td>
-                {{ folder.mediaCount }}
+                <span v-if="folder.mediaCount > 0">{{ folder.mediaCount }}</span>
+                <span v-else title="Empty folder">&mdash;</span>
             </td>
             <td>
                 <a class="hover-action" href @click.prevent="create(folder)" title="Create subfolder">
@@ -33,7 +34,7 @@ export default class FolderRow extends Vue {
                 <a class="hover-action" href @click.prevent="remove(folder)" title="Remove">
                     <span class="fa fa-fw fa-remove"></span>
                 </a>
-                <a class="hover-action" href @click.prevent="edit(folder)" title="Edit profile">
+                <a class="hover-action" href @click.prevent="edit(folder)" title="Edit">
                     <span class="fa fa-fw fa-edit"></span>
                 </a>
             </td>
