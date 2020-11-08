@@ -4,6 +4,7 @@ import SharedLinksPage from "../components/shared-links/SharedLinksPage.vue";
 import ConfigPage from "../components/config/ConfigPage.vue";
 import TagsPage from "../components/tags/TagsPage.vue";
 import UsersPage from "../components/users/UsersPage.vue";
+import FoldersPage from "../components/folders/FoldersPage.vue";
 
 Vue.use(VueRouter);
 
@@ -13,8 +14,8 @@ export default new VueRouter({
     mode: 'history',
     routes: [
         { path: '/', redirect: '/folders' },
-        { path: '/folders' },
-        { path: '/media' },
+        { path: '/folders', component: FoldersPage },
+        { path: '/media/:key?' },
         { path: '/tags', component: TagsPage },
         { path: '/shared-links', component: SharedLinksPage },
         { path: '/users', component: UsersPage },
