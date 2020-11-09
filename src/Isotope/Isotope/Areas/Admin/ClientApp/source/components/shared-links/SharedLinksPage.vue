@@ -41,6 +41,9 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
 
 <template>
     <loading :is-loading="asyncState.isLoading" :is-full-page="true">
+        <div class="mb-2">
+            <h5>Shared links</h5>
+        </div>
         <table class="table table-bordered mb-0">
             <thead>
                 <tr>

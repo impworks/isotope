@@ -62,6 +62,7 @@ export default class UsersPage extends Mixins(HasAsyncState()) {
 <template>
     <loading :is-loading="asyncState.isLoading" :is-full-page="true">
         <div class="mb-2">
+            <h5 class="pull-left">Users</h5>
             <button class="btn btn-outline-secondary btn-sm pull-right" type="button" @click.prevent="create()">
                 <span class="fa fa-plus"></span> Create user
             </button>

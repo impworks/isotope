@@ -64,6 +64,7 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
 <template>
     <loading :is-loading="asyncState.isLoading" :is-full-page="true">
         <div class="mb-2">
+            <h5 class="pull-left">Folders</h5>
             <button class="btn btn-outline-secondary btn-sm pull-right" type="button" @click.prevent="create(null)">
                 <span class="fa fa-plus"></span> Create top-level folder
             </button>
