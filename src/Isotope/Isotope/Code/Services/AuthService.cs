@@ -66,15 +66,22 @@ namespace Isotope.Code.Services
         /// </summary>
         public ClaimsPrincipal ValidateToken(string token)
         {
-            var handler = new JwtSecurityTokenHandler();
-            var args = new TokenValidationParameters
+            try
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = JwtHelper.GetSigningCredentials().Key,
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
-            return handler.ValidateToken(token, args, out _);
+                var handler = new JwtSecurityTokenHandler();
+                var args = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = JwtHelper.GetSigningCredentials().Key,
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+                return handler.ValidateToken(token, args, out _);
+            }
+            catch(SecurityTokenExpiredException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
