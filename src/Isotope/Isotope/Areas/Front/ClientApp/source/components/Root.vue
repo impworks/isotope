@@ -34,7 +34,7 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
                 if(info.isLinkValid === false) {
                     this.error = 'The specified share link is invalid.';
                 }
-            })
+            });
         } catch(e) {
             this.error = 'Gallery is unavailable.';
         } finally {
