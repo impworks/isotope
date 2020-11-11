@@ -86,10 +86,10 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
                     <span v-if="t.type === 3" class="badge badge-danger">Other</span>
                 </td>
                 <td>
-                    <a class="hover-action" href @click.prevent="remove(t)" title="Remove">
+                    <a class="hover-action" @click.prevent="remove(t)" title="Remove">
                         <span class="fa fa-fw fa-remove"></span>
                     </a>
-                    <a class="hover-action" href @click.prevent="edit(t)" title="Edit">
+                    <a class="hover-action" @click.prevent="edit(t)" title="Edit">
                         <span class="fa fa-fw fa-edit"></span>
                     </a>
                 </td>

@@ -77,7 +77,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// <summary>
         /// Retrieves current thumbnail location.
         /// </summary>
-        [HttpDelete, Route("thumb")]
+        [HttpDelete, Route("{key}")]
         public Task Delete(string key)
         {
             return _mediaMgr.RemoveAsync(key);

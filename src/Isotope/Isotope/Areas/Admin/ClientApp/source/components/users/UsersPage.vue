@@ -93,13 +93,13 @@ export default class UsersPage extends Mixins(HasAsyncState()) {
                     <span v-else class="badge badge-primary">User</span>
                 </td>
                 <td>
-                    <a class="hover-action" href @click.prevent="remove(u)" title="Remove">
+                    <a class="hover-action" @click.prevent="remove(u)" title="Remove">
                         <span class="fa fa-fw fa-remove"></span>
                     </a>
-                    <a class="hover-action" href @click.prevent="setPassword(u)" title="Change password">
+                    <a class="hover-action" @click.prevent="setPassword(u)" title="Change password">
                         <span class="fa fa-fw fa-lock"></span>
                     </a>
-                    <a class="hover-action" href @click.prevent="edit(u)" title="Edit profile">
+                    <a class="hover-action" @click.prevent="edit(u)" title="Edit profile">
                         <span class="fa fa-fw fa-edit"></span>
                     </a>
                 </td>

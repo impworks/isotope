@@ -7,11 +7,11 @@ using Mapster;
 
 namespace Isotope.Areas.Admin.Dto
 {
-    public class MediaThumbnailVM
+    public class MediaThumbnailVM: IMapped
     {
         /// <summary>
         /// Unique key of the media file.
-        /// </summary>M
+        /// </summary>
         public string Key { get; set; }
         
         /// <summary>

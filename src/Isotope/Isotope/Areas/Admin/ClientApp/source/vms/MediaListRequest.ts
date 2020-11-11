@@ -1,6 +1,6 @@
 export interface MediaListRequest {
     folder: string;
-    orderBy: string;
+    orderBy: 'Order' | 'UploadDate' | 'Date';
     orderDesc: boolean;
     page: number;
 }

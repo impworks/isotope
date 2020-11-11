@@ -28,13 +28,13 @@ export default class FolderRow extends Vue {
                 <span v-else title="Empty folder">&mdash;</span>
             </td>
             <td>
-                <a class="hover-action" href @click.prevent="create(folder)" title="Create subfolder">
+                <a class="hover-action" @click.prevent="create(folder)" title="Create subfolder">
                     <span class="fa fa-fw fa-plus"></span>
                 </a>
-                <a class="hover-action" href @click.prevent="remove(folder)" title="Remove">
+                <a class="hover-action" @click.prevent="remove(folder)" title="Remove">
                     <span class="fa fa-fw fa-remove"></span>
                 </a>
-                <a class="hover-action" href @click.prevent="edit(folder)" title="Edit">
+                <a class="hover-action" @click.prevent="edit(folder)" title="Edit">
                     <span class="fa fa-fw fa-edit"></span>
                 </a>
             </td>

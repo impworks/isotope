@@ -68,7 +68,7 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
                     <td><span :title="l.folder">{{l.folderCaption}}</span></td>
                     <td>{{l.tags ? l.tags.length : '-'}}</td>
                     <td>
-                        <a class="hover-action" href @click.prevent="remove(l)" title="Remove">
+                        <a class="hover-action" @click.prevent="remove(l)" title="Remove">
                             <span class="fa fa-remove"></span>
                         </a>
                     </td>
