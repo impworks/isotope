@@ -16,7 +16,7 @@ export default new VueRouter({
     routes: [
         { path: '/', redirect: '/folders' },
         { path: '/folders', component: FoldersPage },
-        { path: '/media/:key?', component: MediaPage },
+        { path: '/folders/:key', component: MediaPage },
         { path: '/tags', component: TagsPage },
         { path: '/shared-links', component: SharedLinksPage },
         { path: '/users', component: UsersPage },

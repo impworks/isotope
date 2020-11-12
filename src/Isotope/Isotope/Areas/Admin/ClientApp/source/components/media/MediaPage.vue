@@ -8,6 +8,7 @@ import { create } from "vue-modal-dialogs";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { MediaListRequest } from "../../vms/MediaListRequest";
+import { FolderTitle } from "../../vms/FolderTitle";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 
@@ -16,34 +17,24 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
     @Dep('$api') $api: ApiService;
 
     media: MediaThumbnail[] = [];
-    filter: MediaListRequest = null;
-    folderTitle: string = null;
+    folderKey: string = null;
+    folderCaption: string = null;
 
     async mounted() {
-        const folder = this.$route.params['key'] || null;
-        this.filter = {
-            folder: folder,
-            orderBy: "Order",
-            orderDesc: false,
-            page: 0
-        };
+        this.folderKey = this.$route.params['key'] || null;
+        await this.load();
     }
 
     async load() {
         await this.showLoading(
             async () => {
-                if(this.filter.folder && !this.folderTitle) {
-                    this.folderTitle = (await this.$api.folders.get(this.filter.folder)).caption;
+                if(this.folderKey && !this.folderCaption) {
+                    this.folderCaption = (await this.$api.folders.get(this.folderKey)).caption;
                 }
-                this.media = await this.$api.media.getList(this.filter);
+                this.media = await this.$api.media.getList(this.folderKey);
             },
             'Failed to load media!'
         );
-    }
-    
-    @Watch('filter', { deep: true })
-    onFilterChanged() {
-        this.load();
     }
 
     async remove(m: MediaThumbnail) {
@@ -62,13 +53,6 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         );
     }
     
-    setPage(i: number) {
-        const newPage = this.filter.page + i;
-        if(newPage < 0) return;
-        if(this.media.length === 0 && i > 0) return;
-        this.filter.page = newPage;
-    }
-    
     async edit(m: MediaThumbnail) {
         alert('edit');
     }
@@ -83,12 +67,16 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
     <loading :is-loading="asyncState.isLoading" :is-full-page="true">
         <div class="mb-2">
             <h5 class="pull-left">
-                Media
-                <span v-if="folderTitle">({{folderTitle}})</span>
+                {{folderCaption}}
             </h5>
-            <button v-if="filter.folder" class="btn btn-outline-secondary btn-sm pull-right" type="button" @click.prevent="upload()">
-                <span class="fa fa-upload"></span> Upload media
-            </button>
+            <div class="pull-right">
+                <button class="btn btn-outline-secondary btn-sm mr-2" type="button" @click.prevent="reorder()" :disabled="!media || media.length < 2">
+                    <span class="fa fa-sort"></span> Reorder
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" type="button" @click.prevent="upload()">
+                    <span class="fa fa-upload"></span> Upload media
+                </button>
+            </div>
             <div class="clearfix"></div>
         </div>
         <table class="table table-bordered mb-0">
@@ -105,13 +93,7 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
             <tr>
                 <td colspan="5">
                     <div class="alert alert-info mb-0">
-                        <span v-if="filter.page > 0">
-                            No media on current page. Please go back.
-                        </span>
-                        <span v-else>
-                            <span v-if="folderTitle">No media in this folder. Click "upload media" to create some.</span>
-                            <span v-else>No media found. Please create a folder to upload it.</span>
-                        </span>
+                        No media in this folder. Click "upload media" to create some.
                     </div>
                 </td>
             </tr>
@@ -140,22 +122,6 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                 </tr>
             </tbody>
         </table>
-        <div class="mt-2">
-            <div class="pull-right">
-                <ul class="pagination">
-                    <li class="page-item" :class="{disabled: filter.page === 0}">
-                        <a class="page-link" href @click.prevent="setPage(-1)" title="Back">&laquo;</a>
-                    </li>
-                    <li class="page-item active">
-                        <span class="page-link">{{filter.page + 1}}</span>
-                    </li>
-                    <li class="page-item" :class="{disabled: media.length === 0}">
-                        <a class="page-link" href @click.prevent="setPage(1)" title="Forward">&raquo;</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="clearfix"></div>
-        </div>
     </loading>
 </template>
 

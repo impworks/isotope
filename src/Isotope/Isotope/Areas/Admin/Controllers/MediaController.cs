@@ -23,10 +23,10 @@ namespace Isotope.Areas.Admin.Controllers
         /// <summary>
         /// Displays the list of media files in a folder.
         /// </summary>
-        [HttpGet, Route("")]
-        public Task<IReadOnlyList<MediaThumbnailVM>> GetList([FromQuery] MediaListRequestVM request)
+        [HttpGet, Route("~/@api/admin/folders/{folderKey}/media")]
+        public Task<IReadOnlyList<MediaThumbnailVM>> GetList(string folderKey)
         {
-            return _mediaMgr.GetListAsync(request);
+            return _mediaMgr.GetListAsync(folderKey);
         }
 
         /// <summary>

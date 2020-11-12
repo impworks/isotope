@@ -18,7 +18,7 @@ export default class FolderRow extends Vue {
     <fragment>
         <tr v-action-row class="hover-actions">
             <td>
-                <router-link :to="'/media/' + folder.key"
+                <router-link :to="'/folders/' + folder.key"
                              :style="{marginLeft: depth + 'rem'}">
                     {{ folder.caption }}
                 </router-link>

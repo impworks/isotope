@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { ApiClientBase } from "./ApiClientBase";
 import { AuthService } from "../../../../Common/source/services/AuthService";
-import { MediaListRequest } from "../vms/MediaListRequest";
 import { MediaThumbnail } from "../vms/MediaThumbnail";
 import { Media } from "../vms/Media";
 import { Rect } from "../../../../Common/source/vms/Rect";
@@ -11,8 +10,10 @@ export class MediaApiClient extends ApiClientBase {
         super($host, $auth, 'media');
     }
     
-    async getList(req: MediaListRequest) {
-        return this.restGet<MediaThumbnail[]>(null, req);
+    async getList(folderKey: string) {
+        const url = this.$host + '/@api/admin/folders/' + folderKey + '/media';
+        const cfg = this.getCfg();
+        return (await axios.get<MediaThumbnail[]>(url, cfg)).data;
     }
     
     async upload(folderKey: string, file: File) {

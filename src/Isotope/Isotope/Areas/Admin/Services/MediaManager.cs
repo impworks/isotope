@@ -36,14 +36,28 @@ namespace Isotope.Areas.Admin.Services
         private readonly IMediaHandler[] _mediaHandlers;
 
         /// <summary>
-        /// Returns the list of media files.
+        /// Returns the list of all media files in a folder.
         /// </summary>
-        public async Task<IReadOnlyList<MediaThumbnailVM>> GetListAsync(MediaListRequestVM vm)
+        public async Task<IReadOnlyList<MediaThumbnailVM>> GetListAsync(string folderKey)
+        {
+            if(! await _db.Folders.AnyAsync(x => x.Key == folderKey))
+                throw new OperationException($"Folder '{folderKey}' does not exist.");
+
+            return await _db.Media
+                            .Where(x => x.FolderKey == folderKey)
+                            .OrderBy(x => x.Order)
+                            .ProjectToType<MediaThumbnailVM>(_mapper.Config)
+                            .ToListAsync();
+        }
+
+        /// <summary>
+        /// Finds media files by a complex request.
+        /// </summary>
+        public async Task<IReadOnlyList<MediaThumbnailVM>> FindAsync(MediaListRequestVM vm)
         {
             const int PAGE_SIZE = 100;
             
             var query = _db.Media
-                           .AsNoTracking()
                            .OrderBy(vm.OrderBy.TryGetOneOf(nameof(Media.Order), nameof(Media.UploadDate), nameof(Media.Date)), vm.OrderDesc)
                            .AsQueryable();
 
