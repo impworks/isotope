@@ -9,8 +9,10 @@ import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { MediaListRequest } from "../../vms/MediaListRequest";
 import { FolderTitle } from "../../vms/FolderTitle";
+import MediaPropsEditorDlg from "./MediaPropsEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
+const propsEditor = create<{mediaKey: string}>(MediaPropsEditorDlg);
 
 @Component
 export default class MediaPage extends Mixins(HasAsyncState()) {
@@ -53,8 +55,13 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         );
     }
     
-    async edit(m: MediaThumbnail) {
-        alert('edit');
+    async editProps(m: MediaThumbnail) {
+        if(await propsEditor({ mediaKey: m.key }))
+            await this.load();
+    }
+    
+    async editTags(m: MediaThumbnail) {
+      alert('editTags');
     }
 
     async editThumb(m: MediaThumbnail) {
@@ -115,7 +122,10 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                         <a class="hover-action" @click.prevent="editThumb(m)" title="Update thumbnail">
                             <span class="fa fa-fw fa-crop"></span>
                         </a>
-                        <a class="hover-action" @click.prevent="edit(m)" title="Edit">
+                        <a class="hover-action" @click.prevent="editTags(m)" title="Update tags">
+                            <span class="fa fa-fw fa-tags"></span>
+                        </a>
+                        <a class="hover-action" @click.prevent="editProps(m)" title="Edit">
                             <span class="fa fa-fw fa-edit"></span>
                         </a>
                     </td>

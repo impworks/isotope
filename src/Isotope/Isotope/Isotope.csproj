@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Common\styles" />
     <Folder Include="Areas\Front\ClientApp\source\components\mixins" />
     <Folder Include="Areas\Front\ClientApp\source\config\" />
     <Folder Include="Data\Migrations" />
