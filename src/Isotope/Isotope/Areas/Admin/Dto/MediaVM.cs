@@ -1,5 +1,6 @@
 using System.Linq;
 using Isotope.Code.Utils;
+using Isotope.Code.Utils.Helpers;
 using Isotope.Data.Models;
 using Mapster;
 
@@ -10,6 +11,7 @@ namespace Isotope.Areas.Admin.Dto
     /// </summary>
     public class MediaVM: IMapped
     {
+        public string FullPath { get; set; }
         public string Description { get; set; }
         public string Date { get; set; }
         public TagBindingVM[] ExtraTags { get; set; }
@@ -18,6 +20,7 @@ namespace Isotope.Areas.Admin.Dto
         public void Configure(TypeAdapterConfig config)
         {
             config.NewConfig<Media, MediaVM>()
+                  .Map(x => x.FullPath, x => MediaHelper.GetSizedMediaPath(x.Path, MediaSize.Large))
                   .Map(x => x.Description, x => x.Description)
                   .Map(x => x.Date, x => x.Date)
                   .Map(x => x.OverlayTags, x => x.Tags.Where(y => y.Type == TagBindingType.Depicted))
