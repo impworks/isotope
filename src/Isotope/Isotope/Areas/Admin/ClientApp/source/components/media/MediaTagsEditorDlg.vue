@@ -71,8 +71,10 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
                                     <div class="clearfix"></div>
                                 </div>
                                 <div class="media-wrapper">
-                                    <img :src="value.fullPath" />
-                                    <RectEditor v-for="(b, idx) in value.overlayTags" :rect="b.location" :tag-binding="b" :tags-lookup="tagsLookup" :key="idx"></RectEditor>
+                                    <img :src="value.fullPath" ref="img" />
+                                    <div class="tag-wrapper">
+                                        <RectEditor v-for="(b, idx) in value.overlayTags" :rect="b.location" :tag-binding="b" :tags-lookup="tagsLookup" :key="idx"></RectEditor>
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -105,6 +107,14 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
     img {
         width: 100%;
         height: auto;
+    }
+    
+    .tag-wrapper {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
     }
 }
 </style>

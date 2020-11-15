@@ -37,6 +37,10 @@ Vue.use(PopoverPlugin);
 import * as ModalDialogs from 'vue-modal-dialogs';
 Vue.use(ModalDialogs);
 
+import DraggableResizable from "vue-draggable-resizable";
+//import 'vue-draggable-resizable/dist/VueDraggableResizable.css';
+Vue.component('vue-drag-resize', DraggableResizable);
+
 // -----------------------------------
 // Custom components
 // -----------------------------------
@@ -49,3 +53,6 @@ Vue.directive('autofocus', Autofocus);
 
 import { createActionRowDirective } from "../directives/ActionRow";
 Vue.directive('action-row', createActionRowDirective());
+
+import { createClickOutsideDirective } from "../directives/ClickOutside";
+Vue.directive('click-outside', createClickOutsideDirective());
