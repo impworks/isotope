@@ -11,25 +11,29 @@ export default class RectEditor extends Vue {
     @Prop({ required: false }) tagsLookup: Tag[];
     @Prop({ required: false }) ratio: number;
     
+    private _container: HTMLElement = null;
     active: boolean = false;
     
     origin: IPoint = { x: 0, y: 0 };
     size: IPoint = { x: 1, y: 1 };    
     
     get container(): HTMLElement {
+        if(this._container)
+            return this._container;
+        
         let elem = this.$el;
-        while(elem && !elem.classList.contains('media-wrapper'))
+        while (elem && !elem.classList.contains('media-wrapper'))
             elem = elem.parentElement;
-        return elem;
+        
+        return this._container = elem;
     }
     
     mounted() {
-        const c = this.container;
-        const w = c.offsetWidth;
-        const h = c.offsetHeight;
+        const w = this.container.offsetWidth;
+        const h = this.container.offsetHeight;
         const r = this.rect;
-        this.origin = { x: w * r.x, y: h * r.y };
-        this.size = { x: w * r.width, y: h * r.height };
+        this.origin = { x: Math.round(w * r.x), y: Math.round(h * r.y) };
+        this.size = { x: Math.round(w * r.width), y: Math.round(h * r.height) };
     }
     
     focus() {
@@ -43,7 +47,23 @@ export default class RectEditor extends Vue {
     @Watch('origin', { deep: true })
     @Watch('size', { deep: true })
     onPointsChanged() {
-        // todo
+        const w = this.container.offsetWidth;
+        const h = this.container.offsetHeight;
+        const o = this.origin;
+        const s = this.size;
+        this.rect.x = o.x / w;
+        this.rect.y = o.y / h;
+        this.rect.width = (s.x - o.x) / w;
+        this.rect.height = (s.y - o.y) / h;
+    }
+    
+    onDrag(x: number, y: number) {
+        this.origin = { x, y };
+    }
+    
+    onResize(x: number, y: number, w: number, h: number) {
+        this.origin = { x, y };
+        this.size = { x: w, y: h };
     }
 }
 
@@ -54,7 +74,7 @@ interface IPoint {
 </script>
 
 <template>
-    <vue-drag-resize :x="origin.x" :y="origin.y" :w="size.x" :h="size.y" :parent="true">
+    <vue-drag-resize :x="origin.x" :y="origin.y" :w="size.x" :h="size.y" @dragging="onDrag" @resizing="onResize" :parent="true">
     </vue-drag-resize>
 </template>
 

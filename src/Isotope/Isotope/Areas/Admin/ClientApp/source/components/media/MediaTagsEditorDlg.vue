@@ -24,8 +24,10 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
         await this.showLoading(
             async () => {
                 this.tagsLookup = await this.$api.tags.getList();
-                this.value = await this.$api.media.get(this.mediaKey);
-                this.extraTags = this.value.extraTags?.map(x => x.tagId) ?? [];
+                const data = await this.$api.media.get(this.mediaKey);
+                await this.loadImage(data.fullPath);
+                this.value = data;
+                this.extraTags = data.extraTags?.map(x => x.tagId) ?? [];
             },
             'Failed to load media data'
         );
@@ -43,6 +45,15 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
             },
             'Failed to update media tags'
         )
+    }
+    
+    private loadImage(path: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.addEventListener('load', () => resolve());
+            img.addEventListener('error', err => reject(err));
+            img.src = path;
+        })
     }
     
     addTag() {
