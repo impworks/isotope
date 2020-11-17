@@ -49,12 +49,10 @@ export default class RectEditor extends Vue {
     onPointsChanged() {
         const w = this.container.offsetWidth;
         const h = this.container.offsetHeight;
-        const o = this.origin;
-        const s = this.size;
-        this.rect.x = o.x / w;
-        this.rect.y = o.y / h;
-        this.rect.width = (s.x - o.x) / w;
-        this.rect.height = (s.y - o.y) / h;
+        this.rect.x = this.origin.x / w;
+        this.rect.y = this.origin.y / h;
+        this.rect.width = this.size.x / w;
+        this.rect.height = this.size.y / h;
     }
     
     onDrag(x: number, y: number) {

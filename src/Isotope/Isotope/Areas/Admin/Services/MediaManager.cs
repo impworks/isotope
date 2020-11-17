@@ -165,38 +165,30 @@ namespace Isotope.Areas.Admin.Services
 
             var newTagIds = (vm.OverlayTags?.Select(x => x.TagId) ?? new int[0])
                             .Concat(vm.ExtraTags?.Select(x => x.TagId) ?? new int[0])
-                            .OrderBy(x => x)
                             .ToList();
+            
+            var existingTagIds = await _db.Tags
+                                          .Where(x => newTagIds.Contains(x.Id))
+                                          .Select(x => x.Id)
+                                          .ToListAsync();
 
-            var oldTagIds = media.Tags
-                                 .Where(x => x.Type != TagBindingType.Inherited).Select(x => x.TagId)
-                                 .OrderBy(x => x);
+            var missingTagIds = newTagIds.Except(existingTagIds).ToList();
+            if(missingTagIds.Any())
+                throw new OperationException($"Tag(s) {missingTagIds.JoinString(", ")} do not exist.");
+            
+            var newTags = new List<MediaTagBinding>();
+            
+            if(vm.OverlayTags != null)
+                newTags.AddRange(_mapper.Map<MediaTagBinding[]>(vm.OverlayTags));
+            
+            if(vm.ExtraTags != null)
+                newTags.AddRange(_mapper.Map<MediaTagBinding[]>(vm.ExtraTags));
 
-            if (!oldTagIds.SequenceEqual(newTagIds))
-            {
-                var existingTagIds = await _db.Tags
-                                              .Where(x => newTagIds.Contains(x.Id))
-                                              .Select(x => x.Id)
-                                              .ToListAsync();
-
-                var missingTagIds = newTagIds.Except(existingTagIds).ToList();
-                if(missingTagIds.Any())
-                    throw new OperationException($"Tag(s) {missingTagIds.JoinString(", ")} do not exist.");
-                
-                var newTags = new List<MediaTagBinding>();
-                
-                if(vm.OverlayTags != null)
-                    newTags.AddRange(_mapper.Map<MediaTagBinding[]>(vm.OverlayTags));
-                
-                if(vm.ExtraTags != null)
-                    newTags.AddRange(_mapper.Map<MediaTagBinding[]>(vm.ExtraTags));
-
-                foreach (var tag in newTags)
-                    tag.Media = media;
-                
-                _db.MediaTags.RemoveRange(media.Tags.Where(x => x.Type != TagBindingType.Inherited));
-                _db.MediaTags.AddRange(newTags);
-            }
+            foreach (var tag in newTags)
+                tag.Media = media;
+            
+            _db.MediaTags.RemoveRange(media.Tags.Where(x => x.Type != TagBindingType.Inherited));
+            _db.MediaTags.AddRange(newTags);
 
             await _db.SaveChangesAsync();
         }
