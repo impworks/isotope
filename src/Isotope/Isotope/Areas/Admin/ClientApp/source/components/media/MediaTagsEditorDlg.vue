@@ -8,6 +8,7 @@ import { Media } from "../../vms/Media";
 import { Tag } from "../../vms/Tag";
 import { TagBindingType } from "../../../../../Common/source/vms/TagBindingType";
 import RectEditor from "./RectEditor.vue";
+import { OverlayTagBinding } from "../../vms/OverlayTagBinding";
 @Component({
     components: { RectEditor }
 })
@@ -59,6 +60,13 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
     addTag() {
         alert('new tag');
     }
+    
+    removeTag(b: OverlayTagBinding) {
+        const list = this.value.overlayTags;
+        const idx = list.indexOf(b);
+        if(idx !== -1)
+            list.splice(idx, 1);
+    }
 }
 </script>
 
@@ -84,7 +92,13 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
                                 <div class="media-wrapper">
                                     <img :src="value.fullPath" ref="img" />
                                     <div class="tag-wrapper">
-                                        <RectEditor v-for="(b, idx) in value.overlayTags" :rect="b.location" :tag-binding="b" :tags-lookup="tagsLookup" :key="idx"></RectEditor>
+                                        <RectEditor v-for="(b, idx) in value.overlayTags"
+                                                    :rect="b.location"
+                                                    :tag-binding="b"
+                                                    :tags-lookup="tagsLookup"
+                                                    :key="idx"
+                                                    @removed="removeTag(b)">
+                                        </RectEditor>
                                     </div>
                                 </div>
                             </div>
@@ -126,6 +140,7 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
         bottom: 0;
         left: 0;
         right: 0;
+        z-index: 1000;
     }
 }
 </style>

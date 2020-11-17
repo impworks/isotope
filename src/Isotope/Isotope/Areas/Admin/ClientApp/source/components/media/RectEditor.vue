@@ -21,11 +21,17 @@ export default class RectEditor extends Vue {
         if(this._container)
             return this._container;
         
-        let elem = this.$el;
+        let elem = this.$el as HTMLElement;
         while (elem && !elem.classList.contains('media-wrapper'))
             elem = elem.parentElement;
         
         return this._container = elem;
+    }
+    
+    get popoverStyle() {
+        return {
+            left: Math.round((this.size.x - 280) / 2) + 'px'
+        };
     }
     
     mounted() {
@@ -34,14 +40,6 @@ export default class RectEditor extends Vue {
         const r = this.rect;
         this.origin = { x: Math.round(w * r.x), y: Math.round(h * r.y) };
         this.size = { x: Math.round(w * r.width), y: Math.round(h * r.height) };
-    }
-    
-    focus() {
-        this.active = true;
-    }
-    
-    unfocus() {
-        this.active = false;
     }
     
     @Watch('origin', { deep: true })
@@ -63,6 +61,10 @@ export default class RectEditor extends Vue {
         this.origin = { x, y };
         this.size = { x: w, y: h };
     }
+    
+    onRemoveRequested() {
+        this.$emit('removed');
+    }
 }
 
 interface IPoint {
@@ -72,10 +74,32 @@ interface IPoint {
 </script>
 
 <template>
-    <vue-drag-resize :x="origin.x" :y="origin.y" :w="size.x" :h="size.y" @dragging="onDrag" @resizing="onResize" :parent="true">
+    <vue-drag-resize :x="origin.x" :y="origin.y" :w="size.x" :h="size.y" @dragging="onDrag" @resizing="onResize" :active.sync="active" :parent="true">
+        <div v-if="tagBinding && active" class="popover bs-popover-bottom show" :style="popoverStyle">
+            <div class="arrow" style="left: 124px"></div>
+            <div class="popover-body">
+                <div class="form-inline">
+                    <v-select :options="tagsLookup" v-model="tagBinding.tagId" label="caption" :reduce="x => x.id">
+                        <template slot="no-options">No tags created yet.</template>
+                    </v-select>
+                    <button type="button" class="btn btn-sm btn-outline-danger ml-2" @click.prevent="onRemoveRequested" title="Remove tag">
+                        <span class="fa fa-remove"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </vue-drag-resize>
 </template>
 
 <style lang="scss" scoped>
-
+.v-select {
+    width: 213px;
+}
+.popover {
+    position: absolute;
+    bottom: -68px;
+    top: unset;
+    width: 300px;
+    height: 50px;
+}
 </style>

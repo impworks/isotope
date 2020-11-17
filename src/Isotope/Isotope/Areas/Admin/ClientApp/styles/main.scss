@@ -76,3 +76,7 @@ html, body {
 .vdp-datepicker input {
   @extend .form-control;
 }
+
+.vs__clear {
+  margin-top: -4px;
+}
