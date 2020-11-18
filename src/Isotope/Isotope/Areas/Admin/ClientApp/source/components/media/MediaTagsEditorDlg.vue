@@ -7,8 +7,8 @@ import { DialogComponent } from "vue-modal-dialogs";
 import { Media } from "../../vms/Media";
 import { Tag } from "../../vms/Tag";
 import { TagBindingType } from "../../../../../Common/source/vms/TagBindingType";
-import RectEditor from "./RectEditor.vue";
 import { OverlayTagBinding } from "../../vms/OverlayTagBinding";
+import RectEditor from "./RectEditor.vue";
 @Component({
     components: { RectEditor }
 })

@@ -39,8 +39,8 @@ namespace Isotope.Code.Services.Jobs
         /// </summary>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            foreach (var job in await LoadPendingJobsAsync())
-                Task.Run(() => ExecuteJobAsync(job));
+            foreach (var def in await LoadPendingJobsAsync())
+                ExecuteJobAsync(def);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Isotope.Code.Services.Jobs
             if(jb.IsSuperseding)
                 Cancel(def.ResourceKey);
             
-            await ExecuteJobAsync(def);
+            ExecuteJobAsync(def); // sic! fire and forget
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Isotope.Code.Services.Jobs
         /// </summary>
         private async Task<List<JobDescriptor>> LoadPendingJobsAsync()
         {
-            using var scope = _scopeFactory.CreateScope();
+            var scope = _scopeFactory.CreateScope();
             var di = scope.ServiceProvider;
 
             var db = di.GetRequiredService<AppDbContext>();
@@ -110,6 +110,7 @@ namespace Isotope.Code.Services.Jobs
 
                 result.Add(new JobDescriptor
                 {
+                    Scope = scope,
                     Job = job,
                     Arguments = args,
                     ResourceKey = job.GetResourceKey(args),
@@ -133,7 +134,7 @@ namespace Isotope.Code.Services.Jobs
         /// </summary>
         private async Task<JobDescriptor> CreateDescriptorAsync(JobBuilder jb)
         {
-            using var scope = _scopeFactory.CreateScope();
+            var scope = _scopeFactory.CreateScope();
             var di = scope.ServiceProvider;
             
             var state = new JobState
@@ -180,6 +181,10 @@ namespace Isotope.Code.Services.Jobs
             catch (Exception ex)
             {
                 _logger.Error(ex.Demystify(), $"Job {def} has failed.");
+            }
+            finally
+            {
+                def.Scope.Dispose();
             }
 
             try

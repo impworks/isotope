@@ -1,8 +1,10 @@
+using System;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Isotope.Code.Services.Jobs
 {
-    public class JobDescriptor
+    public class JobDescriptor: IDisposable
     {
         public IJob Job { get; set; }
         public object Arguments { get; set; }
@@ -11,6 +13,17 @@ namespace Isotope.Code.Services.Jobs
         
         public CancellationTokenSource Cancellation { get; set; }
         public int JobStateId { get; set; }
+
+        public IServiceScope Scope { get; set; }
+
+        public void Dispose()
+        {
+            if (Scope == null)
+                return;
+            
+            Scope.Dispose();
+            Scope = null;
+        }
 
         public override string ToString()
         {

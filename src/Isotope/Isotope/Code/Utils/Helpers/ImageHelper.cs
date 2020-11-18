@@ -26,23 +26,7 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static Image ResizeToFit(Image source, Size maxSize)
         {
-            var propSize = GetInscribeSize(source.Size, maxSize);
-            var srcRect = new Rectangle(Point.Empty, source.Size);
-            var destRect = new Rectangle(Point.Empty, propSize);
-
-            var bmp = new Bitmap(propSize.Width, propSize.Height, PixelFormat.Format32bppArgb);
-            using var gfx = Graphics.FromImage(bmp);
-
-            gfx.Clear(Color.Transparent);
-            gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            gfx.DrawImage(
-                source,
-                destRect,
-                srcRect,
-                GraphicsUnit.Pixel
-            );
-
-            return bmp;
+            return GetPortion(source, new Rectangle(Point.Empty, source.Size), GetInscribeSize(source.Size, maxSize));
         }
 
         /// <summary>
@@ -50,12 +34,36 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static Image ResizeToFill(Image source, Size maxSize)
         {
-            var srcRect = GetFillRectangle(source.Size, maxSize);
-            var destRect = new Rectangle(Point.Empty, maxSize);
+            return GetPortion(source, GetFillRectangle(source.Size, maxSize), maxSize);
+        }
+        
+        /// <summary>
+        /// Generates a proportional thumbnail.
+        /// </summary>
+        public static Image GetPortion(Image source, Rect rect, Size size)
+        {
+            return GetPortion(
+                source,
+                new Rectangle(
+                    (int) (rect.X * source.Width),
+                    (int) (rect.Y * source.Height),
+                    (int) (rect.Width * source.Width),
+                    (int) (rect.Height * source.Height)
+                ),
+                size
+            );
+        }
 
-            var bmp = new Bitmap(maxSize.Width, maxSize.Height, PixelFormat.Format32bppArgb);
+        /// <summary>
+        /// Cuts and resizes an image portion.
+        /// </summary>
+        public static Image GetPortion(Image source, Rectangle srcRect, Size size)
+        {
+            var bmp = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
             using var gfx = Graphics.FromImage(bmp);
 
+            var destRect = new Rectangle(Point.Empty, size);
+            
             gfx.Clear(Color.Transparent);
             gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
             gfx.DrawImage(

@@ -11,10 +11,12 @@ import { MediaListRequest } from "../../vms/MediaListRequest";
 import { FolderTitle } from "../../vms/FolderTitle";
 import MediaPropsEditorDlg from "./MediaPropsEditorDlg.vue";
 import MediaTagsEditorDlg from "./MediaTagsEditorDlg.vue";
+import MediaThumbEditorDlg from "./MediaThumbEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const propsEditor = create<{mediaKey: string}>(MediaPropsEditorDlg);
-const tagEditor = create<{media: MediaThumbnail}>(MediaTagsEditorDlg);
+const tagEditor = create<{mediaKey: string}>(MediaTagsEditorDlg);
+const thumbEditor = create<{mediaKey: string}>(MediaThumbEditorDlg);
 
 @Component
 export default class MediaPage extends Mixins(HasAsyncState()) {
@@ -68,7 +70,8 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
     }
 
     async editThumb(m: MediaThumbnail) {
-        alert('editThumb');
+        if(await thumbEditor({ mediaKey: m.key }))
+            await this.load();
     }
 }
 </script>

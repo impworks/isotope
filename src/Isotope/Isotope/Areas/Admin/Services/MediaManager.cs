@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Impworks.Utils.Format;
 using Impworks.Utils.Linq;
 using Isotope.Areas.Admin.Dto;
+using Isotope.Areas.Admin.Services.Jobs;
 using Isotope.Areas.Admin.Services.MediaHandlers;
 using Isotope.Areas.Admin.Utils;
+using Isotope.Code.Services.Jobs;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
@@ -24,15 +26,17 @@ namespace Isotope.Areas.Admin.Services
     /// </summary>
     public class MediaManager
     {
-        public MediaManager(AppDbContext db, IMapper mapper, IEnumerable<IMediaHandler> mediaHandlers)
+        public MediaManager(AppDbContext db, IMapper mapper, IEnumerable<IMediaHandler> mediaHandlers, IBackgroundJobService jobSvc)
         {
             _db = db;
             _mapper = mapper;
+            _jobSvc = jobSvc;
             _mediaHandlers = mediaHandlers.ToArray();
         }
         
         private readonly AppDbContext _db;
         private readonly IMapper _mapper;
+        private readonly IBackgroundJobService _jobSvc;
         private readonly IMediaHandler[] _mediaHandlers;
 
         /// <summary>
@@ -223,10 +227,9 @@ namespace Isotope.Areas.Admin.Services
                 throw new OperationException($"Media '{key}' does not exist.");
 
             media.ThumbnailRect = _mapper.Map<Rect>(vm);
-            
-            // todo: launch image regeneration job
-
             await _db.SaveChangesAsync();
+
+            await _jobSvc.RunAsync(JobBuilder.For<UpdateThumbnailJob>().WithArgs(media.Key));
         }
 
         /// <summary>
@@ -258,15 +261,15 @@ namespace Isotope.Areas.Admin.Services
         private async Task<(string Path, string Url)> SaveUploadAsync(IFormFile file, Folder folder, string key)
         {
             var fileName = key + Path.GetExtension(file.FileName);
-            var path = Path.Combine("@media", folder.Key, fileName);
-            var localPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", path);
+            var path = Path.Combine("/@media", folder.Key, fileName);
+            var localPath = MediaHelper.GetFullMediaPath(path);
             
             Directory.CreateDirectory(Path.GetDirectoryName(localPath));
             
             await using var fs = new FileStream(localPath, FileMode.Open, FileAccess.Write);
             await file.CopyToAsync(fs);
 
-            return (localPath, '/' + path);
+            return (localPath, path);
         }
 
         /// <summary>

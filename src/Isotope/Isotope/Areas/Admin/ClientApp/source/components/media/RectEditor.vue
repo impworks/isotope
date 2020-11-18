@@ -9,7 +9,7 @@ export default class RectEditor extends Vue {
     @Prop({ required: true }) rect: Rect;
     @Prop({ required: false }) tagBinding: TagBinding;
     @Prop({ required: false }) tagsLookup: Tag[];
-    @Prop({ required: false }) ratio: number;
+    @Prop({ required: false, default: false }) lockRatio: boolean;
     
     private _container: HTMLElement = null;
     active: boolean = false;
@@ -74,7 +74,9 @@ interface IPoint {
 </script>
 
 <template>
-    <vue-drag-resize :x="origin.x" :y="origin.y" :w="size.x" :h="size.y" @dragging="onDrag" @resizing="onResize" :active.sync="active" :parent="true">
+    <vue-drag-resize :x="origin.x" :y="origin.y" :w="size.x" :h="size.y" :min-width="50" :min-height="50"
+                     :active.sync="active" :parent="true" :lock-aspect-ratio="lockRatio"
+                     @dragging="onDrag" @resizing="onResize">
         <div v-if="tagBinding && active" class="popover bs-popover-bottom show" :style="popoverStyle">
             <div class="arrow" style="left: 124px"></div>
             <div class="popover-body">

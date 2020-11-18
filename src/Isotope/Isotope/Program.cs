@@ -48,6 +48,7 @@ namespace Isotope
                            services.AddHostedService(sp => sp.GetService<BackgroundJobService>());
 
                            services.AddTransient<RebuildInheritedTagsJob>();
+                           services.AddTransient<UpdateThumbnailJob>();
                        });
         }
     }
