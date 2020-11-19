@@ -34,6 +34,10 @@ export default class RectEditor extends Vue {
         };
     }
     
+    get isIncorrect() {
+        return this.tagBinding && !this.tagBinding.tagId;
+    }
+    
     mounted() {
         const w = this.container.offsetWidth;
         const h = this.container.offsetHeight;
@@ -76,12 +80,15 @@ interface IPoint {
 <template>
     <vue-drag-resize :x="origin.x" :y="origin.y" :w="size.x" :h="size.y" :min-width="50" :min-height="50"
                      :active.sync="active" :parent="true" :lock-aspect-ratio="lockRatio"
+                     :class="{'unset': isIncorrect }"
+                     :title="isIncorrect ? 'Please select a tag' : null"
                      @dragging="onDrag" @resizing="onResize">
-        <div v-if="tagBinding && active" class="popover bs-popover-bottom show" :style="popoverStyle">
+        <div v-if="tagBinding && active" class="popover bs-popover-bottom show tag-popover" :style="popoverStyle">
             <div class="arrow" style="left: 124px"></div>
             <div class="popover-body">
                 <div class="form-inline">
-                    <v-select :options="tagsLookup" v-model="tagBinding.tagId" label="caption" :reduce="x => x.id">
+                    <v-select :options="tagsLookup" v-model="tagBinding.tagId" label="caption" :reduce="x => x.id"
+                              class="tag-popover-select">
                         <template slot="no-options">No tags created yet.</template>
                     </v-select>
                     <button type="button" class="btn btn-sm btn-outline-danger ml-2" @click.prevent="onRemoveRequested" title="Remove tag">
@@ -93,11 +100,20 @@ interface IPoint {
     </vue-drag-resize>
 </template>
 
-<style lang="scss" scoped>
-.v-select {
+<style lang="scss">
+.v-select.tag-popover-select {
     width: 213px;
 }
-.popover {
+
+.vdr.unset {
+    border-color: rgba(255, 0, 0, 0.5);
+    
+    &.active {
+        border-color: rgba(255, 0, 0, 1);    
+    }
+}
+
+.popover.tag-popover {
     position: absolute;
     bottom: -68px;
     top: unset;
