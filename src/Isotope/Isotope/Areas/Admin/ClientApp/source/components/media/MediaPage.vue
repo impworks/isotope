@@ -113,7 +113,7 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
             </tbody>
             <tbody v-else>
                 <tr v-for="m in media" v-action-row class="hover-actions">
-                    <td class="media-thumb" :style="{'background-image': 'url(' + m.thumbnailPath + ')'}">
+                    <td class="media-thumb" :style="{'background-image': 'url(' + m.thumbnailPath + '?nonce=' + m.nonce +')'}">
                     </td>
                     <td>{{m.uploadDate}}</td>
                     <td>

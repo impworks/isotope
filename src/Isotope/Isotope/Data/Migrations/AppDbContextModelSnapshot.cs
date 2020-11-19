@@ -221,6 +221,9 @@ namespace Isotope.Data.Migrations
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("VersionDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("Width")
                         .HasColumnType("INTEGER");
 

@@ -85,6 +85,7 @@ namespace Isotope.Demo
             {
                 Key = key,
                 UploadDate = DateTime.Now,
+                VersionDate = DateTime.Now,
                 Description = descr,
                 Date = date,
                 Folder = folder,

@@ -6,4 +6,5 @@ export interface MediaThumbnail {
     thumbnailPath: string;
     uploadDate: string;
     tags: number;
+    nonce: number;
 }

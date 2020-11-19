@@ -36,6 +36,9 @@ namespace Isotope.Areas.Admin.Services.Jobs
             using var dst = ImageHelper.GetPortion(src, media.ThumbnailRect, ImageHelper.Sizes[MediaSize.Small]);
             
             dst.Save(thumbPath);
+            
+            media.VersionDate = DateTime.Now;
+            await _db.SaveChangesAsync();
         }
     }
 }

@@ -23,6 +23,11 @@ namespace Isotope.Data.Models
         /// Date of the media's uploading to the system.
         /// </summary>
         public DateTime UploadDate { get; set; }
+        
+        /// <summary>
+        /// Date of the media's last modification.
+        /// </summary>
+        public DateTime VersionDate { get; set; }
 
         /// <summary>
         /// Containing folder.

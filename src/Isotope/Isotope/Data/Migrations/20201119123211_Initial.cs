@@ -245,6 +245,7 @@ namespace Isotope.Data.Migrations
                     Key = table.Column<string>(maxLength: 50, nullable: false),
                     Path = table.Column<string>(maxLength: 500, nullable: true),
                     UploadDate = table.Column<DateTime>(nullable: false),
+                    VersionDate = table.Column<DateTime>(nullable: false),
                     FolderKey = table.Column<string>(nullable: false),
                     Type = table.Column<int>(nullable: false),
                     Description = table.Column<string>(nullable: true),

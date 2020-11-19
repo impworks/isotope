@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
@@ -62,6 +63,11 @@ namespace Isotope.Areas.Front.Dto
         /// </summary>
         public TagBindingVM[] ExtraTags { get; set; }
 
+        /// <summary>
+        /// Cache busting key.
+        /// </summary>
+        public long Nonce { get; set; }
+
         public void Configure(TypeAdapterConfig config)
         {
             config.NewConfig<Media, MediaVM>()
@@ -74,7 +80,8 @@ namespace Isotope.Areas.Front.Dto
                   .Map(x => x.Width, x => x.Width)
                   .Map(x => x.Height, x => x.Height)
                   .Map(x => x.OverlayTags, x => x.Tags.Where(y => y.Location != null))
-                  .Map(x => x.ExtraTags, x => x.Tags.Where(y => y.Location == null && y.Type != TagBindingType.Inherited));
+                  .Map(x => x.ExtraTags, x => x.Tags.Where(y => y.Location == null && y.Type != TagBindingType.Inherited))
+                  .Map(x => x.Nonce, x => new DateTimeOffset(x.VersionDate, TimeSpan.Zero).ToUnixTimeSeconds());
         }
         
         /// <summary>
