@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Isotope.Data.Models;
 
 namespace Isotope.Code.Utils.Helpers
 {
@@ -27,6 +28,16 @@ namespace Isotope.Code.Utils.Helpers
                 return Path.ChangeExtension(path, ".sm.jpg");
 
             throw new ArgumentOutOfRangeException(nameof(size), "Unexpected media size!");
+        }
+
+        /// <summary>
+        /// Returns the full URL for media thumbnail with nonce.
+        /// </summary>
+        public static string GetThumbnailUrl(Media media)
+        {
+            var sizedPath = GetSizedMediaPath(media.Path, MediaSize.Small);
+            var nonce = new DateTimeOffset(media.VersionDate).ToUnixTimeSeconds();
+            return sizedPath + "?nonce=" + nonce;
         }
 
         /// <summary>

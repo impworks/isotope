@@ -17,8 +17,7 @@ namespace Isotope.Areas.Admin.Dto
         public string Date { get; set; }
         public TagBindingVM[] ExtraTags { get; set; }
         public OverlayTagBindingVM[] OverlayTags { get; set; }
-        public long Nonce { get; set; }
-        
+
         public void Configure(TypeAdapterConfig config)
         {
             config.NewConfig<Media, MediaVM>()
@@ -26,8 +25,7 @@ namespace Isotope.Areas.Admin.Dto
                   .Map(x => x.Description, x => x.Description)
                   .Map(x => x.Date, x => x.Date)
                   .Map(x => x.OverlayTags, x => x.Tags.Where(y => y.Type == TagBindingType.Depicted))
-                  .Map(x => x.ExtraTags, x => x.Tags.Where(y => y.Type == TagBindingType.Author || y.Type == TagBindingType.Custom))
-                  .Map(x => x.Nonce, x => new DateTimeOffset(x.VersionDate, TimeSpan.Zero).ToUnixTimeSeconds());
+                  .Map(x => x.ExtraTags, x => x.Tags.Where(y => y.Type == TagBindingType.Author || y.Type == TagBindingType.Custom));
 
             config.NewConfig<MediaVM, Media>()
                   .Map(x => x.Description, x => x.Description)

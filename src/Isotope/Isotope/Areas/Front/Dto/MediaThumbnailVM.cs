@@ -1,4 +1,3 @@
-using System;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data.Models;
@@ -25,19 +24,13 @@ namespace Isotope.Areas.Front.Dto
         /// Path to the thumbnail for this media. 
         /// </summary>
         public string ThumbnailPath { get; set; }
-        
-        /// <summary>
-        /// Cache busting key.
-        /// </summary>
-        public long Nonce { get; set; }
 
         public void Configure(TypeAdapterConfig config)
         {
             config.NewConfig<Media, MediaThumbnailVM>()
                   .Map(x => x.Key, x => x.Key)
                   .Map(x => x.Type, x => x.Type)
-                  .Map(x => x.ThumbnailPath, x => MediaHelper.GetSizedMediaPath(x.Path, MediaSize.Small))
-                  .Map(x => x.Nonce, x => new DateTimeOffset(x.VersionDate, TimeSpan.Zero).ToUnixTimeSeconds());
+                  .Map(x => x.ThumbnailPath, x => MediaHelper.GetThumbnailUrl(x));
         }
     }
 }

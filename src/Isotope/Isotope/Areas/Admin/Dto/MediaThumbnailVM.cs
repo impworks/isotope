@@ -33,11 +33,6 @@ namespace Isotope.Areas.Admin.Dto
         /// Number of tags on the media.
         /// </summary>
         public int Tags { get; set; }
-        
-        /// <summary>
-        /// Cache busting key.
-        /// </summary>
-        public long Nonce { get; set; }
 
         public void Configure(TypeAdapterConfig config)
         {
@@ -46,8 +41,7 @@ namespace Isotope.Areas.Admin.Dto
                   .Map(x => x.Type, x => x.Type)
                   .Map(x => x.UploadDate, x => x.UploadDate)
                   .Map(x => x.Tags, x => x.Tags.Count(y => y.Type != TagBindingType.Inherited))
-                  .Map(x => x.ThumbnailPath, x => MediaHelper.GetSizedMediaPath(x.Path, MediaSize.Small))
-                  .Map(x => x.Nonce, x => new DateTimeOffset(x.VersionDate, TimeSpan.Zero).ToUnixTimeSeconds());
+                  .Map(x => x.ThumbnailPath, x => MediaHelper.GetThumbnailUrl(x));
         }
     }
 }
