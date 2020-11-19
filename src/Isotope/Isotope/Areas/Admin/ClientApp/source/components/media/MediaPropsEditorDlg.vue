@@ -25,6 +25,9 @@ export default class MediaPropsEditorDlg extends Mixins(HasAsyncState(), DialogC
     }
 
     async save() {
+        if(this.asyncState.isSaving)
+            return;
+        
         await this.showSaving(
             async () => {
                 this.value.date = this.date ? this.date.toISOString() : null;
@@ -64,7 +67,10 @@ export default class MediaPropsEditorDlg extends Mixins(HasAsyncState(), DialogC
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="submit" class="btn btn-primary" :disabled="asyncState.isSaving">
+                                <span v-if="asyncState.isSaving">Saving...</span>
+                                <span v-else>Update</span>
+                            </button>
                             <button type="button" class="btn btn-secondary" @click.prevent="$close(false)">Cancel</button>
                         </div>
                     </div>

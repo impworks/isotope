@@ -35,6 +35,9 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
     }
 
     async save() {
+        if(this.asyncState.isSaving)
+            return;
+        
         await this.showSaving(
             async () => {
                 this.value.extraTags = this.extraTags.map(x => ({ tagId: x, type: TagBindingType.Custom }));
@@ -83,7 +86,7 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
                             <div class="form-group">
                                 <div class="mb-2">
                                     <div class="pull-right">
-                                        <button class="btn btn-sm btn-outline-secondary" type="button" @click.prevent="addTag()">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" @click.prevent="addTag()" :disabled="asyncState.isSaving">
                                             <span class="fa fa-plus-circle"></span> Add tag
                                         </button>
                                     </div>
@@ -112,7 +115,10 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="submit" class="btn btn-primary" :disabled="asyncState.isSaving">
+                                <span v-if="asyncState.isSaving">Saving...</span>
+                                <span v-else>Update</span>
+                            </button>
                             <button type="button" class="btn btn-secondary" @click.prevent="$close(false)">Cancel</button>
                         </div>
                     </div>

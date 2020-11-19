@@ -7,6 +7,7 @@ import { SharedLinkDetails } from "../../vms/SharedLinkDetails";
 import { create } from "vue-modal-dialogs";
 
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
+import { DateHelper } from "../../../../../Common/source/utils/DateHelper";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 
@@ -36,6 +37,10 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
         await this.load();
         this.$toast.success('Shared link removed.');
     }
+    
+    formatDate(d: string) {
+        return DateHelper.formatFull(d);
+    }
 }
 </script>
 
@@ -64,7 +69,7 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
             </tbody>
             <tbody v-else>
                 <tr v-for="l in links" v-action-row class="hover-actions">
-                    <td>{{ l.creationDate }}</td>
+                    <td>{{ formatDate(l.creationDate) }}</td>
                     <td><span :title="l.folder">{{l.folderCaption}}</span></td>
                     <td>{{l.tags ? l.tags.length : '-'}}</td>
                     <td>

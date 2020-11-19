@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 export class DateHelper {
     
     /**
@@ -5,5 +7,13 @@ export class DateHelper {
      */
     static format(d: Date): string {
         return d ? JSON.stringify(d).substr(1, 10) : null;
+    }
+
+    /**
+     * Returns the full readable date.
+     */
+    static formatFull(d: string | Date) {
+        const dt = typeof d === "string" ? DateTime.fromISO(d) : DateTime.fromJSDate(d);
+        return dt.setLocale('en').toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
     }
 }

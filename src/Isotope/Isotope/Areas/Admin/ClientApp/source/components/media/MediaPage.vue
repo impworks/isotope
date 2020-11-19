@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Mixins, Watch } from "vue-property-decorator";
+import { Component, Mixins} from "vue-property-decorator";
 import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { HasAsyncState } from "../mixins";
@@ -7,11 +7,10 @@ import { HasAsyncState } from "../mixins";
 import { create } from "vue-modal-dialogs";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
-import { MediaListRequest } from "../../vms/MediaListRequest";
-import { FolderTitle } from "../../vms/FolderTitle";
 import MediaPropsEditorDlg from "./MediaPropsEditorDlg.vue";
 import MediaTagsEditorDlg from "./MediaTagsEditorDlg.vue";
 import MediaThumbEditorDlg from "./MediaThumbEditorDlg.vue";
+import { DateHelper } from "../../../../../Common/source/utils/DateHelper";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const propsEditor = create<{mediaKey: string}>(MediaPropsEditorDlg);
@@ -73,6 +72,10 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         if(await thumbEditor({ mediaKey: m.key }))
             await this.load();
     }
+    
+    formatDate(d: string) {
+        return DateHelper.formatFull(d);
+    }
 }
 </script>
 
@@ -96,8 +99,8 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
             <thead>
             <tr>
                 <th></th>
-                <th width="60%">Upload date</th>
                 <th>Type</th>
+                <th width="60%">Upload date</th>
                 <th>Tags</th>
                 <th width="1"></th>
             </tr>
@@ -115,11 +118,11 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                 <tr v-for="m in media" v-action-row class="hover-actions">
                     <td class="media-thumb" :style="{'background-image': 'url(' + m.thumbnailPath + ')'}">
                     </td>
-                    <td>{{m.uploadDate}}</td>
                     <td>
                         <span v-if="m.type === 1">Photo</span>
                         <span v-if="m.type === 2">Video</span>
                     </td>
+                    <td>{{formatDate(m.uploadDate)}}</td>
                     <td>{{m.tags}}</td>
                     <td>
                         <a class="hover-action" @click.prevent="remove(m)" title="Remove">

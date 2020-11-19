@@ -32,6 +32,9 @@ export default class MediaThumbEditorDlg extends Mixins(HasAsyncState(), DialogC
     }
 
     async save() {
+        if(this.asyncState.isSaving)
+            return;
+        
         await this.showSaving(
             async () => {
                 await this.$api.media.updateThumb(this.mediaKey, this.value);
@@ -75,7 +78,10 @@ export default class MediaThumbEditorDlg extends Mixins(HasAsyncState(), DialogC
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="submit" class="btn btn-primary" :disabled="asyncState.isSaving">
+                                <span v-if="asyncState.isSaving">Saving...</span>
+                                <span v-else>Update</span>
+                            </button>
                             <button type="button" class="btn btn-secondary" @click.prevent="$close(false)">Cancel</button>
                         </div>
                     </div>

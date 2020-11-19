@@ -10,7 +10,7 @@ namespace Isotope.Areas.Admin.Dto
     /// </summary>
     public class SharedLinkDetailsVM: SharedLinkVM
     {
-        public string CreationDate { get; set; }
+        public DateTime CreationDate { get; set; }
         public string Key { get; set; }
         public string FolderCaption { get; set; }
 
@@ -24,7 +24,7 @@ namespace Isotope.Areas.Admin.Dto
                   .Map(x => x.Key, x => x.Key)
                   .Map(x => x.Folder, x => x.Folder.Path)
                   .Map(x => x.FolderCaption, x => x.Folder.Caption)
-                  .Map(x => x.CreationDate, x => x.CreationDate.ToString("yyyy-MM-dd HH:mm:ss"));
+                  .Map(x => x.CreationDate, x => x.CreationDate);
         }
     }
 }
