@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Mixins, Prop } from "vue-property-decorator";
+import { Component, Mixins, Prop, Vue } from "vue-property-decorator";
 import GlobalEvents from "vue-global-events";
 
 import { HasAsyncState } from "../mixins";
@@ -14,6 +14,7 @@ import { Rect } from "../../../../../Common/source/vms/Rect";
 
 import RectEditor from "./RectEditor.vue";
 import RectPreview from "./RectPreview.vue";
+import { EventHelper } from "../../../../../Common/source/utils/EventHelper";
 
 @Component({
     components: { RectPreview, RectEditor, GlobalEvents }
@@ -129,10 +130,18 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
             width: Math.min(r.width / w, 1 - (r.x / w)),
             height: Math.min(r.height / h, 1 - (r.y / h))
         };
-        this.value.overlayTags.push({ type: TagBindingType.Depicted, location: relRect});
+        this.value.overlayTags.push({ type: TagBindingType.Depicted, location: relRect, tagId: null});
         
         this.newTagRect = null;
         this.isCreatingTag = false;
+        
+        // activate the newly created tag
+        setTimeout(() => {
+            const rects = this.$refs['rects'] as Vue[];
+            const lastElem = rects[rects.length - 1].$el as HTMLElement;
+            EventHelper.sendMouseEvent(lastElem, 'mousedown');
+            EventHelper.sendMouseEvent(lastElem, 'mouseup');
+        }, 50);
     }
 }
 </script>
@@ -173,6 +182,7 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
                                                     :tag-binding="b"
                                                     :tags-lookup="tagsLookup"
                                                     :key="idx"
+                                                    ref="rects"
                                                     @removed="removeTag(b)">
                                         </RectEditor>
                                     </div>

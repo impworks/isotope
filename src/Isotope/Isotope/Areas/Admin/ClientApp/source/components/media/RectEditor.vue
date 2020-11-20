@@ -69,6 +69,21 @@ export default class RectEditor extends Vue {
     onRemoveRequested() {
         this.$emit('removed');
     }
+    
+    @Watch('active')
+    onActiveChanged(value: boolean) {
+        if(!value) return;
+        if(!this.tagBinding || this.tagBinding.tagId) return;
+        
+        // opens the dropdown if the rect must have a tag, but currently has none.
+        const activateDropdown = () => {
+            const ctrl = this.$refs['select'].$el as HTMLElement;
+            const input = ctrl.querySelector('input');
+            input.focus();
+        };
+
+        setTimeout(activateDropdown, 10);
+    }
 }
 
 interface IPoint {
@@ -88,7 +103,8 @@ interface IPoint {
             <div class="popover-body">
                 <div class="form-inline">
                     <v-select :options="tagsLookup" v-model="tagBinding.tagId" label="caption" :reduce="x => x.id"
-                              class="tag-popover-select">
+                              class="tag-popover-select"
+                              ref="select">
                         <template slot="no-options">No tags created yet.</template>
                     </v-select>
                     <button type="button" class="btn btn-sm btn-outline-danger ml-2" @click.prevent="onRemoveRequested" title="Remove tag">

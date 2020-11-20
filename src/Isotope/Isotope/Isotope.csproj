@@ -81,6 +81,7 @@
     <TypeScriptCompile Include="Areas\Common\source\services\AuthService.ts" />
     <TypeScriptCompile Include="Areas\Common\source\utils\ArrayHelper.ts" />
     <TypeScriptCompile Include="Areas\Common\source\utils\DateHelper.ts" />
+    <TypeScriptCompile Include="Areas\Common\source\utils\EventHelper.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\KeyResult.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\MediaType.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\Rect.ts" />
