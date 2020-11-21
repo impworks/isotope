@@ -89,9 +89,9 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                 <button class="btn btn-outline-secondary btn-sm mr-2" type="button" @click.prevent="reorder()" :disabled="!media || media.length < 2">
                     <span class="fa fa-sort"></span> Reorder
                 </button>
-                <button class="btn btn-outline-secondary btn-sm" type="button" @click.prevent="upload()">
+                <router-link class="btn btn-outline-secondary btn-sm" :to="'/folders/' + folderKey + '/upload'">
                     <span class="fa fa-upload"></span> Upload media
-                </button>
+                </router-link>
             </div>
             <div class="clearfix"></div>
         </div>

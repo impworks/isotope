@@ -36,7 +36,7 @@ namespace Isotope.Code.Utils.Helpers
         public static string GetThumbnailUrl(Media media)
         {
             var sizedPath = GetSizedMediaPath(media.Path, MediaSize.Small);
-            var nonce = new DateTimeOffset(media.VersionDate).ToUnixTimeSeconds();
+            var nonce = new DateTimeOffset(media.VersionDate.ToUniversalTime(), TimeSpan.Zero).ToUnixTimeSeconds();
             return sizedPath + "?nonce=" + nonce;
         }
 

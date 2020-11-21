@@ -111,7 +111,7 @@ namespace Isotope.Areas.Admin.Services
             var media = new Media
             {
                 Key = key,
-                Folder = folder,
+                FolderKey = folder.Key,
                 Path = paths.Url,
                 Type = mediaInfo.MediaType,
                 IsReady = mediaInfo.IsReady,
@@ -119,6 +119,7 @@ namespace Isotope.Areas.Admin.Services
                 Width = mediaInfo.FullImage.Width,
                 Height = mediaInfo.FullImage.Height,
                 UploadDate = DateTime.Now,
+                VersionDate = DateTime.Now,
                 Order = maxOrder + 1,
                 Tags = tags
             };
@@ -261,12 +262,12 @@ namespace Isotope.Areas.Admin.Services
         private async Task<(string Path, string Url)> SaveUploadAsync(IFormFile file, Folder folder, string key)
         {
             var fileName = key + Path.GetExtension(file.FileName);
-            var path = Path.Combine("/@media", folder.Key, fileName);
+            var path = $"/@media/{folder.Key}/{fileName}";
             var localPath = MediaHelper.GetFullMediaPath(path);
             
             Directory.CreateDirectory(Path.GetDirectoryName(localPath));
             
-            await using var fs = new FileStream(localPath, FileMode.Open, FileAccess.Write);
+            await using var fs = new FileStream(localPath, FileMode.Create, FileAccess.Write);
             await file.CopyToAsync(fs);
 
             return (localPath, path);
