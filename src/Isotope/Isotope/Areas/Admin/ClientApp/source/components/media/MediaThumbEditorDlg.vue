@@ -66,6 +66,7 @@ export default class MediaThumbEditorDlg extends Mixins(HasAsyncState(), DialogC
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Update media thumbnail</h5>
+                            <button type="button" class="close" @click="$close(false)">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">

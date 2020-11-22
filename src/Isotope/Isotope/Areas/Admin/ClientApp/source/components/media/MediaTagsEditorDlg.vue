@@ -154,6 +154,7 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogCo
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Update media tags</h5>
+                            <button type="button" class="close" @click="$close(false)">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
