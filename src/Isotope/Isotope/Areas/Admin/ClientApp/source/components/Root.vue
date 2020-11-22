@@ -43,13 +43,16 @@ export default class Root extends Mixins(HasAsyncState()) {
     <div>
         <nav class="navbar navbar-dark bg-dark mb-4">
             <div class="container px-4">
-                <router-link class="navbar-brand" :to="'/'">Isotope</router-link>
+                <a class="navbar-brand" href="/" title="To gallery home">
+                    <span class="fa fa-fw fa-image"></span>
+                    Isotope
+                </a>
                 <div class="navbar-nav mr-auto"></div>
                 <div class="my-2 my-lg-0">
                     <ul class="navbar-nav">
                         <li class="nav-item">
                             <a class="nav-link clickable" @click.prevent="logout()">
-                                <span class="fa fa-sign-out"></span> Exit
+                                <span class="fa fa-sign-out"></span> Logout
                             </a>
                         </li>
                     </ul>

@@ -74,7 +74,7 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
                     <td>{{l.tags ? l.tags.length : '-'}}</td>
                     <td>
                         <a class="hover-action" @click.prevent="remove(l)" title="Remove">
-                            <span class="fa fa-remove"></span>
+                            <span class="fa fa-fw fa-remove"></span>
                         </a>
                     </td>
                 </tr>

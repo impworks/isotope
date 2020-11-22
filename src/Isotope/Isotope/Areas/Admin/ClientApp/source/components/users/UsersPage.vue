@@ -72,7 +72,7 @@ export default class UsersPage extends Mixins(HasAsyncState()) {
             <thead>
             <tr>
                 <th width="80%">Username</th>
-                <th>Access level</th>
+                <th style="white-space: nowrap">Access level</th>
                 <th width="1"></th>
             </tr>
             </thead>
