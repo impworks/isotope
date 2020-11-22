@@ -4,14 +4,14 @@ import { FolderContentsRequest } from "../vms/FolderContentsRequest";
 import { FolderContents } from "../vms/FolderContents";
 import { Tag } from "../vms/Tag";
 import { Media } from "../vms/Media";
-import { LoginRequest } from "../vms/LoginRequest";
-import { LoginResponse } from "../vms/LoginResponse";
 import { GalleryInfo } from "../vms/GalleryInfo";
 import { FilterStateService, IFilterState } from "./FilterStateService";
 import { KeyResult } from "../../../../Common/source/vms/KeyResult";
 import { ILookup } from "../../../../Common/source/utils/Interfaces";
 import { StaticHelper } from "../../../../Common/source/utils/StaticHelper";
 import { AuthService } from "../../../../Common/source/services/AuthService";
+import { LoginRequest } from '../../../../Common/source/vms/LoginRequest';
+import { LoginResponse } from "../../../../Common/source/vms/LoginResponse";
 
 export class ApiService {
     // -----------------------------------

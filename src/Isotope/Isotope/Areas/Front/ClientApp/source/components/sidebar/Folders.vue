@@ -63,7 +63,7 @@ export default class Folders extends Mixins(HasAsyncState(), HasLifetime) {
 </template>
 
 <style lang="scss">
-    @import "../../../styles/variables";
+    @import "../../../../../Common/styles/variables";
 
     .folder-tree {
         height: 0;

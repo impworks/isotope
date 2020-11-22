@@ -136,7 +136,7 @@ interface Crumb {
 </template>
 
 <style lang="scss">
-    @import "../../../styles/variables";
+    @import "../../../../../Common/styles/variables";
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";

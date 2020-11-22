@@ -108,7 +108,7 @@ export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
 </template>
 
 <style lang="scss">
-    @import "../../../styles/variables";
+    @import "../../../../../Common/styles/variables";
 
     .desktop-filters {
         flex: 0 0 auto;

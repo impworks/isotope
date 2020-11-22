@@ -23,14 +23,18 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
     
     async created() {
         this.$filter.updateFromRoute(this.$route);
-        this.observe(this.$auth.onUserChanged, x => this.authRequired = !x);
         this.observe(this.$filter.onUrlChanged, x => this.$router.replace(x));
         
         try {
             await this.showLoading(async () => {
                 const info = await this.$api.getInfo();
                 document.title = info.caption;
-                this.authRequired = !info.allowGuests && !info.isAuthorized && info.isLinkValid === null;
+                if(info.allowGuests) {
+                    this.authRequired = false;
+                } else {
+                    this.authRequired = info.isAuthorized && info.isLinkValid === null;
+                    this.observe(this.$auth.onUserChanged, x => this.authRequired = !x);
+                }
                 if(info.isLinkValid === false) {
                     this.error = 'The specified share link is invalid.';
                 }
@@ -70,7 +74,7 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
 </template>
 
 <style lang="scss">
-    @import "../../styles/variables";
+    @import "../../../../Common/styles/variables";
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";

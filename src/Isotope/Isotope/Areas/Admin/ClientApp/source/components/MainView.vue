@@ -1,40 +1,19 @@
 <script lang="ts">
-import { Component, Mixins } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { DialogsWrapper } from "vue-modal-dialogs";
-import { HasAsyncState } from "./mixins";
 
 import MainMenu from "./utils/MainMenu.vue";
 import { Dep } from "../../../../Common/source/utils/VueInjectDecorator";
-import { ApiService } from "../services/ApiService";
 import { AuthService } from "../../../../Common/source/services/AuthService";
 
 @Component({
     components: { MainMenu, DialogsWrapper }
 })
-export default class Root extends Mixins(HasAsyncState()) {
-    @Dep('$api') $api: ApiService;
+export default class MainView extends Vue {
     @Dep('$auth') $auth: AuthService;
-    
-    async mounted() {
-        try {
-            this.asyncState.isLoading = true;
-            const info = await this.$api.info.getInfo();
-            if(!info.isAdmin) {
-                this.gotoAuth();
-            }
-            this.asyncState.isLoading = false;
-        } catch (e) {
-            this.gotoAuth();
-        }
-    }
     
     logout() {
         this.$auth.user = null;
-        this.gotoAuth();
-    }
-    
-    gotoAuth() {
-        window.location.href = '/';
     }
 }
 </script>
@@ -59,23 +38,21 @@ export default class Root extends Mixins(HasAsyncState()) {
                 </div>
             </div>
         </nav>
-        <loading :is-loading="asyncState.isLoading" :is-full-page="true">
-            <div class="container container-body">
-                <div class="row">
-                    <div class="col-sm-2">
-                        <main-menu></main-menu>
-                    </div>
-                    <div class="col-sm-10">
-                        <div class="card">
-                            <div class="card-body">
-                                <router-view></router-view>
-                            </div>
+        <div class="container container-body">
+            <div class="row">
+                <div class="col-sm-2">
+                    <MainMenu></MainMenu>
+                </div>
+                <div class="col-sm-10">
+                    <div class="card">
+                        <div class="card-body">
+                            <router-view></router-view>
                         </div>
                     </div>
                 </div>
             </div>
-            <dialogs-wrapper transition-name="fade"></dialogs-wrapper>
-        </loading>
+        </div>
+        <DialogsWrapper transition-name="fade"></DialogsWrapper>
     </div>
 </template>
 

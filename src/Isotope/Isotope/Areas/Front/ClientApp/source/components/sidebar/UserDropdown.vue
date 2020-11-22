@@ -3,7 +3,7 @@ import { Vue, Component } from "vue-property-decorator";
 import { GalleryInfo } from "../../vms/GalleryInfo";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
-import { AuthService } from "../../services/AuthService";
+import { AuthService } from "../../../../../Common/source/services/AuthService";
 
 @Component
 export default class UserDropdown extends Vue {
@@ -74,7 +74,7 @@ export default class UserDropdown extends Vue {
 </template>
 
 <style lang="scss">
-    @import "../../../styles/variables";
+    @import "../../../../../Common/styles/variables";
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";

@@ -1,4 +1,4 @@
-@import "variables";
+@import "../../../Common/styles/variables";
 @import "./node_modules/bootstrap/scss/bootstrap";
 @import "./node_modules/vue-select/src/scss/vue-select";
 @import "vue-select";
@@ -6,7 +6,6 @@
 @import "mixins";
 @import "fonts";
 @import "icons";
-@import "logotype";
 @import "radio";
 @import "buttons";
 

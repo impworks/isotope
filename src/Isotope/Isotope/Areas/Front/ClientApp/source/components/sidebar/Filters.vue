@@ -151,7 +151,7 @@ export default class Filters extends Mixins(HasLifetime, HasAsyncState()) {
 </template>
 
 <style lang="scss">
-    @import "../../../styles/variables";
+    @import "../../../../../Common/styles/variables";
     @import "./node_modules/bootstrap/scss/functions";
     @import "./node_modules/bootstrap/scss/variables";
     
