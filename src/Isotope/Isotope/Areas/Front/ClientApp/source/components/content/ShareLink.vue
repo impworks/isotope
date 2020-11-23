@@ -19,6 +19,7 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
     @Model() model: boolean;
     isVisible: boolean = false;
     
+    caption: string = null;
     tags: string[] = [];
     scope: string = null;
     dates: string = null;
@@ -75,7 +76,7 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
         
         try {
             await this.showSaving(async () => {
-                const key = await this.$api.createSharedLink(this.$filter.state);
+                const key = await this.$api.createSharedLink(this.caption, this.$filter.state);
                 this.link = window.location.origin + '/?sh=' + key;
                 this.state = 'succeeded';
             });
@@ -125,7 +126,7 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
     private getDateDescription(state: IFilterState): string {
         const parts: string[] = [];
         if(state.from)
-            parts.push('from ' + DateHelper.format(state.from));
+            parts.push('From ' + DateHelper.format(state.from));
         if(state.to)
             parts.push('to ' + DateHelper.format(state.to));
         
@@ -158,16 +159,28 @@ type LinkCreationState = 'new' | 'succeeded' | 'failed';
             <loading :is-loading="asyncState.isLoading" :is-full-page="true">
                 <div v-if="state === 'new'">
                     <p>You are creating a public link with the following properties:</p>
-                    <ul>
-                        <li><b>Scope</b>: {{scope}}</li>
-                        <li v-if="dates"><b>Date range</b>: {{dates}}</li>
-                        <li v-if="tags && tags.length">
-                            <b>Tags</b>:
-                            <ul>
+                    <div class="row mb-3">
+                        <label class="col-form-label col-sm-3">Caption</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" v-model="caption" v-autofocus />
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-sm-3">Scope</div>
+                        <div class="col-sm-9">{{scope}}</div>
+                    </div>
+                    <div class="row mb-4" v-if="dates">
+                        <div class="col-sm-3">Date range</div>
+                        <div class="col-sm-9">{{dates}}</div>
+                    </div>
+                    <div class="row" v-if="tags && tags.length">
+                        <div class="col-sm-3">Tags</div>
+                        <div class="col-sm-9">
+                            <ul class="mb-0 pl-3">
                                 <li v-for="(tag, i) in tags" :key="i">{{tag}}</li>
                             </ul>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
                 <div v-if="state === 'succeeded'">
                     <p>Please copy the link:</p>

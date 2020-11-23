@@ -10,11 +10,17 @@ namespace Isotope.Data.Models
     public class SharedLink
     {
         /// <summary>
-        /// Unique random key of the image.
+        /// Unique random key of the link.
         /// </summary>
         [Key]
         [StringLength(50)]
         public string Key { get; set; }
+        
+        /// <summary>
+        /// Readable name of the link (for management purposes).
+        /// </summary>
+        [StringLength(200)]
+        public string Caption { get; set; }
         
         /// <summary>
         /// Root folder of the shared link.

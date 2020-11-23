@@ -52,6 +52,7 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
         <table class="table table-bordered mb-0">
             <thead>
                 <tr>
+                    <th>Caption</th>
                     <th>Created at</th>
                     <th>Folder</th>
                     <th>Tags</th>
@@ -69,6 +70,7 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
             </tbody>
             <tbody v-else>
                 <tr v-for="l in links" v-action-row class="hover-actions">
+                    <td>{{l.caption || '-'}}</td>
                     <td>{{ formatDate(l.creationDate) }}</td>
                     <td><span :title="l.folder">{{l.folderCaption}}</span></td>
                     <td>{{l.tags ? l.tags.length : '-'}}</td>

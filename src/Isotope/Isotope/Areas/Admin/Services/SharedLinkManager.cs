@@ -59,7 +59,7 @@ namespace Isotope.Areas.Admin.Services
                 Folder = folder,
             };
             _mapper.Map(vm, link);
-            
+
             _db.SharedLinks.Add(link);
             await _db.SaveChangesAsync();
 

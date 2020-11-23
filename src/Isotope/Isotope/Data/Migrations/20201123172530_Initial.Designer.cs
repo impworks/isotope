@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Isotope.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201119123211_Initial")]
+    [Migration("20201123172530_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -266,6 +266,10 @@ namespace Isotope.Data.Migrations
                     b.Property<string>("Key")
                         .HasColumnType("TEXT")
                         .HasMaxLength(50);
+
+                    b.Property<string>("Caption")
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(200);
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("TEXT");

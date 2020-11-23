@@ -32,7 +32,7 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
                 if(info.allowGuests) {
                     this.authRequired = false;
                 } else {
-                    this.authRequired = info.isAuthorized && info.isLinkValid === null;
+                    this.authRequired = !info.isAuthorized && info.isLinkValid === null;
                     this.observe(this.$auth.onUserChanged, x => this.authRequired = !x);
                 }
                 if(info.isLinkValid === false) {

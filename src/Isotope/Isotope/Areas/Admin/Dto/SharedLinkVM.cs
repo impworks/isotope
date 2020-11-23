@@ -11,6 +11,7 @@ namespace Isotope.Areas.Admin.Dto
     /// </summary>
     public class SharedLinkVM: IMapped
     {
+        public string Caption { get; set; }
         public string Folder { get; set; }
         public int[] Tags { get; set; }
         public string From { get; set; }
@@ -20,6 +21,7 @@ namespace Isotope.Areas.Admin.Dto
         public virtual void Configure(TypeAdapterConfig config)
         {
             config.NewConfig<SharedLinkVM, SharedLink>()
+                  .Map(x => x.Caption, x => x.Caption)
                   .Map(x => x.Scope, x => x.Scope)
                   .Map(x => x.Tags, x => x.Tags == null ? null : x.Tags.JoinString(","))
                   .Map(x => x.DateFrom, x => x.From)

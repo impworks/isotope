@@ -265,6 +265,10 @@ namespace Isotope.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasMaxLength(50);
 
+                    b.Property<string>("Caption")
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(200);
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("TEXT");
 

@@ -354,6 +354,7 @@ namespace Isotope.Data.Migrations
                 columns: table => new
                 {
                     Key = table.Column<string>(maxLength: 50, nullable: false),
+                    Caption = table.Column<string>(maxLength: 200, nullable: true),
                     FolderKey = table.Column<string>(nullable: true),
                     Scope = table.Column<int>(nullable: false),
                     Tags = table.Column<string>(nullable: true),

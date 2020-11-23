@@ -17,6 +17,7 @@ namespace Isotope.Areas.Admin.Dto
         public override void Configure(TypeAdapterConfig config)
         {
             config.NewConfig<SharedLink, SharedLinkDetailsVM>()
+                  .Map(x => x.Caption, x => x.Caption)
                   .Map(x => x.Scope, x => x.Scope)
                   .Map(x => x.Tags, x => x.Tags == null ? new int[0] : x.Tags.Split(',', StringSplitOptions.None).Select(int.Parse))
                   .Map(x => x.From, x => x.DateFrom)

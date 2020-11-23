@@ -71,9 +71,9 @@ export class ApiService {
     /**
      * Creates a new shared link.
      */
-    async createSharedLink(state: IFilterState): Promise<string> {
+    async createSharedLink(caption: string, state: IFilterState): Promise<string> {
         const url = this.getRequestUrl('admin/shared-links');
-        const response = await axios.post<KeyResult>(url, state);
+        const response = await axios.post<KeyResult>(url, { ...state, caption });
         return response.data.key;
     }
 
