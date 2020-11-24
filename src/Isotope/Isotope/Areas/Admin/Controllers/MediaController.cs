@@ -28,6 +28,15 @@ namespace Isotope.Areas.Admin.Controllers
         {
             return _mediaMgr.GetListAsync(folderKey);
         }
+        
+        /// <summary>
+        /// Updates the order of media in a folder.
+        /// </summary>
+        [HttpPut, Route("~/@api/admin/folders/{folderKey}/media/order")]
+        public Task Reorder(string folderKey, [FromBody] string[] keys)
+        {
+            return _mediaMgr.ReorderAsync(folderKey, keys);
+        }
 
         /// <summary>
         /// Returns the details of a media file.

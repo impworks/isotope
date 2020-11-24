@@ -233,6 +233,35 @@ namespace Isotope.Areas.Admin.Services
         }
 
         /// <summary>
+        /// Updates the order of all media files in a folder.
+        /// </summary>
+        public async Task ReorderAsync(string folderKey, string[] mediaKeys)
+        {
+            var folderExists = await _db.Folders.AnyAsync(x => x.Key == folderKey);
+            if(!folderExists)
+                throw new OperationException($"Folder '{folderKey}' does not exist.");
+
+            var extraCount = mediaKeys.Length;
+            var orderLookup = new Dictionary<string, int>();
+            for (var i = 0; i < mediaKeys.Length; i++)
+                orderLookup[mediaKeys[i]] = i;
+
+            var media = await _db.Media
+                                 .Where(x => x.FolderKey == folderKey)
+                                 .OrderBy(x => x.UploadDate)
+                                 .ToListAsync();
+
+            foreach (var elem in media)
+            {
+                elem.Order = orderLookup.TryGetValue(elem.Key, out var order)
+                    ? order
+                    : extraCount++;
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
+        /// <summary>
         /// Removes the specified media by key.
         /// </summary>
         public async Task RemoveAsync(string key)
