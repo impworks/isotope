@@ -38,8 +38,10 @@ import * as ModalDialogs from 'vue-modal-dialogs';
 Vue.use(ModalDialogs);
 
 import DraggableResizable from "vue-draggable-resizable";
-//import 'vue-draggable-resizable/dist/VueDraggableResizable.css';
 Vue.component('vue-drag-resize', DraggableResizable);
+
+import draggable from "vuedraggable";
+Vue.component('Draggable', draggable);
 
 // -----------------------------------
 // Custom components

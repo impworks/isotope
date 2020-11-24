@@ -12,11 +12,13 @@ import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import MediaPropsEditorDlg from "./MediaPropsEditorDlg.vue";
 import MediaTagsEditorDlg from "./MediaTagsEditorDlg.vue";
 import MediaThumbEditorDlg from "./MediaThumbEditorDlg.vue";
+import MediaOrderEditorDlg from "./MediaOrderEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const propsEditor = create<{mediaKey: string}>(MediaPropsEditorDlg);
 const tagEditor = create<{mediaKey: string}>(MediaTagsEditorDlg);
 const thumbEditor = create<{mediaKey: string}>(MediaThumbEditorDlg);
+const orderEditor = create<{folderKey: string}>(MediaOrderEditorDlg);
 
 @Component
 export default class MediaPage extends Mixins(HasAsyncState()) {
@@ -72,6 +74,11 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
 
     async editThumb(m: MediaThumbnail) {
         if(await thumbEditor({ mediaKey: m.key }))
+            await this.load();
+    }
+    
+    async reorder() {
+        if(await orderEditor({ folderKey: this.folder.key }))
             await this.load();
     }
     

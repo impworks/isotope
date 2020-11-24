@@ -15,6 +15,12 @@ export class MediaApiClient extends ApiClientBase {
         const cfg = this.getCfg();
         return (await axios.get<MediaThumbnail[]>(url, cfg)).data;
     }
+
+    async reorder(folderKey: string, mediaKeys: string[]) {
+        const url = this.$host + '/@api/admin/folders/' + folderKey + '/media/order';
+        const cfg = this.getCfg();
+        await axios.put(url, mediaKeys, cfg);
+    }
     
     async upload(folderKey: string, file: File) {
         const url = this.getUrl(null, { folder: folderKey });
