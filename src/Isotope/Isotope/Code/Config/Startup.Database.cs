@@ -58,7 +58,7 @@ namespace Isotope.Code.Config
             var userMgr = sp.GetService<UserManager<AppUser>>(); 
             
             await db.EnsureDatabaseCreatedAsync();
-            await db.EnsureSystemItemsCreatedAsync();
+            await db.EnsureSystemItemsCreatedAsync(userMgr);
 
             if (demoCfg.Enabled && demoCfg.SeedSampleData)
                 await SeedData.SeedSampleDataAsync(db, userMgr);

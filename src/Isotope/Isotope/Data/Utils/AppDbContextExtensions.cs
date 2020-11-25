@@ -40,7 +40,7 @@ namespace Isotope.Data.Utils
         /// <summary>
         /// Ensures all system entries are created in the DB.
         /// </summary>
-        public static async Task EnsureSystemItemsCreatedAsync(this AppDbContext db)
+        public static async Task EnsureSystemItemsCreatedAsync(this AppDbContext db, UserManager<AppUser> userMgr)
         {
             if(!db.Roles.Any())
             {
@@ -74,6 +74,13 @@ namespace Isotope.Data.Utils
                         AllowGuests = false
                     })
                 });
+            }
+
+            if (!db.Users.Any())
+            {
+                var user = new AppUser { UserName = "admin@example.com", IsAdmin = true };
+                await userMgr.CreateAsync(user, "123456");
+                await userMgr.AddToRoleAsync(user, nameof(UserRole.Admin));
             }
 
             await db.SaveChangesAsync();

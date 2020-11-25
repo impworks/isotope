@@ -61,7 +61,7 @@ namespace Isotope.Code.Config
                 app.UseDeveloperExceptionPage();
 
             InitDatabase(app);
-            
+
             app.UseForwardedHeaders(GetForwardedHeadersOptions())
                .UseStaticFiles()
                .UseRouting()

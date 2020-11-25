@@ -42,6 +42,7 @@
 
     <PropertyGroup>
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+        <UserSecretsId>2acadc83-2368-4438-a5fc-2ad677ade9fb</UserSecretsId>
     </PropertyGroup>
     
   <ItemGroup>
@@ -152,6 +153,10 @@
     <None Update="Demo\Media\travel-5.JPG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\@media\**\*.*" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
 </Project>

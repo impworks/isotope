@@ -73,14 +73,6 @@ namespace Isotope.Code.Config
                 opts.LowercaseUrls = false;
             });
 
-            if (Configuration.WebServer.RequireHttps)
-            {
-                services.Configure<MvcOptions>(opts =>
-                {
-                    opts.Filters.Add(new RequireHttpsAttribute());
-                });
-            }
-
             if (Environment.IsDevelopment())
             {
                 services.AddCors(opts => opts.AddDefaultPolicy(x =>

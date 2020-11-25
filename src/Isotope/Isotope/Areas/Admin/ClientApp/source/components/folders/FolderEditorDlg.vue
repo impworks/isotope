@@ -32,7 +32,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState(), DialogBase)
             async () => {
                 this.value = this.folder
                     ? await this.$api.folders.get(this.folder.key)
-                    : { caption: '', slug: '', tags: [], thumbnailKey: '' };
+                    : { key: '', caption: '', slug: '', tags: [], thumbnailKey: '' };
                 this.tags = await this.$api.tags.getList();
             },
             'Failed to load data'
@@ -43,7 +43,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState(), DialogBase)
         await this.showSaving(
             async () => {
                 if(this.isNew) {
-                    await this.$api.folders.create(this.parent.key, this.value);
+                    await this.$api.folders.create(this.parent?.key, this.value);
                     this.$toast.success('Folder created');
                 } else {
                     await this.$api.folders.update(this.folder.key, this.value);
