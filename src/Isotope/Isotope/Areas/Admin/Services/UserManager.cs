@@ -60,9 +60,12 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Updates the user's profile.
         /// </summary>
-        public async Task UpdateProfileAsync(string id, UserVM vm)
+        public async Task UpdateProfileAsync(string id, UserVM vm, string currentUser)
         {
             var user = await FindAsync(id);
+            if(!vm.IsAdmin && string.Equals(user.UserName, currentUser, StringComparison.InvariantCultureIgnoreCase))
+                throw new OperationException("You cannot demote your admin rights.");
+            
             _mapper.Map(vm, user);
             await _db.SaveChangesAsync();
         }
@@ -81,9 +84,12 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Removes an existing user.
         /// </summary>
-        public async Task RemoveAsync(string id)
+        public async Task RemoveAsync(string id, string currentUser)
         {
             var user = await FindAsync(id);
+            if(string.Equals(user.UserName, currentUser, StringComparison.InvariantCultureIgnoreCase))
+                throw new OperationException("You cannot remove your own account.");
+            
             await _userMgr.DeleteAsync(user);
         }
 

@@ -43,7 +43,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpPut, Route("{id}")]
         public Task Update(string id, [FromBody] UserVM vm)
         {
-            return _userMgr.UpdateProfileAsync(id, vm);
+            return _userMgr.UpdateProfileAsync(id, vm, User.Identity.Name);
         }
         
         /// <summary>
@@ -61,7 +61,7 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpDelete, Route("{id}")]
         public Task Delete(string id)
         {
-            return _userMgr.RemoveAsync(id);
+            return _userMgr.RemoveAsync(id, User.Identity.Name);
         }
     }
 }

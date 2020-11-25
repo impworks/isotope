@@ -38,9 +38,15 @@ export default class UsersPage extends Mixins(HasAsyncState()) {
         if (!await confirmation({ text: hint }))
             return;
         
-        await this.$api.users.remove(user.id);
+        await this.showSaving(
+            async () => {
+                await this.$api.users.remove(user.id);
+                this.$toast.success('User removed.');
+            },
+            'Failed to remove the user'
+        );
+
         await this.load();
-        this.$toast.success('User removed.');
     }
 
     async create() {
