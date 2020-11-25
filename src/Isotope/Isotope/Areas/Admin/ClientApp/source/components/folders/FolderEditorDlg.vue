@@ -1,7 +1,6 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from "vue-property-decorator";
-import { HasAsyncState } from "../mixins";
-import { DialogComponent } from "vue-modal-dialogs";
+import { HasAsyncState, DialogBase } from "../mixins";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { Folder } from "../../vms/Folder";
@@ -9,7 +8,7 @@ import { Tag } from "../../vms/Tag";
 import { FolderTitle } from "../../vms/FolderTitle";
 
 @Component
-export default class FolderEditorDlg extends Mixins(HasAsyncState(), DialogComponent) {
+export default class FolderEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
     @Dep('$api') $api: ApiService;
     @Prop() folder: FolderTitle;
     @Prop() parent: FolderTitle;

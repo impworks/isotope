@@ -1,14 +1,13 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from "vue-property-decorator";
-import { HasAsyncState } from "../mixins";
+import { HasAsyncState, DialogBase } from "../mixins";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
-import { DialogComponent } from "vue-modal-dialogs";
 import { UserPassword } from "../../vms/UserPassword";
 import { User } from "../../vms/User";
 
 @Component
-export default class UserPasswordDlg extends Mixins(HasAsyncState(), DialogComponent) {
+export default class UserPasswordDlg extends Mixins(HasAsyncState(), DialogBase) {
     @Dep('$api') $api: ApiService;
     @Prop({ required: true }) user: User;
     

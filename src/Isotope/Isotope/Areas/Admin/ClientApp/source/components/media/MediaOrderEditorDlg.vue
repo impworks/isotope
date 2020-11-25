@@ -1,15 +1,12 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from "vue-property-decorator";
-import { HasAsyncState } from "../mixins";
+import { HasAsyncState, DialogBase } from "../mixins";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
-import { DialogComponent } from "vue-modal-dialogs";
-import { Media } from "../../vms/Media";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
-import draggable from "vuedraggable";
 
 @Component
-export default class MediaOrderEditorDlg extends Mixins(HasAsyncState(), DialogComponent) {
+export default class MediaOrderEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
     @Dep('$api') $api: ApiService;
     @Prop({ required: true }) folderKey: string;
 

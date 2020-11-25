@@ -1,8 +1,9 @@
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
+import { DialogBase } from "../mixins";
 
 @Component
-export default class ConfirmationDlg extends Vue {
+export default class ConfirmationDlg extends Mixins(DialogBase) {
     @Prop({ required: false, default: 'Confirmation' }) header: string;
     @Prop({ required: true }) text: string;
 }

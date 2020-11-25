@@ -2,24 +2,23 @@
 import { Component, Mixins, Prop, Vue } from "vue-property-decorator";
 import GlobalEvents from "vue-global-events";
 
-import { HasAsyncState } from "../mixins";
+import { HasAsyncState, DialogBase } from "../mixins";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
-import { DialogComponent } from "vue-modal-dialogs";
 import { Media } from "../../vms/Media";
 import { Tag } from "../../vms/Tag";
 import { TagBindingType } from "../../../../../Common/source/vms/TagBindingType";
 import { OverlayTagBinding } from "../../vms/OverlayTagBinding";
 import { Rect } from "../../../../../Common/source/vms/Rect";
+import { EventHelper } from "../../../../../Common/source/utils/EventHelper";
 
 import RectEditor from "./RectEditor.vue";
 import RectPreview from "./RectPreview.vue";
-import { EventHelper } from "../../../../../Common/source/utils/EventHelper";
 
 @Component({
     components: { RectPreview, RectEditor, GlobalEvents }
 })
-export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogComponent) {
+export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
     @Dep('$api') $api: ApiService;
     @Prop({ required: true }) mediaKey: string;
 

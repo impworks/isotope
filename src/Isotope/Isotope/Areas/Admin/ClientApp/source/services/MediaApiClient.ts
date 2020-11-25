@@ -4,6 +4,7 @@ import { AuthService } from "../../../../Common/source/services/AuthService";
 import { MediaThumbnail } from "../vms/MediaThumbnail";
 import { Media } from "../vms/Media";
 import { Rect } from "../../../../Common/source/vms/Rect";
+import { Action } from "../../../../Common/source/utils/Interfaces";
 
 export class MediaApiClient extends ApiClientBase {
     constructor($host: string, $auth: AuthService) {
@@ -22,16 +23,21 @@ export class MediaApiClient extends ApiClientBase {
         await axios.put(url, mediaKeys, cfg);
     }
     
-    async upload(folderKey: string, file: File) {
+    async upload(folderKey: string, file: File, progress: Action<number>) {
         const url = this.getUrl(null, { folder: folderKey });
         
         const config = this.getCfg();
         config.headers['Content-Type'] = 'multipart/form-data';
+        config.onUploadProgress = evt => {
+            const pc = evt.loaded / evt.total * 100;
+            // console.log('upload: ' + pc + '%');
+            progress(pc);
+        };
         
         const form = new FormData();
         form.append('file', file);
         
-        const response = await axios.post<MediaThumbnail>(url, form);
+        const response = await axios.post<MediaThumbnail>(url, form, config);
         return response.data;
     }
 

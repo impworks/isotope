@@ -3,8 +3,8 @@ import { Component, Mixins} from "vue-property-decorator";
 import { create } from "vue-modal-dialogs";
 import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
-import { FolderTitle } from "../../vms/FolderTitle";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
+import { Folder } from "../../vms/Folder";
 import { HasAsyncState } from "../mixins";
 
 import FilePicker from "./FilePicker.vue";
@@ -24,7 +24,7 @@ const thumbEditor = create<{mediaKey: string}>(MediaThumbEditorDlg);
 export default class MediaUploadPage extends Mixins(HasAsyncState()) {
     @Dep('$api') $api: ApiService;
     
-    folder: FolderTitle = null;
+    folder: Folder = null;
     uploads: IUploadWrapper[] = [];
     
     async mounted() {
@@ -44,11 +44,11 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
     }
     
     async uploadOne(file: File) {
-        const wrap: IUploadWrapper = { isUploading: true, result: null, error: null };
+        const wrap: IUploadWrapper = { isUploading: true, result: null, error: null, progress: 0 };
         this.uploads.push(wrap);
         
         try {
-            wrap.result = await this.$api.media.upload(this.folder.key, file);
+            wrap.result = await this.$api.media.upload(this.folder.key, file, pc => wrap.progress = pc);
         } catch (e) {
             if(e.response?.status === 400) {
                 wrap.error = e.response.data.error;
@@ -92,8 +92,9 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
 
 interface IUploadWrapper {
     isUploading: boolean;
-    error?: string;
-    result?: MediaThumbnail;
+    progress: number;
+    error: string;
+    result: MediaThumbnail;
 }
 </script>
 
@@ -119,7 +120,14 @@ interface IUploadWrapper {
             <div class="row row-cols-1 row-cols-sm-4">
                 <div class="col mt-4" v-for="u in uploads">
                     <div class="card h-100 upload-card">
-                        <loading :is-loading="u.isUploading" :is-full-page="true">
+                        <template v-if="u.isUploading">
+                            <div class="card-body">
+                                <div class="progress upload-progress">
+                                    <div class="progress-bar progress-bar-animated progress-bar-striped" :style="{width: u.progress + '%'}"></div>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-else>
                             <template v-if="u.result">
                                 <img :src="u.result.thumbnailPath" class="card-img-top" />
                                 <div class="card-body">
@@ -152,7 +160,7 @@ interface IUploadWrapper {
                                     </div>
                                 </div>
                             </template>
-                        </loading>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -166,6 +174,10 @@ interface IUploadWrapper {
 </template>
 
 <style lang="scss">
+.upload-progress {
+    height: 48px;
+}
+
 .upload-card {
     min-height: 200px;
     
