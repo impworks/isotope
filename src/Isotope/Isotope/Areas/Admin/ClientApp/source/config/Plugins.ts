@@ -55,6 +55,3 @@ Vue.directive('autofocus', Autofocus);
 
 import { createActionRowDirective } from "../directives/ActionRow";
 Vue.directive('action-row', createActionRowDirective());
-
-import { createClickOutsideDirective } from "../directives/ClickOutside";
-Vue.directive('click-outside', createClickOutsideDirective());

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Prop } from "vue-property-decorator";
+import { Component, Prop, Mixins } from "vue-property-decorator";
 import { DialogBase } from "../mixins";
 
 @Component
