@@ -87,4 +87,12 @@ export default class MediaOrderEditorDlg extends Mixins(HasAsyncState(), DialogB
     height: 100px;
     margin: 0 1em 1em 0;
 }
+
+.modal-media-reorder {
+    max-width: 715px;
+
+    .modal-body {
+        padding-right: 0;
+    }
+}
 </style>

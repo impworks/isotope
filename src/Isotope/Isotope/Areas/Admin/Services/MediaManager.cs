@@ -238,8 +238,8 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task ReorderAsync(string folderKey, string[] mediaKeys)
         {
-            var folderExists = await _db.Folders.AnyAsync(x => x.Key == folderKey);
-            if(!folderExists)
+            var folder = await _db.Folders.FirstOrDefaultAsync(x => x.Key == folderKey);
+            if(folder == null)
                 throw new OperationException($"Folder '{folderKey}' does not exist.");
 
             var extraCount = mediaKeys.Length;
@@ -259,6 +259,7 @@ namespace Isotope.Areas.Admin.Services
                     : extraCount++;
             }
 
+            folder.MediaCount = media.Count;
             await _db.SaveChangesAsync();
         }
 
