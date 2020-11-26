@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -111,10 +112,19 @@ namespace Isotope.Areas.Admin.Services
             if(folder == null)
                 throw new OperationException($"Folder '{key}' does not exist.");
 
-            await _db.Media.RemoveWhereAsync(x => x.Folder.Path.StartsWith(folder.Path));
-            await _db.Folders.RemoveWhereAsync(x => x.Path.StartsWith(folder.Path));
+            var folders = await _db.Folders
+                                      .Where(x => x.Path.StartsWith(folder.Path))
+                                      .ToListAsync();
 
+            _db.Folders.RemoveRange(folders);
+            await _db.Media.RemoveWhereAsync(x => x.Folder.Path.StartsWith(folder.Path));
             await _db.SaveChangesAsync();
+
+            foreach (var f in folders)
+            {
+                var dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "@media", f.Key);
+                Directory.Delete(dir, true);
+            }
         }
 
         /// <summary>

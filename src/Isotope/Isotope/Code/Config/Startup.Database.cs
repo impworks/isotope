@@ -1,14 +1,17 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Isotope.Code.Services.Config;
 using Isotope.Data;
 using Isotope.Data.Models;
 using Isotope.Data.Utils;
 using Isotope.Demo;
+using MetadataExtractor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Directory = System.IO.Directory;
 
 namespace Isotope.Code.Config
 {
@@ -39,6 +42,8 @@ namespace Isotope.Code.Config
         /// </summary>
         private void InitDatabase(IApplicationBuilder app)
         {
+            CreateStorageFolder();
+
             var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             var sp = scope.ServiceProvider;
             InitDatabaseAsync(sp).GetAwaiter().GetResult();
@@ -62,6 +67,15 @@ namespace Isotope.Code.Config
 
             if (demoCfg.Enabled && demoCfg.SeedSampleData)
                 await SeedData.SeedSampleDataAsync(db, userMgr);
+        }
+
+        /// <summary>
+        /// Creates the folder for database & keys.
+        /// </summary>
+        private void CreateStorageFolder()
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Storage");
+            Directory.CreateDirectory(path);
         }
     }
 }

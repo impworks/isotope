@@ -3,7 +3,10 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { FolderTitle } from "../../vms/FolderTitle";
 import { Action } from "../../../../../Common/source/utils/Interfaces";
 
-@Component
+@Component({
+    name: 'FolderRow',
+    components: { FolderRow }
+})
 export default class FolderRow extends Vue {
     @Prop({ required: true }) folder: FolderTitle;
     @Prop({ required: true}) depth: number;

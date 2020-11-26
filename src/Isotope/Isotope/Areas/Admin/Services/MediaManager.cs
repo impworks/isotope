@@ -104,7 +104,7 @@ namespace Isotope.Areas.Admin.Services
             
             var maxOrder = await _db.Media
                                     .Where(x => x.FolderKey == folderKey)
-                                    .MaxAsync(x => x.Order);
+                                    .MaxAsync(x => (int?) x.Order) ?? 0;
 
             var media = new Media
             {

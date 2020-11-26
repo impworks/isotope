@@ -4,7 +4,10 @@ import { Folder } from "../../vms/Folder";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { FilterStateService } from "../../services/FilterStateService";
 
-@Component
+@Component({
+    name: 'FolderTreeItem',
+    components: { FolderTreeItem }
+})
 export default class FolderTreeItem extends Vue {
     @Dep('$filter') $filter: FilterStateService;
     
@@ -46,9 +49,9 @@ export default class FolderTreeItem extends Vue {
             <div class="folder-tree-link__icon" :style="{marginLeft: depth * 0.7 + 'em'}"></div>
             <div class="folder-tree-link__name">{{ folder.caption }}</div>
         </a>
-        <fragment v-if="folder.subfolders && folder.subfolders.length && expanded">
+        <template v-if="folder.subfolders && folder.subfolders.length && expanded">
             <FolderTreeItem v-for="s in folder.subfolders" :folder="s" :key="s.path" :depth="depth + 1" :current-path="currentPath" />
-        </fragment>
+        </template>
     </div>
 </template>
 

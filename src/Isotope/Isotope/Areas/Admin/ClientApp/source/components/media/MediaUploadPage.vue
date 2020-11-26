@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Mixins} from "vue-property-decorator";
+import { Component, Mixins } from "vue-property-decorator";
 import { create } from "vue-modal-dialogs";
 import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
@@ -35,12 +35,12 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
         );
     }
     
-    upload(files: File[]) {
+    async upload(files: File[]) {
         if(!this.folder)
             return;
         
-        for(let file of files)
-            this.uploadOne(file); // sic! no await
+        for (let file of files)
+            await this.uploadOne(file);
     }
     
     async uploadOne(file: File) {

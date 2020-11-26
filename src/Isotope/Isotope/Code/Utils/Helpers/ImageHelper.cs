@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Linq;
 using Isotope.Data.Models;
 
 namespace Isotope.Code.Utils.Helpers
@@ -15,10 +16,24 @@ namespace Isotope.Code.Utils.Helpers
         /// <summary>
         /// Known sizes for media thumbnails.
         /// </summary>
-        public static IReadOnlyDictionary<MediaSize, Size> Sizes = new Dictionary<MediaSize, Size>
+        public static IReadOnlyDictionary<MediaSize, ImagePreset> ImagePresets = new Dictionary<MediaSize, ImagePreset>
         {
-            [MediaSize.Small] = new Size(200, 200),
-            [MediaSize.Large] = new Size(1024, 768),
+            [MediaSize.Small] = new ImagePreset
+            {
+                MediaSize = MediaSize.Small,
+                Size = new Size(200, 200),
+                ResizeFunc = ResizeToFill,
+                Codec = ImageCodecInfo.GetImageEncoders().First(x => x.MimeType == "image/jpeg"),
+                CodecArgs = new EncoderParameters { Param = new [] { new EncoderParameter(Encoder.Quality, 80L) } }
+            },
+            [MediaSize.Large] = new ImagePreset
+            {
+                MediaSize = MediaSize.Large,
+                Size = new Size(1024, 768),
+                ResizeFunc = ResizeToFit,
+                Codec = ImageCodecInfo.GetImageEncoders().First(x => x.MimeType == "image/jpeg"),
+                CodecArgs = new EncoderParameters { Param = new[] { new EncoderParameter(Encoder.Quality, 90L) } }
+            }
         };
 
         /// <summary>
@@ -109,12 +124,11 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static void CreateThumbnails(Image originalImage, string originalPath)
         {
-            foreach (var size in new[] {MediaSize.Large, MediaSize.Small})
+            foreach (var preset in ImagePresets.Values)
             {
-                var path = MediaHelper.GetSizedMediaPath(originalPath, size);
-                var func = size == MediaSize.Large ? (Func<Image, Size, Image>) ResizeToFit : ResizeToFill;
-                var image = func(originalImage, Sizes[size]);
-                image.Save(path);
+                var path = MediaHelper.GetSizedMediaPath(originalPath, preset.MediaSize);
+                var image = preset.ResizeFunc(originalImage, preset.Size);
+                image.Save(path, preset.Codec, preset.CodecArgs);
             }
         }
 
@@ -123,7 +137,7 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static Rect GetDefaultThumbnailRect(Size size)
         {
-            var targetSize = Sizes[MediaSize.Small];
+            var targetSize = ImagePresets[MediaSize.Small].Size;
             var rect = GetFillRectangle(size, targetSize);
             var w = 1.0 / size.Width;
             var h = 1.0 / size.Height;
@@ -135,5 +149,14 @@ namespace Isotope.Code.Utils.Helpers
                 Height = rect.Height * h,
             };
         }
+    }
+
+    public class ImagePreset
+    {
+        public MediaSize MediaSize { get; set; }
+        public Size Size { get; set; }
+        public Func<Image, Size, Image> ResizeFunc { get; set; }
+        public ImageCodecInfo Codec { get; set; }
+        public EncoderParameters CodecArgs { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -40,10 +40,9 @@
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
-    <PropertyGroup>
-        <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-        <UserSecretsId>2acadc83-2368-4438-a5fc-2ad677ade9fb</UserSecretsId>
-    </PropertyGroup>
+  <PropertyGroup>
+      <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+  </PropertyGroup>
     
   <ItemGroup>
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\admin-main.ts" />
@@ -157,6 +156,6 @@
 
   <ItemGroup>
     <Content Update="wwwroot\@media\**\*.*" CopyToPublishDirectory="Never" />
+    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
-
 </Project>

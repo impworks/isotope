@@ -9,7 +9,9 @@
     "admin-dev": "parcel -d .dist-tmp ./Areas/Admin/ClientApp/admin.html --no-source-maps",
     "front-build": "parcel build -d wwwroot/@assets ./areas/Front/ClientApp/front.html --no-source-maps --public-url /@assets",
     "front-dev-vs": "parcel watch -d wwwroot/@assets ./areas/Front/ClientApp/front.html --no-source-maps --public-url /@assets",
-    "front-dev": "parcel -d .dist-tmp ./Areas/Front/ClientApp/front.html --no-source-maps"
+    "front-dev": "parcel -d .dist-tmp ./Areas/Front/ClientApp/front.html --no-source-maps",
+    "build": "npm run admin-build && npm run front-build",
+    "clean": "rmdir \"wwwroot/@assets\" /s /q"
   },
   "keywords": [
     "photo",
@@ -60,10 +62,10 @@
     "@vue/component-compiler-utils": "^2.5.0",
     "cssnano": "^4.1.10",
     "parcel-bundler": "1.12.4",
+    "postcss-flexbugs-fixes": "4.2.1",
     "sass": "^1.22.10",
     "typescript": "^3.7.4",
-    "vue-template-compiler": "^2.6.10",
-    "postcss-flexbugs-fixes": "4.2.1"
+    "vue-template-compiler": "^2.6.10"
   },
   "-vs-binding": {
     "ProjectOpened": [

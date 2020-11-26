@@ -32,10 +32,11 @@ namespace Isotope.Areas.Admin.Services.Jobs
             var largePath = MediaHelper.GetSizedMediaPath(path, MediaSize.Large);
             var thumbPath = MediaHelper.GetSizedMediaPath(path, MediaSize.Small);
 
+            var preset = ImageHelper.ImagePresets[MediaSize.Small];
             using var src = Image.FromFile(largePath);
-            using var dst = ImageHelper.GetPortion(src, media.ThumbnailRect, ImageHelper.Sizes[MediaSize.Small]);
+            using var dst = ImageHelper.GetPortion(src, media.ThumbnailRect, preset.Size);
             
-            dst.Save(thumbPath);
+            dst.Save(thumbPath, preset.Codec, preset.CodecArgs);
             
             media.VersionDate = DateTime.Now;
             await _db.SaveChangesAsync();

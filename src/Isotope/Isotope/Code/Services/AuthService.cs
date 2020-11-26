@@ -78,7 +78,7 @@ namespace Isotope.Code.Services
                 };
                 return handler.ValidateToken(token, args, out _);
             }
-            catch(SecurityTokenExpiredException)
+            catch
             {
                 return null;
             }
