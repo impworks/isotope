@@ -372,7 +372,7 @@ interface ICachedMedia extends IMedia {
         left: 0;
         height: 100%;
         width: 100%;
-        position: absolute;
+        position: fixed;
         overflow: hidden;
         -webkit-user-select: none;  
         -moz-user-select: none;    
