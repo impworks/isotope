@@ -85,7 +85,6 @@ namespace Isotope.Areas.Admin.Services
         public async Task<MediaThumbnailVM> UploadAsync(string folderKey, IFormFile file)
         {
             var folder = await _db.Folders
-                                  .AsNoTracking()
                                   .FirstOrDefaultAsync(x => x.Key == folderKey);
             
             if(folder == null)
@@ -124,7 +123,9 @@ namespace Isotope.Areas.Admin.Services
             };
 
             _db.Media.Add(media);
+            await _db.SaveChangesAsync();
 
+            folder.MediaCount = await _db.Media.CountAsync(x => x.FolderKey == folderKey);
             await _db.SaveChangesAsync();
 
             ImageHelper.CreateThumbnails(mediaInfo.FullImage, paths.Path);

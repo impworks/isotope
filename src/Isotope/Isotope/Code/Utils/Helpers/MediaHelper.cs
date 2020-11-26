@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Isotope.Data.Models;
@@ -45,7 +46,9 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static string GetFullMediaPath(string path)
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", path.TrimStart('/').Replace('/', '\\'));
+            var parts = new List<string> {Directory.GetCurrentDirectory(), "wwwroot"};
+            parts.AddRange(path.Split('/', StringSplitOptions.RemoveEmptyEntries));
+            return Path.Combine(parts.ToArray());
         }
     }
 }
