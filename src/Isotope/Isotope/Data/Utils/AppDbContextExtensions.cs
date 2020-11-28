@@ -46,7 +46,7 @@ namespace Isotope.Data.Utils
             {
                 db.Roles.AddRange(
                     EnumHelper.GetEnumValues<UserRole>()
-                              .Select(name => new IdentityRole { Name = name.ToString(), NormalizedName = name.ToString().ToUpper() })
+                              .Select(name => new IdentityRole {Name = name.ToString(), NormalizedName = name.ToString().ToUpper()})
                 );
             }
 
@@ -75,6 +75,8 @@ namespace Isotope.Data.Utils
                     })
                 });
             }
+            
+            await db.SaveChangesAsync();
 
             if (!db.Users.Any())
             {

@@ -33,7 +33,7 @@ namespace Isotope.Demo
         /// <summary>
         /// Adds a new folder to the context.
         /// </summary>
-        public Folder AddFolder(string caption, string slug, Folder parent = null)
+        public async Task<Folder> AddFolderAsync(string caption, string slug, Folder parent = null)
         {
             var folder = new Folder
             {
@@ -56,6 +56,7 @@ namespace Isotope.Demo
             }
 
             _db.Folders.Add(folder);
+            await _db.SaveChangesAsync();
 
             return folder;
         }
@@ -63,7 +64,7 @@ namespace Isotope.Demo
         /// <summary>
         /// Adds a new photo to the context.
         /// </summary>
-        public Media AddPhoto(string path, Folder folder, string descr = null, string date = null)
+        public async Task<Media> AddPhotoAsync(string path, Folder folder, string descr = null, string date = null)
         {
             var key = UniqueKey.Get();
             var order = _mediaOrder.ContainsKey(folder.Key)
@@ -101,7 +102,12 @@ namespace Isotope.Demo
             };
 
             folder.MediaCount++;
+
+            if (folder.Thumbnail == null)
+                folder.Thumbnail = media;
+
             _db.Media.Add(media);
+            await _db.SaveChangesAsync();
 
             return media;
         }
@@ -109,7 +115,7 @@ namespace Isotope.Demo
         /// <summary>
         /// Adds a new tag.
         /// </summary>
-        public Tag AddTag(string caption, TagType type = TagType.Custom)
+        public async Task<Tag> AddTagAsync(string caption, TagType type = TagType.Custom)
         {
             var tag = new Tag
             {
@@ -119,6 +125,7 @@ namespace Isotope.Demo
             };
 
             _db.Tags.Add(tag);
+            await _db.SaveChangesAsync();
 
             return tag;
         }
@@ -126,7 +133,7 @@ namespace Isotope.Demo
         /// <summary>
         /// Adds a tag to the photo.
         /// </summary>
-        public void TagPhoto(Media photo, Tag tag, TagBindingType type = TagBindingType.Custom, string location = null)
+        public async Task TagPhotoAsync(Media photo, Tag tag, TagBindingType type = TagBindingType.Custom, string location = null)
         {
             var bind = new MediaTagBinding
             {
@@ -152,12 +159,13 @@ namespace Isotope.Demo
 
             _db.MediaTags.Add(bind);
             photo.Tags.Add(bind);
+            await _db.SaveChangesAsync();
         }
         
         /// <summary>
         /// Adds a tag to the folder.
         /// </summary>
-        public void TagFolder(Folder folder, Tag tag)
+        public async Task TagFolderAsync(Folder folder, Tag tag)
         {
             var bind = new FolderTagBinding
             {
@@ -167,12 +175,14 @@ namespace Isotope.Demo
 
             _db.FolderTags.Add(bind);
             folder.Tags.Add(bind);
+
+            await _db.SaveChangesAsync();
         }
 
         /// <summary>
         /// Adds a new shared link.
         /// </summary>
-        public SharedLink AddSharedLink(Folder folder = null, int[] tagIds = null, SearchScope? mode = null, string dateFrom = null, string dateTo = null, string key = null)
+        public async Task<SharedLink> AddSharedLink(Folder folder = null, int[] tagIds = null, SearchScope? mode = null, string dateFrom = null, string dateTo = null, string key = null)
         {
             var link = new SharedLink
             {
@@ -186,34 +196,26 @@ namespace Isotope.Demo
             };
 
             _db.SharedLinks.Add(link);
+            await _db.SaveChangesAsync();
             
             return link;
         }
 
         /// <summary>
-        /// Commits current changes.
-        /// </summary>
-        public void SaveChanges()
-        {
-            _db.SaveChanges();
-        }
-
-        /// <summary>
         /// Creates all media tags inherited from folders.
         /// </summary>
-        public void ApplyInheritedTags()
+        public async Task ApplyInheritedTagsAsync()
         {
-            _db.SaveChanges();
-            
-            var folders = _db.Folders
-                             .AsNoTracking()
-                             .Include(x => x.Tags)
-                             .Where(x => x.Depth != 0)
-                             .ToLookup(x => x.Depth, x => x);
+            var foldersList = await _db.Folders
+                                       .AsNoTracking()
+                                       .Include(x => x.Tags)
+                                       .Where(x => x.Depth != 0)
+                                       .ToListAsync();
+            var folders = foldersList.ToLookup(x => x.Depth, x => x);
 
-            var media = _db.Media
-                           .Select(x => new {x.Folder, x.Key})
-                           .ToList();
+            var media = await _db.Media
+                                 .Select(x => new {x.Folder, x.Key})
+                                 .ToListAsync();
 
             foreach (var m in media)
             {
@@ -235,7 +237,7 @@ namespace Isotope.Demo
                 }));
             }
             
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
     }
 }

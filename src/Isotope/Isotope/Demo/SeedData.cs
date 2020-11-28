@@ -19,107 +19,91 @@ namespace Isotope.Demo
         /// <summary>
         /// Creates sample data.
         /// </summary>
-        public static async Task SeedSampleDataAsync(AppDbContext db, UserManager<AppUser> userMgr)
+        public static async Task SeedSampleDataAsync(AppDbContext db)
         {
             var ctx = new SeedContext(db);
 
-            SeedCatsFolders(ctx);
-            SeedTravelFolders(ctx);
-            SeedEdgeCaseFolders(ctx);
-            
-            ctx.ApplyInheritedTags();
+            await SeedCatsFoldersAsync(ctx);
+            await SeedTravelFoldersAsync(ctx);
+            // SeedEdgeCaseFolders(ctx);
 
-            await SeedDefaultUserAsync(userMgr);
-
-            await db.SaveChangesAsync();
+            await ctx.ApplyInheritedTagsAsync();
         }
 
         /// <summary>
         /// Creates folders with cute fluffy kitties :3
         /// </summary>
-        private static void SeedCatsFolders(SeedContext ctx)
+        private static async Task SeedCatsFoldersAsync(SeedContext ctx)
         {
-            var catsFolder = ctx.AddFolder("Cats", "cats");
+            var catsFolder = await ctx.AddFolderAsync("Cats", "cats");
 
-            var britsFolder = ctx.AddFolder("British", "british", catsFolder);
+            var britsFolder = await ctx.AddFolderAsync("British", "british", catsFolder);
             for (var i = 1; i <= 4; i++)
-                ctx.AddPhoto($"brit-{i}.jpg", britsFolder);
+                await ctx.AddPhotoAsync($"brit-{i}.jpg", britsFolder);
 
-            var cat = ctx.AddPhoto("brit-5.jpg", britsFolder);
+            var cat = await ctx.AddPhotoAsync("brit-5.jpg", britsFolder);
 
-            var abyFolder = ctx.AddFolder("Abyssinian", "aby", catsFolder);
+            var abyFolder = await ctx.AddFolderAsync("Abyssinian", "aby", catsFolder);
             for (var i = 1; i <= 4; i++)
-                ctx.AddPhoto($"aby-{i}.jpg", abyFolder);
+                await ctx.AddPhotoAsync($"aby-{i}.jpg", abyFolder);
 
-            var catsTag = ctx.AddTag("Felines");
-            var kittyTag = ctx.AddTag("Kitty", TagType.Person);
+            var catsTag = await ctx.AddTagAsync("Felines");
+            var kittyTag = await ctx.AddTagAsync("Kitty", TagType.Person);
 
-            ctx.TagFolder(catsFolder, catsTag);
+            await ctx.TagFolderAsync(catsFolder, catsTag);
 
-            ctx.TagPhoto(cat, kittyTag, TagBindingType.Depicted, "0.2,0.2,0.6,0.7");
+            await ctx.TagPhotoAsync(cat, kittyTag, TagBindingType.Depicted, "0.2,0.2,0.6,0.7");
 
-            var catsPhoto = ctx.AddPhoto("kittens-1.jpg", catsFolder, descr: "Three kittens on a sleeping mat", date: "2020.10.??");
-            ctx.TagPhoto(catsPhoto, ctx.AddTag("Alpha", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 58, 38, 233, 205));
-            ctx.TagPhoto(catsPhoto, ctx.AddTag("Bravo", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 267, 25, 435, 192));
-            ctx.TagPhoto(catsPhoto, ctx.AddTag("Charlie", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 385, 150, 585, 332));
-            ctx.TagPhoto(catsPhoto, ctx.AddTag("Mutts"));
+            var catsPhoto = await ctx.AddPhotoAsync("kittens-1.jpg", catsFolder, descr: "Three kittens on a sleeping mat", date: "2020.10.??");
+            await ctx.TagPhotoAsync(catsPhoto, await ctx.AddTagAsync("Alpha", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 58, 38, 233, 205));
+            await ctx.TagPhotoAsync(catsPhoto, await ctx.AddTagAsync("Bravo", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 267, 25, 435, 192));
+            await ctx.TagPhotoAsync(catsPhoto, await ctx.AddTagAsync("Charlie", TagType.Person), TagBindingType.Depicted, Calc(720, 450, 385, 150, 585, 332));
+            await ctx.TagPhotoAsync(catsPhoto, await ctx.AddTagAsync("Mutts"));
 
-            ctx.AddSharedLink(catsFolder, key: "all-cats", mode: SearchScope.CurrentFolderAndSubfolders);
+            await ctx.AddSharedLink(catsFolder, key: "all-cats", mode: SearchScope.CurrentFolderAndSubfolders);
         }
 
         /// <summary>
         /// Creates folders with travel-related pictures.
         /// </summary>
-        private static void SeedTravelFolders(SeedContext ctx)
+        private static async Task SeedTravelFoldersAsync(SeedContext ctx)
         {
-            var travelFolder = ctx.AddFolder("Travel", "travel");
+            var travelFolder = await ctx.AddFolderAsync("Travel", "travel");
 
-            var tp1 = ctx.AddPhoto("travel-1.jpg", travelFolder, "Rodos Island", "2018.09.01");
-            var tp2 = ctx.AddPhoto("travel-2.jpg", travelFolder, "Simi Island", "2018.09.04");
-            var tp3 = ctx.AddPhoto("travel-3.jpg", travelFolder, "Colosseum", "2018.04.22");
-            var tp4 = ctx.AddPhoto("travel-4.jpg", travelFolder, "Trevi Fountain", "2018.04.23");
-            var tp5 = ctx.AddPhoto("travel-5.jpg", travelFolder, "Venice", "2018.04.??");
+            var tp1 = await ctx.AddPhotoAsync("travel-1.jpg", travelFolder, "Rodos Island", "2018.09.01");
+            var tp2 = await ctx.AddPhotoAsync("travel-2.jpg", travelFolder, "Simi Island", "2018.09.04");
+            var tp3 = await ctx.AddPhotoAsync("travel-3.jpg", travelFolder, "Colosseum", "2018.04.22");
+            var tp4 = await ctx.AddPhotoAsync("travel-4.jpg", travelFolder, "Trevi Fountain", "2018.04.23");
+            var tp5 = await ctx.AddPhotoAsync("travel-5.jpg", travelFolder, "Venice", "2018.04.??");
 
-            var greeceTag = ctx.AddTag("Greece");
-            var italyTag = ctx.AddTag("Italy");
-            var sightTag = ctx.AddTag("Sight-seeing");
+            var greeceTag = await ctx.AddTagAsync("Greece");
+            var italyTag = await ctx.AddTagAsync("Italy");
+            var sightTag = await ctx.AddTagAsync("Sight-seeing");
 
-            ctx.TagPhoto(tp1, greeceTag);
-            ctx.TagPhoto(tp1, sightTag);
-            ctx.TagPhoto(tp2, greeceTag);
-            ctx.TagPhoto(tp3, italyTag);
-            ctx.TagPhoto(tp3, sightTag);
-            ctx.TagPhoto(tp4, italyTag);
-            ctx.TagPhoto(tp5, italyTag);
-            
-            ctx.SaveChanges();
+            await ctx.TagPhotoAsync(tp1, greeceTag);
+            await ctx.TagPhotoAsync(tp1, sightTag);
+            await ctx.TagPhotoAsync(tp2, greeceTag);
+            await ctx.TagPhotoAsync(tp3, italyTag);
+            await ctx.TagPhotoAsync(tp3, sightTag);
+            await ctx.TagPhotoAsync(tp4, italyTag);
+            await ctx.TagPhotoAsync(tp5, italyTag);
 
-            ctx.AddSharedLink(travelFolder, new[] {greeceTag.Id}, key: "travel-greece");
+            await ctx.AddSharedLink(travelFolder, new[] {greeceTag.Id}, key: "travel-greece");
         }
 
         /// <summary>
         /// Creates uncommon folders to test various edge cases.
         /// </summary>
-        private static void SeedEdgeCaseFolders(SeedContext ctx)
+        private static async Task SeedEdgeCaseFoldersAsync(SeedContext ctx)
         {
-            var longFolder = ctx.AddFolder("Z Long folder", "long");
+            var longFolder = await ctx.AddFolderAsync("Z Long folder", "long");
             for (var i = 1; i <= 50; i++)
-                ctx.AddFolder("Subfolder " + i, "sub" + i, longFolder);
+                await ctx.AddFolderAsync("Subfolder " + i, "sub" + i, longFolder);
 
-            var deepFolder = ctx.AddFolder("Z Deep folder", "deep");
+            var deepFolder = await ctx.AddFolderAsync("Z Deep folder", "deep");
             var curr = deepFolder;
             for (var i = 1; i <= 10; i++)
-                curr = ctx.AddFolder("Subfolder " + i, "sub" + i, curr);
-        }
-
-        /// <summary>
-        /// Creates a sample user to test authorization.
-        /// </summary>
-        private static async Task SeedDefaultUserAsync(UserManager<AppUser> userMgr)
-        {
-            var user = new AppUser {UserName = "admin@example.com", IsAdmin = true};
-            await userMgr.CreateAsync(user, "123456");
-            await userMgr.AddToRoleAsync(user, nameof(UserRole.Admin));
+                curr = await ctx.AddFolderAsync("Subfolder " + i, "sub" + i, curr);
         }
 
         /// <summary>
@@ -138,13 +122,13 @@ namespace Isotope.Demo
         /// <summary>
         /// Removes existing media and database.
         /// </summary>
-        public static async Task ClearPreviousData()
+        public static async Task ClearPreviousDataAsync()
         {
             var dir = Directory.GetCurrentDirectory();
             var mediaPath = Path.Combine(dir, "wwwroot", "@media");
             if (Directory.Exists(mediaPath))
             {
-                Directory.Delete(mediaPath, true);
+                await Task.Run(() => Directory.Delete(mediaPath, true));
                 Directory.CreateDirectory(mediaPath);
             }
 

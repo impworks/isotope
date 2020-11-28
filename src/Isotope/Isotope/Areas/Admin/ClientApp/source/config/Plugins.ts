@@ -37,6 +37,9 @@ Vue.use(PopoverPlugin);
 import * as ModalDialogs from 'vue-modal-dialogs';
 Vue.use(ModalDialogs);
 
+import { createClickOutsideDirective } from "../directives/ClickOutside";
+Vue.directive('click-outside', createClickOutsideDirective());
+
 import DraggableResizable from "vue-draggable-resizable";
 Vue.component('vue-drag-resize', DraggableResizable);
 

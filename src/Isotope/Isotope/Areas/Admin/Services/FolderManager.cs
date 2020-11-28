@@ -42,6 +42,7 @@ namespace Isotope.Areas.Admin.Services
         {
             var folders = await _db.Folders
                                    .AsNoTracking()
+                                   .Include(x => x.Thumbnail)
                                    .Where(x => x.Depth > 0)
                                    .OrderBy(x => x.Caption)
                                    .ToListAsync();

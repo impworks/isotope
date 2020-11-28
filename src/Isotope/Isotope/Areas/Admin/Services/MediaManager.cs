@@ -18,6 +18,7 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using FolderVM = Isotope.Areas.Front.Dto.FolderVM;
 
 namespace Isotope.Areas.Admin.Services
 {
@@ -268,9 +269,14 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task RemoveAsync(string key)
         {
-            var media = await _db.Media.FirstOrDefaultAsync(x => x.Key == key);
+            var media = await _db.Media
+                                 .Include(x => x.Folder)
+                                 .FirstOrDefaultAsync(x => x.Key == key);
             if(media == null)
                 throw new OperationException($"Media '{key}' does not exist.");
+
+            if (media.Folder.ThumbnailKey == key)
+                media.Folder.Thumbnail = null;
 
             _db.Media.Remove(media);
 

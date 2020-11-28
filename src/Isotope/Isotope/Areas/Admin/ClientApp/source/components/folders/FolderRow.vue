@@ -2,10 +2,11 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { FolderTitle } from "../../vms/FolderTitle";
 import { Action } from "../../../../../Common/source/utils/Interfaces";
+import SharedLinksPage from "../shared-links/SharedLinksPage.vue";
 
 @Component({
     name: 'FolderRow',
-    components: { FolderRow }
+    components: { SharedLinksPage, FolderRow }
 })
 export default class FolderRow extends Vue {
     @Prop({ required: true }) folder: FolderTitle;
@@ -20,9 +21,10 @@ export default class FolderRow extends Vue {
 <template>
     <fragment>
         <tr v-action-row class="hover-actions">
-            <td>
-                <router-link :to="'/folders/' + folder.key"
-                             :style="{marginLeft: depth + 'rem'}">
+            <td :style="{'padding-left': (depth + 1) + 'rem'}">
+                <div v-if="folder.thumbnailPath" class="folder-thumb" :style="{'background-image': 'url(' + folder.thumbnailPath + ')'}"></div>
+                <span v-else class="fa fa-fw fa-folder-o"></span>
+                <router-link :to="'/folders/' + folder.key">
                     {{ folder.caption }}
                 </router-link>
             </td>
@@ -45,3 +47,16 @@ export default class FolderRow extends Vue {
         <FolderRow v-for="s in folder.subfolders" :folder="s" :depth="depth + 1" :create="create" :edit="edit" :remove="remove"></FolderRow>
     </fragment>
 </template>
+
+<style scoped lang="scss">
+.folder-thumb {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-position: center center;
+    background-size: cover;
+    vertical-align: middle;
+    margin: -5px;
+    margin-right: 8px;
+}
+</style>

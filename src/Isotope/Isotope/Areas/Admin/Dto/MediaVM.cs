@@ -12,6 +12,7 @@ namespace Isotope.Areas.Admin.Dto
     /// </summary>
     public class MediaVM: IMapped
     {
+        public string ThumbnailPath { get; set; }
         public string FullPath { get; set; }
         public string Description { get; set; }
         public string Date { get; set; }
@@ -21,6 +22,7 @@ namespace Isotope.Areas.Admin.Dto
         public void Configure(TypeAdapterConfig config)
         {
             config.NewConfig<Media, MediaVM>()
+                  .Map(x => x.ThumbnailPath, x => MediaHelper.GetSizedMediaPath(x.Path, MediaSize.Small))
                   .Map(x => x.FullPath, x => MediaHelper.GetSizedMediaPath(x.Path, MediaSize.Large))
                   .Map(x => x.Description, x => x.Description)
                   .Map(x => x.Date, x => x.Date)

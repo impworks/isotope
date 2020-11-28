@@ -57,7 +57,7 @@ namespace Isotope.Code.Config
             var demoCfg = Configuration.DemoMode ?? new DemoModeConfig(); // all false
             
             if (demoCfg.Enabled && demoCfg.ClearOnStartup)
-                await SeedData.ClearPreviousData();
+                await SeedData.ClearPreviousDataAsync();
 
             var db = sp.GetService<AppDbContext>();
             var userMgr = sp.GetService<UserManager<AppUser>>(); 
@@ -66,7 +66,7 @@ namespace Isotope.Code.Config
             await db.EnsureSystemItemsCreatedAsync(userMgr);
 
             if (demoCfg.Enabled && demoCfg.SeedSampleData)
-                await SeedData.SeedSampleDataAsync(db, userMgr);
+                await SeedData.SeedSampleDataAsync(db);
         }
 
         /// <summary>

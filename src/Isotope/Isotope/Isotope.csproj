@@ -53,6 +53,7 @@
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Plugins.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Router.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\directives\ActionRow.ts" />
+    <TypeScriptCompile Include="Areas\Admin\ClientApp\source\directives\ClickOutside.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\ApiClientBase.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\ConfigApiClient.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\services\ApiService.ts" />
