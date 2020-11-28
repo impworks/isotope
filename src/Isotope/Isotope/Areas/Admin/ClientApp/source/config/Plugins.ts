@@ -37,9 +37,6 @@ Vue.use(PopoverPlugin);
 import * as ModalDialogs from 'vue-modal-dialogs';
 Vue.use(ModalDialogs);
 
-import { createClickOutsideDirective } from "../directives/ClickOutside";
-Vue.directive('click-outside', createClickOutsideDirective());
-
 import DraggableResizable from "vue-draggable-resizable";
 Vue.component('vue-drag-resize', DraggableResizable);
 
@@ -58,3 +55,9 @@ Vue.directive('autofocus', Autofocus);
 
 import { createActionRowDirective } from "../directives/ActionRow";
 Vue.directive('action-row', createActionRowDirective());
+
+import { createClickOutsideDirective } from "../directives/ClickOutside";
+Vue.directive('click-outside', createClickOutsideDirective());
+
+import ContextMenu from "../components/utils/ContextMenu.vue";
+Vue.component("context-menu", ContextMenu);

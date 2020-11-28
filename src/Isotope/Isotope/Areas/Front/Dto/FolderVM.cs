@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Isotope.Code.Utils;
+using Isotope.Code.Utils.Helpers;
 using Isotope.Data.Models;
 using Mapster;
 
@@ -41,7 +42,7 @@ namespace Isotope.Areas.Front.Dto
             config.NewConfig<Folder, FolderVM>()
                   .Map(x => x.Caption, x => x.Caption)
                   .Map(x => x.Path, x => x.Path)
-                  .Map(x => x.ThumbnailPath, x => x.Thumbnail.Path)
+                  .Map(x => x.ThumbnailPath, x => x.Thumbnail == null ? null : MediaHelper.GetThumbnailUrl(x.Thumbnail))
                   .Map(x => x.MediaCount, x => x.MediaCount)
                   .Ignore(x => x.Subfolders);
         }

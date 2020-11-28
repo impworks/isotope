@@ -10,13 +10,15 @@ import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import UserCreatorDlg from "./UserCreatorDlg.vue";
 import UserEditorDlg from "./UserEditorDlg.vue";
 import UserPasswordDlg from "./UserPasswordDlg.vue";
+import ContextMenu from "../utils/ContextMenu.vue";
 
 const confirmation = create<{ text: string }>(ConfirmationDlg);
 const creator = create<{}>(UserCreatorDlg);
 const profileEditor = create<{ user: User }>(UserEditorDlg);
 const pwdEditor = create<{ user: User }>(UserPasswordDlg);
-
-@Component
+@Component({
+    components: { ContextMenu }
+})
 export default class UsersPage extends Mixins(HasAsyncState()) {
     @Dep('$api') $api: ApiService;
 
@@ -66,51 +68,61 @@ export default class UsersPage extends Mixins(HasAsyncState()) {
 </script>
 
 <template>
-    <loading :is-loading="asyncState.isLoading" :is-full-page="true">
-        <div class="mb-2">
-            <h5 class="pull-left">Users</h5>
-            <button class="btn btn-outline-secondary btn-sm pull-right" type="button" @click.prevent="create()">
-                <span class="fa fa-plus"></span> Create user
-            </button>
-            <div class="clearfix"></div>
-        </div>
-        <table class="table table-bordered mb-0">
-            <thead>
-            <tr>
-                <th width="80%">Username</th>
-                <th style="white-space: nowrap">Access level</th>
-                <th width="1"></th>
-            </tr>
-            </thead>
-            <tbody v-if="users.length === 0">
-            <tr>
-                <td colspan="3">
-                    <div class="alert alert-info mb-0">
-                        No users found.
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-            <tbody v-else>
-            <tr v-for="u in users" v-action-row class="hover-actions">
-                <td>{{ u.userName }}</td>
-                <td>
-                    <span v-if="u.isAdmin" class="badge badge-danger">Admin</span>
-                    <span v-else class="badge badge-primary">User</span>
-                </td>
-                <td>
-                    <a class="hover-action" @click.prevent="remove(u)" title="Remove">
-                        <span class="fa fa-fw fa-remove"></span>
-                    </a>
-                    <a class="hover-action" @click.prevent="setPassword(u)" title="Change password">
-                        <span class="fa fa-fw fa-lock"></span>
-                    </a>
-                    <a class="hover-action" @click.prevent="edit(u)" title="Edit profile">
-                        <span class="fa fa-fw fa-edit"></span>
-                    </a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </loading>
+    <div>
+        <loading :is-loading="asyncState.isLoading" :is-full-page="true">
+            <div class="mb-2">
+                <h5 class="pull-left">Users</h5>
+                <button class="btn btn-outline-secondary btn-sm pull-right" type="button" @click.prevent="create()">
+                    <span class="fa fa-plus"></span> Create user
+                </button>
+                <div class="clearfix"></div>
+            </div>
+            <table class="table table-bordered mb-0">
+                <thead>
+                <tr>
+                    <th width="80%">Username</th>
+                    <th style="white-space: nowrap">Access level</th>
+                    <th width="1"></th>
+                </tr>
+                </thead>
+                <tbody v-if="users.length === 0">
+                <tr>
+                    <td colspan="3">
+                        <div class="alert alert-info mb-0">
+                            No users found.
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+                <tbody v-else>
+                <tr v-for="u in users" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, u)">
+                    <td>{{ u.userName }}</td>
+                    <td>
+                        <span v-if="u.isAdmin" class="badge badge-danger">Admin</span>
+                        <span v-else class="badge badge-primary">User</span>
+                    </td>
+                    <td>
+                        <a class="hover-action" @click.stop="$refs.menu.open($event, u)" title="Actions">
+                            <span class="fa fa-fw fa-ellipsis-v"></span>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </loading>
+        <portal to="context-menu">
+            <context-menu ref="menu" v-slot="{data}">
+                <a class="dropdown-item clickable" @click.prevent="edit(data)">
+                    <span class="fa fa-fw fa-edit"></span> Edit profile
+                </a>
+                <a class="dropdown-item clickable" @click.prevent="setPassword(data)">
+                    <span class="fa fa-fw fa-lock"></span> Change password
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item clickable" @click.prevent="remove(data)">
+                    <span class="fa fa-fw fa-remove"></span> Remove
+                </a>
+            </context-menu>
+        </portal>
+    </div>
 </template>

@@ -53,6 +53,7 @@ export default class MainView extends Vue {
             </div>
         </div>
         <DialogsWrapper transition-name="fade"></DialogsWrapper>
+        <portal-target name="context-menu"></portal-target>
     </div>
 </template>
 

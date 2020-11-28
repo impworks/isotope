@@ -37,6 +37,7 @@ namespace Isotope.Areas.Front.Services
         public async Task<FolderVM[]> GetFolderTreeAsync(UserContext ctx)
         {
             var query = _db.Folders
+                           .Include(x => x.Thumbnail)
                            .AsNoTracking()
                            .Where(x => x.Depth > 0)
                            .OrderBy(x => x.Caption)
