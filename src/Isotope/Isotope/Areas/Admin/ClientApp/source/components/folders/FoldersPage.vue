@@ -24,6 +24,11 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
 
     async mounted() {
         await this.load();
+        this.$root.$on('menu-requested', e => this.$refs.menu.open(e.event, e.folder));
+    }
+    
+    beforeDestroy() {
+        this.$root.$off('menu-requested');
     }
 
     async load() {
@@ -88,8 +93,31 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
             </tr>
             </tbody>
             <tbody v-else>
-                <FolderRow v-for="f in folders" :folder="f" :depth="0" :create="create" :edit="edit" :remove="remove"></FolderRow>
+                <FolderRow v-for="f in folders" :folder="f" :depth="0"></FolderRow>
             </tbody>
         </table>
+        <portal to="context-menu">
+            <context-menu ref="menu" v-slot="{data}">
+                <template v-if="data">
+                    <router-link :to="'/folders/' + data.key" class="dropdown-item clickable">
+                        <span class="fa fa-fw fa-list"></span> View media
+                    </router-link>
+                    <router-link :to="'/folders/' + data.key + '/upload'" class="dropdown-item clickable">
+                        <span class="fa fa-fw fa-upload"></span> Upload
+                    </router-link>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item clickable" @click.prevent="edit(data)">
+                        <span class="fa fa-fw fa-edit"></span> Edit folder
+                    </a>
+                    <a class="dropdown-item clickable" @click.prevent="remove(data)">
+                        <span class="fa fa-fw fa-remove"></span> Remove
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item clickable" @click.prevent="create(data)">
+                        <span class="fa fa-fw fa-plus"></span> Create subfolder
+                    </a>
+                </template>
+            </context-menu>
+        </portal>
     </loading>
 </template>

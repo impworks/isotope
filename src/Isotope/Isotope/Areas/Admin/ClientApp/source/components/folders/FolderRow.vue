@@ -12,15 +12,15 @@ export default class FolderRow extends Vue {
     @Prop({ required: true }) folder: FolderTitle;
     @Prop({ required: true}) depth: number;
     
-    @Prop({ required: true }) create: Action<FolderTitle>;
-    @Prop({ required: true }) remove: Action<FolderTitle>;
-    @Prop({ required: true }) edit: Action<FolderTitle>;
+    showMenu(e: MouseEvent, f: FolderTitle) {
+        this.$root.$emit('menu-requested', { event: e, folder: f });
+    }
 }
 </script>
 
 <template>
     <fragment>
-        <tr v-action-row class="hover-actions">
+        <tr v-action-row class="hover-actions" @contextmenu.prevent="showMenu($event, folder)">
             <td :style="{'padding-left': (depth + 1) + 'rem'}">
                 <div v-if="folder.thumbnailPath" class="folder-thumb" :style="{'background-image': 'url(' + folder.thumbnailPath + ')'}"></div>
                 <span v-else class="fa fa-fw fa-folder-o"></span>
@@ -33,18 +33,12 @@ export default class FolderRow extends Vue {
                 <span v-else title="Empty folder">&mdash;</span>
             </td>
             <td>
-                <a class="hover-action" @click.prevent="create(folder)" title="Create subfolder">
-                    <span class="fa fa-fw fa-plus"></span>
-                </a>
-                <a class="hover-action" @click.prevent="remove(folder)" title="Remove">
-                    <span class="fa fa-fw fa-remove"></span>
-                </a>
-                <a class="hover-action" @click.prevent="edit(folder)" title="Edit">
-                    <span class="fa fa-fw fa-edit"></span>
+                <a class="hover-action" @click.stop="showMenu($event, folder)" title="Actions">
+                    <span class="fa fa-fw fa-ellipsis-v"></span>
                 </a>
             </td>
         </tr>
-        <FolderRow v-for="s in folder.subfolders" :folder="s" :depth="depth + 1" :create="create" :edit="edit" :remove="remove"></FolderRow>
+        <FolderRow v-for="s in folder.subfolders" :folder="s" :depth="depth + 1"></FolderRow>
     </fragment>
 </template>
 

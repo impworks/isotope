@@ -51,6 +51,15 @@ export default class ContextMenu extends Vue {
 <style scoped lang="scss">
 .dropdown-menu {
     opacity: 0.01;
+    
+    .dropdown-item {
+        padding-left: 0.75rem;
+        
+        .fa {
+            font-size: 18px;
+            margin-right: 0.25rem;
+        }
+    }
 }
 .placed {
     opacity: 1;
