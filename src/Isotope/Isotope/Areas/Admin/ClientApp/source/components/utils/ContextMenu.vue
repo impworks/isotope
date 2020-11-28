@@ -28,8 +28,6 @@ export default class ContextMenu extends Vue {
         const vw = window.scrollX + window.innerWidth;
         const vh = window.scrollY + window.innerHeight;
         
-        console.log({ x, y, w, h, vw, vh });
-        
         if(x + w >= vw)
             x -= (w + offset * 2);
         

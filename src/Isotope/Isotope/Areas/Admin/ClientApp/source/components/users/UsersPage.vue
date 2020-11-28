@@ -68,48 +68,46 @@ export default class UsersPage extends Mixins(HasAsyncState()) {
 </script>
 
 <template>
-    <div>
-        <loading :is-loading="asyncState.isLoading" :is-full-page="true">
-            <div class="mb-2">
-                <h5 class="pull-left">Users</h5>
-                <button class="btn btn-outline-secondary btn-sm pull-right" type="button" @click.prevent="create()">
-                    <span class="fa fa-plus"></span> Create user
-                </button>
-                <div class="clearfix"></div>
-            </div>
-            <table class="table table-bordered mb-0">
-                <thead>
-                <tr>
-                    <th width="80%">Username</th>
-                    <th style="white-space: nowrap">Access level</th>
-                    <th width="1"></th>
-                </tr>
-                </thead>
-                <tbody v-if="users.length === 0">
-                <tr>
-                    <td colspan="3">
-                        <div class="alert alert-info mb-0">
-                            No users found.
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-                <tbody v-else>
-                <tr v-for="u in users" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, u)">
-                    <td>{{ u.userName }}</td>
-                    <td>
-                        <span v-if="u.isAdmin" class="badge badge-danger">Admin</span>
-                        <span v-else class="badge badge-primary">User</span>
-                    </td>
-                    <td>
-                        <a class="hover-action" @click.stop="$refs.menu.open($event, u)" title="Actions">
-                            <span class="fa fa-fw fa-ellipsis-v"></span>
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </loading>
+    <loading :is-loading="asyncState.isLoading" :is-full-page="true">
+        <div class="mb-2">
+            <h5 class="pull-left">Users</h5>
+            <button class="btn btn-outline-secondary btn-sm pull-right" type="button" @click.prevent="create()">
+                <span class="fa fa-plus"></span> Create user
+            </button>
+            <div class="clearfix"></div>
+        </div>
+        <table class="table table-bordered mb-0">
+            <thead>
+            <tr>
+                <th width="80%">Username</th>
+                <th style="white-space: nowrap">Access level</th>
+                <th width="1"></th>
+            </tr>
+            </thead>
+            <tbody v-if="users.length === 0">
+            <tr>
+                <td colspan="3">
+                    <div class="alert alert-info mb-0">
+                        No users found.
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+            <tbody v-else>
+            <tr v-for="u in users" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, u)">
+                <td>{{ u.userName }}</td>
+                <td>
+                    <span v-if="u.isAdmin" class="badge badge-danger">Admin</span>
+                    <span v-else class="badge badge-primary">User</span>
+                </td>
+                <td>
+                    <a class="hover-action" @click.stop="$refs.menu.open($event, u)" title="Actions">
+                        <span class="fa fa-fw fa-ellipsis-v"></span>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
         <portal to="context-menu">
             <context-menu ref="menu" v-slot="{data}">
                 <a class="dropdown-item clickable" @click.prevent="edit(data)">
@@ -124,5 +122,5 @@ export default class UsersPage extends Mixins(HasAsyncState()) {
                 </a>
             </context-menu>
         </portal>
-    </div>
+    </loading>
 </template>

@@ -69,18 +69,25 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
                 </tr>
             </tbody>
             <tbody v-else>
-                <tr v-for="l in links" v-action-row class="hover-actions">
+                <tr v-for="l in links" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, t)">
                     <td>{{l.caption || '-'}}</td>
                     <td>{{ formatDate(l.creationDate) }}</td>
                     <td><span :title="l.folder">{{l.folderCaption}}</span></td>
                     <td>{{l.tags ? l.tags.length : '-'}}</td>
                     <td>
-                        <a class="hover-action" @click.prevent="remove(l)" title="Remove">
-                            <span class="fa fa-fw fa-remove"></span>
+                        <a class="hover-action" @click.stop="$refs.menu.open($event, l)" title="Actions">
+                            <span class="fa fa-fw fa-ellipsis-v"></span>
                         </a>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <portal to="context-menu">
+            <context-menu ref="menu" v-slot="{data}">
+                <a class="dropdown-item clickable" @click.prevent="remove(data)">
+                    <span class="fa fa-fw fa-remove"></span> Remove
+                </a>
+            </context-menu>
+        </portal>
     </loading>
 </template>

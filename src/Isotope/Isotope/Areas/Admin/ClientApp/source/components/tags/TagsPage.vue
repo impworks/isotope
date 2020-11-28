@@ -78,7 +78,7 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
             </tr>
             </tbody>
             <tbody v-else>
-            <tr v-for="t in tags" v-action-row class="hover-actions">
+            <tr v-for="t in tags" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, t)">
                 <td>{{ t.caption }}</td>
                 <td>
                     <span v-if="t.type === 1" class="badge badge-primary">Person</span>
@@ -86,15 +86,23 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
                     <span v-if="t.type === 3" class="badge badge-danger">Other</span>
                 </td>
                 <td>
-                    <a class="hover-action" @click.prevent="remove(t)" title="Remove">
-                        <span class="fa fa-fw fa-remove"></span>
-                    </a>
-                    <a class="hover-action" @click.prevent="edit(t)" title="Edit">
-                        <span class="fa fa-fw fa-edit"></span>
+                    <a class="hover-action" @click.stop="$refs.menu.open($event, t)" title="Actions">
+                        <span class="fa fa-fw fa-ellipsis-v"></span>
                     </a>
                 </td>
             </tr>
             </tbody>
         </table>
+        <portal to="context-menu">
+            <context-menu ref="menu" v-slot="{data}">
+                <a class="dropdown-item clickable" @click.prevent="edit(data)">
+                    <span class="fa fa-fw fa-edit"></span> Edit tag
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item clickable" @click.prevent="remove(data)">
+                    <span class="fa fa-fw fa-remove"></span> Remove
+                </a>
+            </context-menu>
+        </portal>
     </loading>
 </template>

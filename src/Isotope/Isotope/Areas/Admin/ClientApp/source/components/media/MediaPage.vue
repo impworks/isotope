@@ -125,7 +125,7 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                 </tr>
                 </tbody>
                 <tbody v-else>
-                    <tr v-for="m in media" v-action-row class="hover-actions">
+                    <tr v-for="m in media" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, m)">
                         <td class="media-thumb" :style="{'background-image': 'url(' + m.thumbnailPath + ')'}">
                         </td>
                         <td>
@@ -135,17 +135,8 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                         <td>{{formatDate(m.uploadDate)}}</td>
                         <td>{{m.tags}}</td>
                         <td>
-                            <a class="hover-action" @click.prevent="remove(m)" title="Remove">
-                                <span class="fa fa-fw fa-remove"></span>
-                            </a>
-                            <a class="hover-action" @click.prevent="editThumb(m)" title="Update thumbnail">
-                                <span class="fa fa-fw fa-crop"></span>
-                            </a>
-                            <a class="hover-action" @click.prevent="editTags(m)" title="Update tags">
-                                <span class="fa fa-fw fa-tags"></span>
-                            </a>
-                            <a class="hover-action" @click.prevent="editProps(m)" title="Edit">
-                                <span class="fa fa-fw fa-edit"></span>
+                            <a class="hover-action" @click.stop="$refs.menu.open($event, m)" title="Actions">
+                                <span class="fa fa-fw fa-ellipsis-v"></span>
                             </a>
                         </td>
                     </tr>
@@ -155,6 +146,23 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         <template v-else>
             <div class="alert alert-danger mb-0">Folder does not exist.</div>
         </template>
+        <portal to="context-menu">
+            <context-menu ref="menu" v-slot="{data}">
+                <a class="dropdown-item clickable" @click.prevent="editProps(data)">
+                    <span class="fa fa-fw fa-edit"></span> Edit properties
+                </a>
+                <a class="dropdown-item clickable" @click.prevent="editTags(data)">
+                    <span class="fa fa-fw fa-tags"></span> Edit tags
+                </a>
+                <a class="dropdown-item clickable" @click.prevent="editThumb(data)">
+                    <span class="fa fa-fw fa-crop"></span> Update thumbnail
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item clickable" @click.prevent="remove(data)">
+                    <span class="fa fa-fw fa-remove"></span> Remove
+                </a>
+            </context-menu>
+        </portal>
     </loading>
 </template>
 
