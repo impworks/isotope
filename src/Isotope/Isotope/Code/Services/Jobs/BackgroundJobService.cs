@@ -104,7 +104,7 @@ namespace Isotope.Code.Services.Jobs
             var result = new List<JobDescriptor>();
             foreach (var state in states)
             {
-                var jobType = RuntimeHelper.FindType(state.Type);
+                var jobType = Type.GetType(state.Type);
                 var job = (IJob) di.GetRequiredService(jobType);
                 var args = GetArguments(state);
 
@@ -124,7 +124,7 @@ namespace Isotope.Code.Services.Jobs
             object GetArguments(JobState state)
             {
                 return !string.IsNullOrEmpty(state.Arguments)
-                    ? JsonConvert.DeserializeObject(state.Arguments, RuntimeHelper.FindType(state.ArgumentsType))
+                    ? JsonConvert.DeserializeObject(state.Arguments, Type.GetType(state.ArgumentsType))
                     : null;
             }
         }

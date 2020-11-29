@@ -186,7 +186,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
     </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .thumb-picker {
     width: 92px;
     height: 92px;
@@ -195,28 +195,38 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
     background-position: center center;
 }
 
-.thumb-picker-popover {
+.popover.thumb-picker-popover {
     position: absolute;
     left: -75px;
     bottom: -195px;
     top: unset;
     width: 300px;
     height: 200px;
-    
+
     .arrow:after {
         border-bottom-color: #f7f7f7;
     }
-    
+
     .popover-body {
         padding: 0.5rem;
         padding-right: 0;
-        
-        .thumb-picker-list {
-            overflow-x: hidden;
-            overflow-y: scroll;
-        }
+        height: 150px;
+        max-height: 150px;
+        overflow: hidden;
+        position: relative;
     }
-    
+
+    .thumb-picker-list {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: -17px;
+        padding: 8px;
+        padding-right: 0;
+        overflow-y: scroll;
+    }
+
     .thumb-picker-item {
         display: inline-block;
         width: 46px;

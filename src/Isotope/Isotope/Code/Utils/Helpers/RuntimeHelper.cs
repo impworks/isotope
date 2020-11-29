@@ -25,6 +25,9 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static readonly IReadOnlyList<Assembly> OwnAssemblies;
 
+        /// <summary>
+        /// List of types defined in own this project.
+        /// </summary>
         public static IEnumerable<Type> OwnTypes => OwnAssemblies.SelectMany(x => x.GetTypes());
 
         /// <summary>
@@ -42,10 +45,10 @@ namespace Isotope.Code.Utils.Helpers
         /// <summary>
         /// Finds a type by full name.
         /// </summary>
-        public static Type FindType(string name)
+        public static Type FindOwnType(string name)
         {
-            return OwnTypes.FirstOrDefault(x => x.FullName == name) ??
-                throw new Exception($"Type '{name}' was not found.");
+            return OwnTypes.FirstOrDefault(x => x.FullName == name)
+                ?? throw new Exception($"Type '{name}' was not found.");
         }
 
         /// <summary>

@@ -21,8 +21,8 @@ export default class ContextMenu extends Vue {
     
     private getPosition(e: MouseEvent) {
         const offset = 5;
-        let x = e.clientX + offset;
-        let y = e.clientY + offset;
+        let x = e.pageX + offset;
+        let y = e.pageY + offset;
         const w = this.$el.clientWidth;
         const h = this.$el.clientHeight;
         const vw = window.scrollX + window.innerWidth;

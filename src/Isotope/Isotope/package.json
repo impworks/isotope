@@ -10,7 +10,7 @@
     "front-build": "parcel build -d wwwroot/@assets ./areas/Front/ClientApp/front.html --no-source-maps --public-url /@assets",
     "front-dev-vs": "parcel watch -d wwwroot/@assets ./areas/Front/ClientApp/front.html --no-source-maps --public-url /@assets",
     "front-dev": "parcel -d .dist-tmp ./Areas/Front/ClientApp/front.html --no-source-maps",
-    "build": "npm run admin-build && npm run front-build",
+    "build": "npm run clean && npm run admin-build && npm run front-build",
     "clean": "rmdir \"wwwroot/@assets\" /s /q"
   },
   "keywords": [
