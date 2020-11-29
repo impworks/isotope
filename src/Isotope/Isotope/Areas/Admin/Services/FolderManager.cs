@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Impworks.Utils.Linq;
@@ -114,17 +115,20 @@ namespace Isotope.Areas.Admin.Services
                 throw new OperationException($"Folder '{key}' does not exist.");
 
             var folders = await _db.Folders
-                                      .Where(x => x.Path.StartsWith(folder.Path))
-                                      .ToListAsync();
-
+                                   .Where(x => x.Path == folder.Path || x.Path.StartsWith(folder.Path + "/"))
+                                   .ToListAsync();
+            
             _db.Folders.RemoveRange(folders);
-            await _db.Media.RemoveWhereAsync(x => x.Folder.Path.StartsWith(folder.Path));
+            await _db.SaveChangesAsync();
+            
+            await _db.Media.RemoveWhereAsync(x => x.Folder.Path == folder.Path || x.Folder.Path.StartsWith(folder.Path + "/"));
             await _db.SaveChangesAsync();
 
             foreach (var f in folders)
             {
                 var dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "@media", f.Key);
-                Directory.Delete(dir, true);
+                if(Directory.Exists(dir))
+                    Directory.Delete(dir, true);
             }
         }
 
@@ -163,6 +167,47 @@ namespace Isotope.Areas.Admin.Services
             await _db.SaveChangesAsync();
 
             return _mapper.Map<FolderTitleVM>(folder);
+        }
+
+        /// <summary>
+        /// Moves the folder to be a child of another folder.
+        /// </summary>
+        public async Task MoveAsync(string folderKey, string targetKey)
+        {
+            var folder = await _db.Folders.AsNoTracking().FirstOrDefaultAsync(x => x.Key == folderKey);
+            if (folder == null)
+                throw new OperationException($"Folder '{folderKey}' does not exist.");
+
+            var target = string.IsNullOrEmpty(targetKey)
+                ? await _db.Folders.AsNoTracking().FirstOrDefaultAsync(x => x.Depth == 0)
+                : await _db.Folders.AsNoTracking().FirstOrDefaultAsync(x => x.Key == targetKey);
+            
+            if (target == null)
+                throw new OperationException($"Folder '{targetKey}' does not exist.");
+
+            if(target.Path.StartsWith(folder.Path))
+                throw new OperationException("Folder cannot be moved inside itself.");
+
+            var oldPath = folder.Path;
+            var newPath = PathHelper.Combine(target.Path, folder.Slug);
+            var depthDiff = target.Depth - folder.Depth + 1;
+
+            var allFolders = await _db.Folders
+                                      .Where(x => x.Key == folderKey || x.Path.StartsWith(oldPath + "/"))
+                                      .ToListAsync();
+            
+            var newPaths = allFolders.Select(x => x.Path.Replace(oldPath, newPath)).ToList();
+            var conflict = await _db.Folders.FirstOrDefaultAsync(x => newPaths.Contains(x.Path));
+            if (conflict != null)
+                throw new OperationException($"Folder name conflict: path '{conflict.Path}' already exists at destination.");
+
+            foreach (var f in allFolders)
+            {
+                f.Path = f.Path.Replace(oldPath, newPath);
+                f.Depth += depthDiff;
+            }
+
+            await _db.SaveChangesAsync();
         }
 
         /// <summary>

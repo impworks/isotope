@@ -63,5 +63,14 @@ namespace Isotope.Areas.Admin.Controllers
         {
             return _folderMgr.RemoveAsync(key);
         }
+        
+        /// <summary>
+        /// Moves a folder to another location.
+        /// </summary>
+        [HttpPost, Route("move")]
+        public Task Move([FromBody] MoveFolderVM vm)
+        {
+            return _folderMgr.MoveAsync(vm.SourceKey, vm.TargetKey);
+        }
     }
 }

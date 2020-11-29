@@ -43,13 +43,13 @@ export default class ContextMenu extends Vue {
 </script>
 
 <template>
-    <div :class="{'dropdown-menu': true, 'show': isShown, 'placed': !!pos}" :style="pos" v-click-outside="close" @click="close">
+    <div class="dropdown-menu popup-menu" :class="{'show': isShown, 'placed': !!pos}" :style="pos" v-click-outside="close" @click="close">
         <slot :data="data"></slot>
     </div>
 </template>
 
-<style scoped lang="scss">
-.dropdown-menu {
+<style lang="scss">
+.dropdown-menu.popup-menu {
     opacity: 0.01;
     
     .dropdown-item {
@@ -60,8 +60,9 @@ export default class ContextMenu extends Vue {
             margin-right: 0.25rem;
         }
     }
-}
-.placed {
-    opacity: 1;
+    
+    &.placed {
+        opacity: 1;
+    }
 }
 </style>

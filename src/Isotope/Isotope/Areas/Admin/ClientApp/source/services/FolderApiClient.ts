@@ -27,4 +27,8 @@ export class FolderApiClient extends ApiClientBase {
     async remove(key: string) {
         return this.restDelete(key);
     }
+    
+    async move(key: string, target: string) {
+        return this.restPost({ sourceKey: key, targetKey: target }, 'move');
+    }
 }

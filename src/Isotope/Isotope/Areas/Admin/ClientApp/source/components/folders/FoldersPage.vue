@@ -10,9 +10,11 @@ import { create } from "vue-modal-dialogs";
 import FolderRow from "./FolderRow.vue";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import FolderEditorDlg from "./FolderEditorDlg.vue";
+import FolderMoveDlg from "./FolderMoveDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
-const editor = create<{folder: FolderTitle, parent: FolderTitle}>(FolderEditorDlg);
+const editDlg = create<{folder: FolderTitle, parent: FolderTitle}>(FolderEditorDlg);
+const moveDlg = create<{folder: FolderTitle}>(FolderMoveDlg); 
 
 @Component({
     components: { FolderRow }
@@ -39,7 +41,7 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
     }
 
     async create(root: FolderTitle) {
-        if(await editor({ parent: root }))
+        if(await editDlg({ parent: root }))
             await this.load();
     }
 
@@ -60,7 +62,12 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
     }
 
     async edit(f: FolderTitle) {
-        if(await editor({ folder: f }))
+        if(await editDlg({ folder: f }))
+            await this.load();
+    }
+
+    async move(f: FolderTitle) {
+        if(await moveDlg({ folder: f }))
             await this.load();
     }
 }
@@ -108,6 +115,9 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item clickable" @click.prevent="edit(data)">
                         <span class="fa fa-fw fa-edit"></span> Edit folder
+                    </a>
+                    <a class="dropdown-item clickable" @click.prevent="move(data)">
+                        <span class="fa fa-fw fa-arrow-circle-right"></span> Move folder
                     </a>
                     <a class="dropdown-item clickable" @click.prevent="remove(data)">
                         <span class="fa fa-fw fa-remove"></span> Remove
