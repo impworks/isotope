@@ -208,6 +208,8 @@ namespace Isotope.Areas.Admin.Services
             }
 
             await _db.SaveChangesAsync();
+            
+            await _jobSvc.RunAsync(JobBuilder.For<RebuildInheritedTagsJob>().SupersedeAll());
         }
 
         /// <summary>
