@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Isotope.Code.Utils.Helpers;
 using Isotope.Data.Models;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
@@ -35,8 +36,13 @@ namespace Isotope.Areas.Admin.Services.MediaHandlers
         /// </summary>
         public async Task<MediaInfo> ProcessAsync(string key, string path)
         {
-            var image = await Task.Run(() => Image.FromFile(path));
-            
+            var image = await Task.Run(() =>
+            {
+                var img = Image.FromFile(path);
+                ImageHelper.ApplyExifRotation(img);
+                return img;
+            });
+
             var media = new MediaInfo
             {
                 FullImage = image,

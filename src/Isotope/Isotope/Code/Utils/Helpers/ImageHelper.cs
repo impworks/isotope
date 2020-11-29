@@ -133,6 +133,34 @@ namespace Isotope.Code.Utils.Helpers
         }
 
         /// <summary>
+        /// Rotates the image if it has an EXIF orientation tag.
+        /// </summary>
+        public static void ApplyExifRotation(Image img)
+        {
+            const int EXIF_ORIENTATION = 274;
+            
+            if (!img.PropertyIdList.Contains(EXIF_ORIENTATION))
+                return;
+
+            var prop = img.GetPropertyItem(EXIF_ORIENTATION);
+            int val = BitConverter.ToUInt16(prop.Value, 0);
+            var rot = RotateFlipType.RotateNoneFlipNone;
+
+            if (val == 3 || val == 4)
+                rot = RotateFlipType.Rotate180FlipNone;
+            else if (val == 5 || val == 6)
+                rot = RotateFlipType.Rotate90FlipNone;
+            else if (val == 7 || val == 8)
+                rot = RotateFlipType.Rotate270FlipNone;
+
+            if (val == 2 || val == 4 || val == 5 || val == 7)
+                rot |= RotateFlipType.RotateNoneFlipX;
+
+            if (rot != RotateFlipType.RotateNoneFlipNone)
+                img.RotateFlip(rot);
+        }
+
+        /// <summary>
         /// Returns the small thumbnail rect in 0..1 coordinate space.
         /// </summary>
         public static Rect GetDefaultThumbnailRect(Size size)
