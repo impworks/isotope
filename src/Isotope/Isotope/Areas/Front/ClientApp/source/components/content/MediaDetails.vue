@@ -43,19 +43,12 @@ export default class MediaDetails extends Vue {
             window.removeEventListener('resize', this.resizeHandler);
         }
     }
-    
-    get hasDetails(): boolean {
-        if (this.media.date != null || this.media.description != null || this.media.extraTags.length > 0 ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     countHeight() {
-        this.height = this.isOpen 
-            ? this.$refs.button.clientHeight + this.$refs.content.clientHeight + 'px'
-            : this.$refs.button.clientHeight + 'px';
+        let height = this.$refs.button.clientHeight;
+        if(this.isOpen)
+            height += this.$refs.content.clientHeight;
+        this.height = height + 'px';
     }
 
     filterByTag(binding: TagBinding) {
@@ -93,7 +86,6 @@ export default class MediaDetails extends Vue {
 <template>
     <div 
         v-if="media"
-        v-show="hasDetails"
         class="media-details"
         :style="{height: height}" 
         @transitionstart.self="isTransitioning = true" 
@@ -143,6 +135,12 @@ export default class MediaDetails extends Vue {
                         {{t.tag.caption}}
                     </span>
                 </template>
+            </div>
+            <div class="media-details__original">
+                <a class="media-details__original__button"
+                   :href="media.originalPath" target="_blank">
+                   <span class="fa fa-fw fa-download"></span> View original
+                </a>
             </div>
         </div>
     </div>
@@ -271,6 +269,21 @@ export default class MediaDetails extends Vue {
                     color: $white;
                     text-decoration: none;
                     background-color: darken($primary, 3%);
+                }
+            }
+        }
+        
+        &__original {
+            font-size: 0;
+            margin-top: 0.5rem;
+            
+            &__button {
+                font-size: 1rem;
+                color: $light;
+
+                &:hover {
+                    color: $white;
+                    text-decoration: underline;
                 }
             }
         }
