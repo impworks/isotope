@@ -1,5 +1,7 @@
 using System;
+using System.Globalization;
 using System.Linq;
+using Impworks.Utils.Strings;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
 using Isotope.Code.Utils.Helpers;
@@ -83,7 +85,7 @@ namespace Isotope.Areas.Front.Dto
         /// </summary>
         private static string TryFormatDate(string date)
         {
-            return FuzzyDate.TryParse(date)?.ReadableDate;
+            return date.TryParse<DateTime?>()?.ToString("D", CultureInfo.InvariantCulture);
         }
     }
 }
