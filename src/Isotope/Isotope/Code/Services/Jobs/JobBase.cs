@@ -11,7 +11,7 @@ namespace Isotope.Code.Services.Jobs
         public string GetResourceKey(object args) => GetResourceKey((TArgs) args);
         public Task ExecuteAsync(object args, CancellationToken token) => ExecuteAsync((TArgs) args, token);
         
-        protected virtual string GetResourceKey(TArgs args) => null;
+        protected virtual string GetResourceKey(TArgs args) => GetType().FullName;
         protected abstract Task ExecuteAsync(TArgs args, CancellationToken token);
     }
     
@@ -23,7 +23,7 @@ namespace Isotope.Code.Services.Jobs
         public string GetResourceKey(object args) => GetResourceKey();
         public Task ExecuteAsync(object args, CancellationToken token) => ExecuteAsync(token);
         
-        protected virtual string GetResourceKey() => null;
+        protected virtual string GetResourceKey() => GetType().FullName;
         protected abstract Task ExecuteAsync(CancellationToken token);
     }
 }

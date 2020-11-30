@@ -126,6 +126,9 @@ namespace Isotope.Areas.Admin.Services
             _db.Media.Add(media);
             await _db.SaveChangesAsync();
 
+            if (folder.ThumbnailKey == null)
+                folder.ThumbnailKey = media.Key;
+
             folder.MediaCount = await _db.Media.CountAsync(x => x.FolderKey == folderKey);
             await _db.SaveChangesAsync();
 
