@@ -123,6 +123,7 @@ interface Crumb {
             <div class="mobile-navigation__actions">
                 <button 
                     class="btn-header"
+                    v-if="info && info.isAdmin && info.isLinkValid === null"
                     @click.prevent="isShareLinkVisible = !isShareLinkVisible"
                 >
                     <div class="btn-header__content">

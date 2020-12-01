@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Isotope.Code.Services;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -7,16 +8,16 @@ namespace Isotope.Code.Utils.Filters
     /// <summary>
     /// Retrieves authorization info from the bearer token, if one is specified.
     /// </summary>
-    public class JwtAuthorizeFilter: IAuthorizationFilter
+    public class JwtAuthorizeFilter: IAsyncAuthorizationFilter
     {
         public JwtAuthorizeFilter(AuthService auth)
         {
             _auth = auth;
         }
         
-        private readonly AuthService _auth;
+        protected readonly AuthService _auth;
         
-        public void OnAuthorization(AuthorizationFilterContext context)
+        public virtual async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
             const string Scheme = "Bearer ";
             var auth = context.HttpContext.Request.Headers["Authorization"].ToString();

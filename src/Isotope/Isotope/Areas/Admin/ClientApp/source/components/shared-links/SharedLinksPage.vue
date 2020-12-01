@@ -69,7 +69,7 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
                 </tr>
             </tbody>
             <tbody v-else>
-                <tr v-for="l in links" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, t)">
+                <tr v-for="l in links" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, l)">
                     <td>{{l.caption || '-'}}</td>
                     <td>{{ formatDate(l.creationDate) }}</td>
                     <td><span :title="l.folder">{{l.folderCaption}}</span></td>
