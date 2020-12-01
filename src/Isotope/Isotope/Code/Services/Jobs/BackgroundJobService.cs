@@ -104,13 +104,15 @@ namespace Isotope.Code.Services.Jobs
             var result = new List<JobDescriptor>();
             foreach (var state in states)
             {
+                var jscope = _scopeFactory.CreateScope();
+                var jdi = jscope.ServiceProvider;
                 var jobType = Type.GetType(state.Type);
-                var job = (IJob) di.GetRequiredService(jobType);
+                var job = (IJob) jdi.GetRequiredService(jobType);
                 var args = GetArguments(state);
 
                 result.Add(new JobDescriptor
                 {
-                    Scope = scope,
+                    Scope = jscope,
                     Job = job,
                     Arguments = args,
                     ResourceKey = job.GetResourceKey(args),
