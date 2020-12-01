@@ -18,11 +18,12 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
     links: SharedLinkDetails[] = [];
 
     async mounted() {
-        await this.load();
+        await this.load(true);
     }
     
-    async load() {
-        await this.showLoading(
+    async load(showPreloader: boolean = false) {
+        await this.showProgress(
+            showPreloader ? 'isLoading' : 'isWorking',
             async () => this.links = await this.$api.sharedLinks.getList(),
             'Failed to load config state!'
         );

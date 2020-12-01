@@ -35,11 +35,12 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         );
         
         if(this.folder)
-            await this.load();
+            await this.load(true);
     }
 
-    async load() {
-        await this.showLoading(
+    async load(showPreloader: boolean = false) {
+        await this.showProgress(
+            showPreloader ? 'isLoading' : 'isWorking',
             async () => this.media = await this.$api.media.getList(this.folder.key),
             'Failed to load media!'
         );

@@ -25,7 +25,7 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
     folders: FolderTitle[] = [];
 
     async mounted() {
-        await this.load();
+        await this.load(true);
         this.$root.$on('menu-requested', e => this.$refs.menu.open(e.event, e.folder));
     }
     
@@ -33,8 +33,9 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
         this.$root.$off('menu-requested');
     }
 
-    async load() {
-        await this.showLoading(
+    async load(showPreloader: boolean = false) {
+        await this.showProgress(
+            showPreloader ? 'isLoading' : 'isWorking',
             async () => this.folders = await this.$api.folders.getTree(),
             'Failed to load folders tree!'
         );

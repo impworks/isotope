@@ -25,11 +25,12 @@ export default class UsersPage extends Mixins(HasAsyncState()) {
     users: User[] = [];
 
     async mounted() {
-        await this.load();
+        await this.load(true);
     }
 
-    async load() {
-        await this.showLoading(
+    async load(showPreloader: boolean = false) {
+        await this.showProgress(
+            showPreloader ? 'isLoading' : 'isWorking',
             async () => this.users = await this.$api.users.getList(),
             'Failed to load users list!'
         );

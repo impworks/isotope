@@ -19,11 +19,12 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
     tags: Tag[] = [];
 
     async mounted() {
-        await this.load();
+        await this.load(true);
     }
 
-    async load() {
-        await this.showLoading(
+    async load(showPreloader: boolean = false) {
+        await this.showProgress(
+            showPreloader ? 'isLoading' : 'isWorking',
             async () => this.tags = await this.$api.tags.getList(),
             'Failed to load tags list!'
         );

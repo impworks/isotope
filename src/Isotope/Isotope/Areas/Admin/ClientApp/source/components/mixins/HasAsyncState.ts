@@ -7,6 +7,7 @@ import { Func } from "../../../../../Common/source/utils/Interfaces";
 export interface IAsyncState {
     isLoading?: boolean;
     isSaving?: boolean;
+    isWorking?: boolean;
 }
 
 export function HasAsyncState<T>(arg?: T) {
