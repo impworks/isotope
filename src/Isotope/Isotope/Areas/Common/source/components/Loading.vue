@@ -12,14 +12,27 @@ export default class Loading extends Vue {
 <template>
     <fragment>
         <div v-if="isLoading && isFullPage" class="d-flex align-items-center justify-content-center flex-grow-1 overflow-hidden">
-            <div class="spinner-border" style="width: 3rem; height: 3rem;"></div>
+            <div class="spinner-border spinner-large"></div>
         </div>
         <div v-if="isLoading && !isFullPage">
-            <span class="spinner-border spinner-border-sm"></span>
+            <span class="spinner-border spinner-border-sm spinner-small"></span>
             <span>{{text}}</span>
         </div>
         <slot v-if="!isLoading"></slot>
     </fragment>
 </template>
+
+<style lang="scss">
+.spinner-border.spinner-small {
+    vertical-align: middle;
+}
+
+.spinner-border.spinner-large {
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+    margin: 0.5em;
+}
+</style>
 
 

@@ -30,7 +30,7 @@ export default class FilePicker extends Vue {
 </script>
 
 <template>
-    <div class="file-picker btn btn-outline-primary">
+    <div class="file-picker btn btn-outline-primary" :class="{disabled : disabled}">
         <span class="file-picker-label" @click="onClick()" @drop.prevent="onDrop" @dragover.prevent>
             <slot>
                 <i class="fa fa-upload"></i> Upload
@@ -49,6 +49,10 @@ export default class FilePicker extends Vue {
     line-height: 90px;
     font-size: 2rem;
     text-align: center;
+    
+    &.disabled {
+        cursor: auto;
+    }
     
     .file-picker-label {
         display: block;

@@ -25,6 +25,7 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
     @Dep('$api') $api: ApiService;
     
     folder: Folder = null;
+    uploadsCount: number = null;
     uploads: IUploadWrapper[] = [];
     
     async mounted() {
@@ -39,8 +40,13 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
         if(!this.folder)
             return;
         
-        for (let file of files)
-            await this.uploadOne(file);
+        try {
+            this.uploadsCount = files.length;
+            for (let file of files)
+                await this.uploadOne(file);
+        } finally {
+            this.uploadsCount = null;
+        }
     }
     
     async uploadOne(file: File) {
@@ -68,8 +74,9 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
         tagEditor({ mediaKey: m.key });
     }
 
-    editThumb(m: MediaThumbnail) {
-        thumbEditor({ mediaKey: m.key });
+    async editThumb(m: MediaThumbnail) {
+        if(await thumbEditor({ mediaKey: m.key }))
+            m.thumbnailPath = m.thumbnailPath.replace(/nonce=([0-9]+)$/, 'nonce=' + Math.ceil(Math.random() * 10000));
     }
 
     async remove(u: IUploadWrapper) {
@@ -114,7 +121,14 @@ interface IUploadWrapper {
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <FilePicker :multiple="true" @change="upload"></FilePicker>
+                    <FilePicker :multiple="true" @change="upload" :disabled="!!uploadsCount">
+                        <div v-if="!uploadsCount">
+                            <i class="fa fa-upload"></i> Upload
+                        </div>
+                        <div v-else>
+                            <loading :is-loading="true" :text="'Uploading ' + uploads.length + ' of ' + uploadsCount + '...'"></loading>
+                        </div>
+                    </FilePicker>
                 </div>
             </div>
             <div class="row row-cols-1 row-cols-sm-4">
