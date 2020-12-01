@@ -17,7 +17,14 @@ export default class TagEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
         { type: TagType.Location, caption: 'Location' },
         { type: TagType.Pet, caption: 'Pet' },
         { type: TagType.Custom, caption: 'Other' }
-    ]
+    ];
+
+    createMore: boolean = false;
+    result: boolean = false;
+
+    $refs: {
+        caption: HTMLInputElement;
+    }
     
     get isNew(): boolean {
         return !this.value?.id;
@@ -43,6 +50,13 @@ export default class TagEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
                 if(this.isNew) {
                     await this.$api.tags.create(this.value)
                     this.$toast.success('Tag created');
+                    
+                    if(this.createMore) {
+                        this.value = { id: 0, caption: '', type: this.value.type };
+                        this.result = true;
+                        this.$refs.caption.focus();
+                        return;
+                    }
                 }
                 else {
                     await this.$api.tags.update(this.value.id, this.value);
@@ -73,7 +87,7 @@ export default class TagEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
                             <div class="form-group row">
                                 <label class="col-sm-2 col-form-label">Caption</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" v-model="value.caption" v-autofocus />
+                                    <input type="text" class="form-control" v-model="value.caption" v-autofocus ref="caption" />
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -91,6 +105,9 @@ export default class TagEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <label class="mr-auto" v-if="isNew" title="Keep the dialog open to create another folder after saving">
+                                <input type="checkbox" v-model="createMore" /> Create more
+                            </label>
                             <button type="submit" class="btn btn-primary" :disabled="!canSave">
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>

@@ -21,6 +21,13 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
     isThumbPickerOpen: boolean = false;
     thumbs: MediaThumbnail[] = [];
     
+    createMore: boolean = false;
+    result: boolean = false;
+    
+    $refs: {
+        caption: HTMLInputElement;
+    }
+    
     get isNew() {
         return !this.folder;
     }
@@ -46,7 +53,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
                         key: this.value.thumbnailKey,
                         uploadDate: '',
                         tags: 0,
-                        mediaType: MediaType.Photo
+                        type: MediaType.Photo
                     };
                 }
             },
@@ -60,6 +67,14 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
                 if(this.isNew) {
                     await this.$api.folders.create(this.parent?.key, this.value);
                     this.$toast.success('Folder created');
+                    
+                    if(this.createMore) {
+                        this.value = { key: '', caption: '', slug: '', tags: [], thumbnailKey: '' };
+                        this.thumb = null;
+                        this.result = true;
+                        this.$refs.caption.focus();
+                        return;
+                    }
                 } else {
                     await this.$api.folders.update(this.folder.key, this.value);
                     this.$toast.success('Folder updated');
@@ -76,9 +91,11 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
             return;
         
         this.isThumbPickerOpen = true;
-        await this.showProgress('isLoadingThumbs', async () => {
-            this.thumbs = await this.$api.media.getList(this.folder.key);
-        });
+        await this.showProgress(
+            'isLoadingThumbs',
+            async () => this.thumbs = await this.$api.media.getList(this.folder.key),
+            'Failed to load thumbnails'
+        );
     }
     
     closeThumbPicker() {
@@ -118,7 +135,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">Caption</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control" v-model="value.caption" v-autofocus />
+                                                    <input type="text" class="form-control" v-model="value.caption" v-autofocus ref="caption" />
                                                 </div>
                                             </div>
                                             <div class="form-group row">
@@ -167,6 +184,9 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
                                     </div>
                                 </div>
                                 <div class="modal-footer">
+                                    <label class="mr-auto" v-if="isNew" title="Keep the dialog open to create another tag after saving">
+                                        <input type="checkbox" v-model="createMore" /> Create more
+                                    </label>
                                     <button type="submit" class="btn btn-primary" :disabled="!canSave">
                                         <span v-if="asyncState.isSaving">Saving...</span>
                                         <span v-else>
@@ -174,7 +194,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
                                             <span v-else>Update</span>
                                         </span>
                                     </button>
-                                    <button type="button" class="btn btn-secondary" @click.prevent="$close(false)">Cancel</button>
+                                    <button type="button" class="btn btn-secondary" @click.prevent="$close(result)">Cancel</button>
                                 </div>
                             </form>
                         </loading>
@@ -198,10 +218,11 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
 .popover.thumb-picker-popover {
     position: absolute;
     left: -75px;
-    bottom: -195px;
+    bottom: -395px;
     top: unset;
-    width: 300px;
-    height: 200px;
+    width: 450px;
+    max-width: 450px;
+    height: 400px;
 
     .arrow:after {
         border-bottom-color: #f7f7f7;
@@ -210,8 +231,8 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
     .popover-body {
         padding: 0.5rem;
         padding-right: 0;
-        height: 150px;
-        max-height: 150px;
+        height: 350px;
+        max-height: 350px;
         overflow: hidden;
         position: relative;
     }
