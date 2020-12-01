@@ -16,8 +16,13 @@
         Location = 2,
 
         /// <summary>
+        /// Animal on a photo.
+        /// </summary>
+        Pet = 3,
+
+        /// <summary>
         /// Other attributes (category, etc).
         /// </summary>
-        Custom = 3
+        Custom = 4
     }
 }

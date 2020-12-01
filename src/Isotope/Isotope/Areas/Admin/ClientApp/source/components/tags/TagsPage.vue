@@ -84,7 +84,8 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
                 <td>
                     <span v-if="t.type === 1" class="badge badge-primary">Person</span>
                     <span v-if="t.type === 2" class="badge badge-warning">Location</span>
-                    <span v-if="t.type === 3" class="badge badge-danger">Other</span>
+                    <span v-if="t.type === 3" class="badge badge-info">Pet</span>
+                    <span v-if="t.type === 4" class="badge badge-danger">Other</span>
                 </td>
                 <td>
                     <a class="hover-action" @click.stop="$refs.menu.open($event, t)" title="Actions">

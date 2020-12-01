@@ -15,6 +15,7 @@ export default class TagEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
     tagTypes: {type: TagType, caption: string}[] = [
         { type: TagType.Person, caption: 'Person' },
         { type: TagType.Location, caption: 'Location' },
+        { type: TagType.Pet, caption: 'Pet' },
         { type: TagType.Custom, caption: 'Other' }
     ]
     
@@ -25,11 +26,12 @@ export default class TagEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
     mounted() {
         this.value = this.tag
             ? { ...this.tag }
-            : { id: 0, caption: '', type: TagType.Custom };
+            : { id: 0, caption: '', type: TagType.Person };
     }
     
     get canSave(): boolean {
-        return !!this.value?.caption;
+        return !this.asyncState.isSaving
+            && !!this.value?.caption;
     }    
     
     async save() {
@@ -90,8 +92,11 @@ export default class TagEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary" :disabled="!canSave">
-                                <span v-if="isNew">Create</span>
-                                <span v-else>Update</span>
+                                <span v-if="asyncState.isSaving">Saving...</span>
+                                <span v-else>
+                                    <span v-if="isNew">Create</span>
+                                    <span v-else>Update</span>
+                                </span>
                             </button>
                             <button type="button" class="btn btn-secondary" @click.prevent="$close(false)">Cancel</button>
                         </div>
