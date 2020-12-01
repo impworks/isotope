@@ -149,7 +149,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
                                             <div class="clickable thumb-picker" :style="{'background-image': thumb ? 'url(' + thumb.thumbnailPath + ')' : 'none'}"
                                                  @click="openThumbPicker()" v-click-outside="closeThumbPicker" title="Pick thumbnail...">
                                                 <div v-if="isThumbPickerOpen" class="popover bs-popover-bottom show thumb-picker-popover">
-                                                    <div class="arrow" style="left: 124px"></div>
+                                                    <div class="arrow"></div>
                                                     <h3 class="popover-header">
                                                         <span class="pull-left">Folder thumbnail</span>
                                                         <span class="pull-right clickable" v-if="value.thumbnailKey" @click="pickThumb(null)" title="Remove">
@@ -217,22 +217,25 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
 
 .popover.thumb-picker-popover {
     position: absolute;
-    left: -75px;
-    bottom: -395px;
+    left: -155px;
+    bottom: -295px;
     top: unset;
-    width: 450px;
-    max-width: 450px;
-    height: 400px;
+    width: 406px;
+    max-width: 406px;
+    height: 300px;
 
-    .arrow:after {
-        border-bottom-color: #f7f7f7;
+    .arrow {
+        left: 204px;
+        
+        &:after {
+            border-bottom-color: #f7f7f7;
+        }
     }
 
     .popover-body {
-        padding: 0.5rem;
-        padding-right: 0;
-        height: 350px;
-        max-height: 350px;
+        padding: 0.5rem 0 0 0.5rem;
+        height: 260px;
+        max-height: 260px;
         overflow: hidden;
         position: relative;
     }
@@ -243,18 +246,17 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
         left: 0;
         bottom: 0;
         right: -17px;
-        padding: 8px;
-        padding-right: 0;
+        padding: 8px 0 0 8px;
         overflow-y: scroll;
-    }
 
-    .thumb-picker-item {
-        display: inline-block;
-        width: 46px;
-        height: 46px;
-        margin: 0 0.5em 0.5em 0;
-        background-size: cover;
-        background-position: center center;
+        .thumb-picker-item {
+            display: inline-block;
+            width: 92px;
+            height: 92px;
+            margin: 0 0.5em 0.5em 0;
+            background-size: cover;
+            background-position: center center;
+        }
     }
 }
 </style>
