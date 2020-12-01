@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash.cloneDeep';
+import cloneDeep from 'lodash/cloneDeep';
 import { Route } from "vue-router";
 import { SearchScope } from "../../../../Common/source/vms/SearchScope";
 import { Observable } from "../../../../Common/source/utils/Observable";
