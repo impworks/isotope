@@ -4,11 +4,11 @@
   "description": "A simple photo gallery",
   "main": "index.js",
   "scripts": {
-    "admin-build": "parcel build -d wwwroot/@assets ./areas/Admin/ClientApp/admin.html --no-source-maps --public-url /@assets",
-    "admin-dev-vs": "parcel watch -d wwwroot/@assets ./areas/Admin/ClientApp/admin.html --no-source-maps --public-url /@assets",
+    "admin-build": "parcel build -d wwwroot/@assets ./Areas/Admin/ClientApp/admin.html --no-source-maps --public-url /@assets",
+    "admin-dev-vs": "parcel watch -d wwwroot/@assets ./Areas/Admin/ClientApp/admin.html --no-source-maps --public-url /@assets",
     "admin-dev": "parcel -d .dist-tmp ./Areas/Admin/ClientApp/admin.html --no-source-maps",
-    "front-build": "parcel build -d wwwroot/@assets ./areas/Front/ClientApp/front.html --no-source-maps --public-url /@assets",
-    "front-dev-vs": "parcel watch -d wwwroot/@assets ./areas/Front/ClientApp/front.html --no-source-maps --public-url /@assets",
+    "front-build": "parcel build -d wwwroot/@assets ./Areas/Front/ClientApp/front.html --no-source-maps --public-url /@assets",
+    "front-dev-vs": "parcel watch -d wwwroot/@assets ./Areas/Front/ClientApp/front.html --no-source-maps --public-url /@assets",
     "front-dev": "parcel -d .dist-tmp ./Areas/Front/ClientApp/front.html --no-source-maps",
     "build": "npm run admin-build && npm run front-build",
     "clean": "rmdir \"wwwroot/@assets\" /s /q"
