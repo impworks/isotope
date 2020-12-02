@@ -26,9 +26,12 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
     extraTags: number[] = [];
     
     tagsLookup: Tag[] = [];
-    
     isCreatingTag: boolean = false;
     newTagRect: Rect = null;
+    
+    currentKey: string = null;
+    tagMore: boolean = false;
+    result: boolean = false;
     
     get isIncorrect() {
         return this.value?.overlayTags.some(x => !x.tagId);
@@ -42,9 +45,17 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
 
     async mounted() {
         await this.showLoading(
+            async () => this.tagsLookup = await this.$api.tags.getList(),
+            'Failed to load tag list'
+        );
+        this.currentKey = this.mediaKey;
+        await this.load();
+    }
+    
+    async load() {
+        await this.showLoading(
             async () => {
-                this.tagsLookup = await this.$api.tags.getList();
-                const data = await this.$api.media.get(this.mediaKey);
+                const data = await this.$api.media.get(this.currentKey);
                 await this.loadImage(data.fullPath);
                 this.value = data;
                 this.extraTags = data.extraTags?.map(x => x.tagId) ?? [];
@@ -60,14 +71,24 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
         await this.showSaving(
             async () => {
                 this.value.extraTags = this.extraTags.map(x => ({ tagId: x, type: TagBindingType.Custom }));
-                await this.$api.media.update(this.mediaKey, this.value);
-
-                this.$close(true);
+                await this.$api.media.update(this.currentKey, this.value);
 
                 this.$toast.success('Media tags updated');
+                this.result = true;
+                
+                if(this.tagMore) {
+                    const next = await this.$api.media.getNextUntagged(this.currentKey);
+                    if(next.key) {
+                        this.currentKey = next.key;
+                        await this.load();
+                        return;
+                    }
+                }
+                
+                this.$close(true);
             },
             'Failed to update media tags'
-        )
+        );        
     }
     
     private loadImage(path: string): Promise<void> {
@@ -153,7 +174,7 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Update media tags</h5>
-                            <button type="button" class="close" @click="$close(false)">&times;</button>
+                            <button type="button" class="close" @click="$close(result)">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
@@ -199,11 +220,14 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <label class="mr-auto" title="Keep the dialog open and find next untagged media after saving">
+                                <input type="checkbox" v-model="tagMore" /> Tag next untagged
+                            </label>
                             <button type="submit" class="btn btn-primary" :disabled="!canSave">
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Update</span>
                             </button>
-                            <button type="button" class="btn btn-secondary" @click.prevent="$close(false)">Cancel</button>
+                            <button type="button" class="btn btn-secondary" @click.prevent="$close(result)">Cancel</button>
                         </div>
                     </div>
                 </div>

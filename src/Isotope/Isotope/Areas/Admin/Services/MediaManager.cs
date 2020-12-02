@@ -157,6 +157,35 @@ namespace Isotope.Areas.Admin.Services
         }
 
         /// <summary>
+        /// Returns the next untagged media after the current one.
+        /// </summary>
+        public async Task<KeyResultVM> GetNextUntaggedAsync(string key)
+        {
+            var tagLookup = await _db.Media
+                                     .OrderBy(x => x.Folder.Caption)
+                                     .ThenBy(x => x.Order)
+                                     .Select(x => new {x.Folder.Caption, x.Key, HasTags = x.Tags.Any(y => y.Type != TagBindingType.Inherited)})
+                                     .ToListAsync();
+
+            var currIdx = tagLookup.FindIndex(x => x.Key == key);
+            if(currIdx == -1)
+                throw new OperationException($"Media '{key}' does not exist.");
+
+            // find closest media after current
+            var next = tagLookup.FindIndex(currIdx + 1, x => x.HasTags == false);
+            if (next != -1)
+                return new KeyResultVM {Key = tagLookup[next].Key};
+
+            // restart from the beginning
+            var first = tagLookup.FindIndex(x => x.HasTags == false);
+            if (first != -1)
+                return new KeyResultVM {Key = tagLookup[first].Key};
+
+            // nothing more to tag
+            return new KeyResultVM {Key = null};
+        }
+
+        /// <summary>
         /// Updates the media description.
         /// </summary>
         public async Task UpdateAsync(string key, MediaVM vm)

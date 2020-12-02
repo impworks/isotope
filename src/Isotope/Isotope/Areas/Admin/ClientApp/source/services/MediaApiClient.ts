@@ -5,6 +5,7 @@ import { MediaThumbnail } from "../vms/MediaThumbnail";
 import { Media } from "../vms/Media";
 import { Rect } from "../../../../Common/source/vms/Rect";
 import { Action } from "../../../../Common/source/utils/Interfaces";
+import { KeyResult } from "../../../../Common/source/vms/KeyResult";
 
 export class MediaApiClient extends ApiClientBase {
     constructor($host: string, $auth: AuthService) {
@@ -55,6 +56,10 @@ export class MediaApiClient extends ApiClientBase {
 
     async updateThumb(key: string, value: Rect) {
         return this.restPut(key + '/thumb', value);
+    }
+    
+    async getNextUntagged(key: string) {
+        return this.restGet<KeyResult>(key + '/next-untagged');
     }
     
     async remove(key: string) {
