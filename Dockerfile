@@ -4,7 +4,7 @@ WORKDIR /build/
 
 ADD src/Isotope/Isotope/package.json .
 ADD src/Isotope/Isotope/package-lock.json .
-RUN npm install
+RUN npm ci
 
 ADD src/Isotope/Isotope/ .
 RUN find .
