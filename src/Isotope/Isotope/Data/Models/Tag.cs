@@ -31,5 +31,10 @@ namespace Isotope.Data.Models
         /// Related hashes.
         /// </summary>
         public ICollection<TagHash> Hashes { get; set; }
+
+        /// <summary>
+        /// Media bindings using this tag.
+        /// </summary>
+        public ICollection<MediaTagBinding> MediaTagBindings { get; set; }
     }
 }

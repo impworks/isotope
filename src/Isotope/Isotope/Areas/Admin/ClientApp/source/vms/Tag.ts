@@ -4,4 +4,5 @@ export interface Tag {
     id: number;
     caption: string;
     type: TagType;
+    count: number;
 }

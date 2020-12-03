@@ -40,7 +40,7 @@ namespace Isotope.Data
             builder.Entity<FolderTagBinding>().HasOne(x => x.Folder).WithMany(x => x.Tags).IsRequired(true);
             builder.Entity<FolderTagBinding>().HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).IsRequired(true);
 
-            builder.Entity<MediaTagBinding>().HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).IsRequired(true);
+            builder.Entity<MediaTagBinding>().HasOne(x => x.Tag).WithMany(x => x.MediaTagBindings).HasForeignKey(x => x.TagId).IsRequired(true);
             builder.Entity<MediaTagBinding>().HasOne(x => x.Media).WithMany(x => x.Tags).HasForeignKey(x => x.MediaKey).IsRequired(true);
             builder.Entity<MediaTagBinding>().OwnsOne(x => x.Location);
 

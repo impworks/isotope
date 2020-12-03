@@ -63,15 +63,16 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
         </div>
         <table class="table table-bordered mb-0">
             <thead>
-            <tr>
-                <th width="80%">Caption</th>
-                <th>Type</th>
-                <th width="1"></th>
-            </tr>
+                <tr>
+                    <th width="80%">Caption</th>
+                    <th>Type</th>
+                    <th>Usages</th>
+                    <th width="1"></th>
+                </tr>
             </thead>
             <tbody v-if="tags.length === 0">
             <tr>
-                <td colspan="3">
+                <td colspan="4">
                     <div class="alert alert-info mb-0">
                         There are no tags yet.
                     </div>
@@ -86,6 +87,10 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
                     <span v-if="t.type === 2" class="badge badge-warning">Location</span>
                     <span v-if="t.type === 3" class="badge badge-info">Pet</span>
                     <span v-if="t.type === 4" class="badge badge-danger">Other</span>
+                </td>
+                <td>
+                    <span v-if="t.count > 0">{{ t.count }}</span>
+                    <span v-else title="No usages">&mdash;</span>
                 </td>
                 <td>
                     <a class="hover-action" @click.stop="$refs.menu.open($event, t)" title="Actions">

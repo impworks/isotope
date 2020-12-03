@@ -134,7 +134,10 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                             <span v-if="m.type === 2">Video</span>
                         </td>
                         <td>{{formatDate(m.uploadDate)}}</td>
-                        <td>{{m.tags}}</td>
+                        <td>
+                            <span v-if="m.tags > 0">{{ m.tags }}</span>
+                            <span v-else title="No tags">&mdash;</span>
+                        </td>
                         <td>
                             <a class="hover-action" @click.stop="$refs.menu.open($event, m)" title="Actions">
                                 <span class="fa fa-fw fa-ellipsis-v"></span>
