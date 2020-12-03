@@ -60,7 +60,7 @@ export default class UserPasswordDlg extends Mixins(HasAsyncState(), DialogBase)
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" :disabled="!canSave">
+                            <button type="submit" class="btn btn-primary" :disabled="!canSave" title="Ctrl + S">
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Save</span>
                             </button>
@@ -73,5 +73,6 @@ export default class UserPasswordDlg extends Mixins(HasAsyncState(), DialogBase)
         </div>
         <div class="modal-backdrop show fade">
         </div>
+        <GlobalEvents @keydown.ctrl.83.stop.prevent="save()"></GlobalEvents>
     </div>
 </template>

@@ -18,15 +18,22 @@ import RectPreview from "./RectPreview.vue";
 @Component({
     components: { RectPreview, RectEditor, GlobalEvents }
 })
-export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
+export default class MediaTagsEditorDlg extends Mixins(HasAsyncState({ isSkipping: false }), DialogBase) {
     @Dep('$api') $api: ApiService;
     @Prop({ required: true }) mediaKey: string;
+    
+    $refs: {
+        img: HTMLImageElement;
+        rects: Vue[];
+        wrapper: HTMLElement;
+    };
 
     value: Media = null;
     extraTags: number[] = [];
     
     tagsLookup: Tag[] = [];
     isCreatingTag: boolean = false;
+    tagOrigin: { x: number, y: number } = null;
     newTagRect: Rect = null;
     
     currentKey: string = null;
@@ -39,6 +46,7 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
     
     get canSave() {
         return !this.asyncState.isSaving
+            && !this.asyncState.isSkipping
             && !this.isCreatingTag
             && !this.isIncorrect;
     }
@@ -76,19 +84,29 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
                 this.$toast.success('Media tags updated');
                 this.result = true;
                 
-                if(this.tagMore) {
-                    const next = await this.$api.media.getNextUntagged(this.currentKey);
-                    if(next.key) {
-                        this.currentKey = next.key;
-                        await this.load();
-                        return;
-                    }
-                }
-                
-                this.$close(true);
+                if (this.tagMore)
+                    await this.loadNext(false);
+                else
+                    this.$close(true);
             },
             'Failed to update media tags'
         );        
+    }
+
+    async loadNext(skip: boolean) {
+        await this.showProgress(
+            skip ? 'isSkipping' : 'isWorking',
+            async () => {
+                const next = await this.$api.media.getNextUntagged(this.currentKey);
+                if (next.key) {
+                    this.currentKey = next.key;
+                    await this.load();
+                } else {
+                    this.$close(this.result);
+                }
+            },
+            'Failed to load next media'
+        );
     }
     
     private loadImage(path: string): Promise<void> {
@@ -116,9 +134,10 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
         if(!this.isCreatingTag || this.newTagRect)
             return;
         
+        this.tagOrigin = this.getOffset(evt);
         this.newTagRect = {
-            x: evt.offsetX,
-            y: evt.offsetY,
+            x: this.tagOrigin.x,
+            y: this.tagOrigin.y,
             width: 0,
             height: 0
         };
@@ -127,19 +146,35 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
     createTagMoved(evt: MouseEvent) {
         if(!this.newTagRect)
             return;
-        
-        const x = evt.offsetX;
-        const y = evt.offsetY;
+
+        const { x, y } = this.getOffset(evt);
         const r = this.newTagRect;
-        r.width = Math.max(0, x - r.x);
-        r.height = Math.max(0, y - r.y);
+        const o = this.tagOrigin;
+        
+        const w = x - o.x;
+        if(w >= 0) {
+            r.x = o.x;
+            r.width = w;
+        } else {
+            r.x = o.x + w;
+            r.width = Math.abs(w);
+        }
+
+        const h = y - o.y;
+        if(h >= 0) {
+            r.y = o.y;
+            r.height = h;
+        } else {
+            r.y = o.y + h;
+            r.height = Math.abs(h);
+        }
     }
     
     createTagCompleted() {
         if(!this.newTagRect)
             return;
         
-        const elem = this.$refs['media-wrapper'] as HTMLElement;
+        const elem = this.$refs.wrapper;
         const w = elem.offsetWidth;
         const h = elem.offsetHeight;
         const r = this.newTagRect;
@@ -157,11 +192,19 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
         
         // activate the newly created tag
         setTimeout(() => {
-            const rects = this.$refs['rects'] as Vue[];
+            const rects = this.$refs['rects'];
             const lastElem = rects[rects.length - 1].$el as HTMLElement;
             EventHelper.sendMouseEvent(lastElem, 'mousedown');
             EventHelper.sendMouseEvent(lastElem, 'mouseup');
         }, 50);
+    }
+    
+    private getOffset(evt: MouseEvent) {
+        const wp = this.$refs.wrapper.getBoundingClientRect();
+        return {
+            x: evt.pageX - wp.x,
+            y: evt.pageY - wp.y
+        };
     }
 }
 </script>
@@ -185,7 +228,7 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
                                                 :disabled="asyncState.isSaving || isCreatingTag">
                                             <span class="fa fa-plus-circle"></span>
                                             <span v-if="isCreatingTag">Adding tag: Esc to cancel</span>
-                                            <span v-else>Add tag</span>
+                                            <span v-else title="Add a new tag (Ctrl + Space)">Add tag</span>
                                         </button>
                                     </div>
                                     <div class="clearfix"></div>
@@ -194,8 +237,8 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
                                      @mousedown.prevent="createTagStarted($event)"
                                      @mousemove.prevent="createTagMoved($event)"
                                      @mouseup.prevent="createTagCompleted()"
-                                     ref="media-wrapper">
-                                    <img :src="value.fullPath" ref="img" />
+                                     ref="wrapper">
+                                    <img :src="value.fullPath" />
                                     <RectPreview v-if="newTagRect" :rect="newTagRect"></RectPreview>
                                     <div class="tag-wrapper" v-if="!isCreatingTag">
                                         <RectEditor v-for="(b, idx) in value.overlayTags"
@@ -223,7 +266,13 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
                             <label class="mr-auto" title="Keep the dialog open and find next untagged media after saving">
                                 <input type="checkbox" v-model="tagMore" /> Tag next untagged
                             </label>
-                            <button type="submit" class="btn btn-primary" :disabled="!canSave">
+                            <button v-if="tagMore" type="button" class="btn btn-outline-primary"
+                                    :disabled="asyncState.isSaving || asyncState.isSkipping"
+                                    @click="loadNext(true)" title="View next untagged (Ctrl + RightArrow)">
+                                <span v-if="asyncState.isSkipping">Skipping...</span>
+                                <span v-else>Skip</span>
+                            </button>
+                            <button type="submit" class="btn btn-primary" :disabled="!canSave" title="Ctrl + S">
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Update</span>
                             </button>
@@ -235,7 +284,11 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState(), DialogBa
         </div>
         <div class="modal-backdrop show fade">
         </div>
-        <GlobalEvents @keydown.esc="toggleCreatingTagMode(false)"></GlobalEvents>
+        <GlobalEvents @keydown.esc="toggleCreatingTagMode(false)"
+                      @keydown.ctrl.right="loadNext(true)"
+                      @keydown.ctrl.space="toggleCreatingTagMode(true)"
+                      @keydown.ctrl.83.stop.prevent="save()">
+        </GlobalEvents>
     </div>
 </template>
 

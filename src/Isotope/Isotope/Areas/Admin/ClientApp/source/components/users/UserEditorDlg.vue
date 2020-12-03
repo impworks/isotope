@@ -58,7 +58,7 @@ export default class UserEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary" title="Ctrl + S">
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Save</span>
                             </button>
@@ -71,5 +71,6 @@ export default class UserEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
         </div>
         <div class="modal-backdrop show fade">
         </div>
+        <GlobalEvents @keydown.ctrl.83.stop.prevent="save()"></GlobalEvents>
     </div>
 </template>

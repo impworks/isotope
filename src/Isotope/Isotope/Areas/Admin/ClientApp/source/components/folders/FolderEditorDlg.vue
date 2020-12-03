@@ -187,7 +187,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
                                     <label class="mr-auto" v-if="isNew" title="Keep the dialog open to create another tag after saving">
                                         <input type="checkbox" v-model="createMore" /> Create one more
                                     </label>
-                                    <button type="submit" class="btn btn-primary" :disabled="!canSave">
+                                    <button type="submit" class="btn btn-primary" :disabled="!canSave" title="Ctrl + S">
                                         <span v-if="asyncState.isSaving">Saving...</span>
                                         <span v-else>
                                             <span v-if="isNew">Create</span>
@@ -203,6 +203,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
         </div>
         <div class="modal-backdrop show fade">
         </div>
+        <GlobalEvents @keydown.ctrl.83.stop.prevent="save()"></GlobalEvents>
     </div>
 </template>
 

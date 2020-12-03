@@ -78,7 +78,7 @@ export default class MediaThumbEditorDlg extends Mixins(HasAsyncState(), DialogB
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" :disabled="asyncState.isSaving">
+                            <button type="submit" class="btn btn-primary" :disabled="asyncState.isSaving" title="Ctrl + S">
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Update</span>
                             </button>
@@ -90,6 +90,7 @@ export default class MediaThumbEditorDlg extends Mixins(HasAsyncState(), DialogB
         </div>
         <div class="modal-backdrop show fade">
         </div>
+        <GlobalEvents @keydown.ctrl.83.stop.prevent="save()"></GlobalEvents>
     </div>
 </template>
 
