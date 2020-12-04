@@ -202,8 +202,8 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState({ isSkippin
     private getOffset(evt: MouseEvent) {
         const wp = this.$refs.wrapper.getBoundingClientRect();
         return {
-            x: evt.pageX - wp.x,
-            y: evt.pageY - wp.y
+            x: evt.clientX - wp.left,
+            y: evt.clientY - wp.top
         };
     }
 }
