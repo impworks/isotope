@@ -182,7 +182,9 @@ namespace Isotope.Areas.Front.Services
             else if (request.Scope == SearchScope.CurrentFolderAndSubfolders)
                 query = query.Where(x => x.Folder.Path.StartsWith(folder.Path));
 
-            var media = await query.OrderBy(x => x.Order)
+            var media = await query.OrderBy(x => x.Date)
+                                   .ThenBy(x => x.Folder.Caption)
+                                   .ThenBy(x => x.Order)
                                    .ToListAsync();
 
             var datedMedia = TryFilterMediaByDate(request, media);
