@@ -73,7 +73,7 @@ export default class OverlayTag extends Vue {
 </script>
 
 <template>
-    <fragment>
+    <div>
         <div 
             v-hammer:tap="onTap"
             class="overlay-tag tooltip-target" 
@@ -106,7 +106,7 @@ export default class OverlayTag extends Vue {
                 {{value.tag.caption}}
             </span>
         </b-popover>
-    </fragment>
+    </div>
 </template>
 
 <style lang="scss">

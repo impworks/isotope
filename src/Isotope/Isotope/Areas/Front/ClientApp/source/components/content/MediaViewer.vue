@@ -309,11 +309,7 @@ interface ICachedMedia extends IMedia {
 
 <template>
     <portal to="overlay">
-        <GlobalEvents 
-            @keydown.left="nav(-1)" 
-            @keydown.right="nav(1)" 
-            @keydown.esc="hide()"
-        ></GlobalEvents>
+        <GlobalEvents @keydown.left="nav(-1)" @keydown.right="nav(1)" @keydown.esc="hide()"></GlobalEvents>
         <transition name="media-viewer__fade">
             <div class="media-viewer"
                 v-if="shown"
@@ -331,8 +327,8 @@ interface ICachedMedia extends IMedia {
                     <media-content 
                         :elem="prev" 
                         :key="'p' + index"
-                        :isMobileOverlayVisible="isMobileOverlayVisible"
-                    ></media-content>
+                        :isMobileOverlayVisible="isMobileOverlayVisible">
+                    </media-content>
                     <media-content 
                         :elem="curr" 
                         :hasOverlay="true"
@@ -340,20 +336,20 @@ interface ICachedMedia extends IMedia {
                         :isLast="!next"
                         :isMobileOverlayVisible="isMobileOverlayVisible"
                         v-on:nav="nav($event)"
-                        v-on:close="hide()"
-                    ></media-content>
+                        v-on:close="hide()">
+                    </media-content>
                     <media-content 
                         :elem="next" 
                         :key="'n' + index"
-                        :isMobileOverlayVisible="isMobileOverlayVisible"
-                    ></media-content>
+                        :isMobileOverlayVisible="isMobileOverlayVisible">
+                    </media-content>
                 </div>
                 <media-details
                     v-if="isMobile && curr && !curr.isLoading"
                     :isOpenOnMobile="isMobileOverlayVisible"
                     :isMobile="true"
-                    :media="curr.media"
-                ></media-details>
+                    :media="curr.media">
+                </media-details>
             </div>
         </transition>
     </portal>
