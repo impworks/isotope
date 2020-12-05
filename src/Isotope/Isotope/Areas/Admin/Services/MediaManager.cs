@@ -134,6 +134,8 @@ namespace Isotope.Areas.Admin.Services
 
             ImageHelper.CreateThumbnails(mediaInfo.FullImage, paths.Path);
 
+            mediaInfo.FullImage.Dispose();
+
             return await _db.Media
                             .Where(x => x.Key == key)
                             .ProjectToType<MediaThumbnailVM>(_mapper.Config)

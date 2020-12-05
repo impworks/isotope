@@ -127,7 +127,7 @@ namespace Isotope.Code.Utils.Helpers
             foreach (var preset in ImagePresets.Values)
             {
                 var path = MediaHelper.GetSizedMediaPath(originalPath, preset.MediaSize);
-                var image = preset.ResizeFunc(originalImage, preset.Size);
+                using var image = preset.ResizeFunc(originalImage, preset.Size);
                 image.Save(path, preset.Codec, preset.CodecArgs);
             }
         }
