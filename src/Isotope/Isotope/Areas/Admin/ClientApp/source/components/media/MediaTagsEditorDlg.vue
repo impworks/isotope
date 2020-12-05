@@ -286,7 +286,7 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState({ isSkippin
         </div>
         <GlobalEvents @keydown.esc="toggleCreatingTagMode(false)"
                       @keydown.ctrl.right="loadNext(true)"
-                      @keydown.ctrl.space="toggleCreatingTagMode(true)"
+                      @keydown.ctrl.space.stop.prevent="toggleCreatingTagMode(true)"
                       @keydown.ctrl.83.stop.prevent="save()">
         </GlobalEvents>
     </div>
