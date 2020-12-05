@@ -142,7 +142,7 @@ namespace Isotope.Areas.Admin.Services
             var folder = await _db.Folders
                                   .Include(x => x.Tags)
                                   .FirstOrDefaultAsync(x => x.Key == key);
-            
+
             if (folder.Slug != vm.Slug)
             {
                 // update paths in subfolders
@@ -159,12 +159,17 @@ namespace Isotope.Areas.Admin.Services
                     subfolder.Path = newPath + subfolder.Path.Substring(oldPath.Length);
             }
 
-            await UpdateInheritedTagsAsync(folder, vm.Tags);
-
             _mapper.Map(vm, folder);
+            
+            var oldTags = folder.Tags?.Select(x => x.TagId).OrderBy(x => x).ToList() ?? new List<int>();
+            var newTags = vm.Tags?.OrderBy(x => x).ToList() ?? new List<int>();
+            
             folder.Tags = vm.Tags?.Select(x => new FolderTagBinding {TagId = x}).ToList();
 
             await _db.SaveChangesAsync();
+            
+            if(!oldTags.SequenceEqual(newTags))
+                await _jobSvc.RunAsync(JobBuilder.For<RebuildInheritedTagsJob>().SupersedeAll()); // sic! run in background
 
             return _mapper.Map<FolderTitleVM>(folder);
         }
@@ -297,20 +302,6 @@ namespace Isotope.Areas.Admin.Services
                 throw new OperationException($"Folder '{StringHelper.Coalesce(key, "root")}' does not exist!");
 
             return folder;
-        }
-
-        /// <summary>
-        /// Recalculates all inherited tags for all media inside the folder and subfolders.
-        /// </summary>
-        private async Task UpdateInheritedTagsAsync(Folder folder, int[] tags)
-        {
-            var oldTags = folder.Tags?.Select(x => x.TagId).OrderBy(x => x).ToList() ?? new List<int>();
-            var newTags = tags?.OrderBy(x => x).ToList() ?? new List<int>();
-            
-            if (oldTags.SequenceEqual(newTags))
-                return;
-
-            await _jobSvc.RunAsync(JobBuilder.For<RebuildInheritedTagsJob>().SupersedeAll());
         }
     }
 }
