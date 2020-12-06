@@ -25,7 +25,8 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
     @Dep('$api') $api: ApiService;
     
     folder: Folder = null;
-    uploadsCount: number = null;
+    batchSize: number = null;
+    batchIndex: number = 1;
     uploads: IUploadWrapper[] = [];
     
     async mounted() {
@@ -41,11 +42,15 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
             return;
         
         try {
-            this.uploadsCount = files.length;
-            for (let file of files)
+            this.batchSize = files.length;
+            this.batchIndex = 1;
+            
+            for (let file of files) {
                 await this.uploadOne(file);
+                this.batchIndex++;
+            }
         } finally {
-            this.uploadsCount = null;
+            this.batchSize = null;
         }
     }
     
@@ -121,12 +126,12 @@ interface IUploadWrapper {
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <FilePicker :multiple="true" @change="upload" :disabled="!!uploadsCount">
-                        <div v-if="!uploadsCount">
+                    <FilePicker :multiple="true" @change="upload" :disabled="!!batchSize">
+                        <div v-if="!batchSize">
                             <i class="fa fa-upload"></i> Upload
                         </div>
                         <div v-else>
-                            <loading :is-loading="true" :text="'Uploading ' + uploads.length + ' of ' + uploadsCount + '...'"></loading>
+                            <loading :is-loading="true" :text="'Uploading ' + batchIndex + ' of ' + batchSize + '...'"></loading>
                         </div>
                     </FilePicker>
                 </div>
