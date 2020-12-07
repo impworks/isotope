@@ -12,7 +12,7 @@
 html, body {
     height: 100%;
     color: $gray-800;
-    font-family: "Rubik";
+    font-family: "Rubik", sans-serif;
     background: $gray-200;
 
     @include media-breakpoint-down(sm) {
