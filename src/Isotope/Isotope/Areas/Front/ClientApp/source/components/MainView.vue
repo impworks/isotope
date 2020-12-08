@@ -28,13 +28,13 @@ export default class MainView extends Vue {
         min-height: 0;
         flex: 1 0 auto;
 
-        @include media-breakpoint-down(sm) {
+        @include media-breakpoint-down(md) {
             padding-top: 3.6875rem;
             flex-direction: column;
             min-height: 100%;
         }
 
-        @include media-breakpoint-up(md) {
+        @include media-breakpoint-up(lg) {
             height: 100%;
             overflow: hidden;
             flex-direction: row;

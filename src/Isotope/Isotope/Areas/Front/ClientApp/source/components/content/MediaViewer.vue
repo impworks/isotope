@@ -54,17 +54,17 @@ export default class MediaViewer extends Mixins(HasLifetime) {
         this.observe(this.indexFeed, x => this.show(x));
         this.observe(this.$filter.onStateChanged, x => x.source === 'viewer' || this.hide());
 
-        this.isMobile = BreakpointHelper.down(Breakpoints.md);
+        this.isMobile = BreakpointHelper.down(Breakpoints.lg);
         window.addEventListener("resize", this.resizeHandler);
-        window.addEventListener('orientationchange', this.oriantationHandler);
+        window.addEventListener('orientationchange', this.orientationHandler);
     }
 
     beforeDestroy() {
         window.removeEventListener('resize', this.resizeHandler);
-        window.removeEventListener('orientationchange', this.oriantationHandler);
+        window.removeEventListener('orientationchange', this.orientationHandler);
     }
 
-    oriantationHandler() {
+    orientationHandler() {
         document.documentElement.style.height = `initial`;
         setTimeout(() => {
             document.documentElement.style.height = `100%`;
@@ -77,7 +77,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     @Debounce(50)
     @Bind()
     resizeHandler() {
-        this.isMobile = BreakpointHelper.down(Breakpoints.md);
+        this.isMobile = BreakpointHelper.down(Breakpoints.lg);
     }
 
     hide() {
@@ -164,7 +164,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
 
     @Watch('shown')
     onShownChanged(value: boolean) {
-        this.isMobile = BreakpointHelper.down(Breakpoints.md);
+        this.isMobile = BreakpointHelper.down(Breakpoints.lg);
         document.body.classList.toggle('media-viewer-open', value);
     }
 
@@ -420,6 +420,7 @@ interface ICachedMedia extends IMedia {
     }
 
     .media-viewer-open {
+        touch-action: none;
         overflow: hidden;
     }
 </style>

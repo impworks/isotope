@@ -147,7 +147,7 @@ interface Crumb {
         background: $white;
         border-bottom: 1px solid $gray-300;
 
-        @include media-breakpoint-down(sm) {
+        @include media-breakpoint-down(md) {
             margin-top: -1px;
             border-top: 1px solid $gray-300;
         }
@@ -159,7 +159,7 @@ interface Crumb {
         flex-direction: row;
         justify-content: space-between;
 
-        @include media-breakpoint-down(sm) {
+        @include media-breakpoint-down(md) {
             display: none;
         }
 
@@ -182,7 +182,12 @@ interface Crumb {
         align-items: center;
         background: $gray-200;
 
-        @include media-breakpoint-up(md) {
+        @supports(padding: max(0px)) {
+            padding-left: max(0px, calc(env(safe-area-inset-left)) - 1rem);
+            padding-right: max(0px, calc(env(safe-area-inset-right)) - 1rem);
+        }
+
+        @include media-breakpoint-up(lg) {
             display: none;
         }
 

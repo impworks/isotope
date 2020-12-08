@@ -133,14 +133,14 @@ export default class Sidebar extends Mixins(HasLifetime) {
         position: relative;
         background: $white;
 
-        @include media-breakpoint-down(sm) {
+        @include media-breakpoint-down(md) {
             top: 0;
             width: 100%;
             position: fixed;
             border-bottom: 1px solid $gray-300;
         }
 
-        @include media-breakpoint-up(md) {
+        @include media-breakpoint-up(lg) {
             flex: 0 0 auto;
             display: flex;
             flex-direction: column;
@@ -159,13 +159,18 @@ export default class Sidebar extends Mixins(HasLifetime) {
             align-items: center;
             padding-left: 1rem;
 
+            @supports(padding: max(0px)) {
+                padding-left: max(1rem, env(safe-area-inset-left));
+                padding-right: max(0px, calc(env(safe-area-inset-right)) - 1rem);
+            }
+
             &__actions {
                 display: flex;
             }
         }
 
         .btn-header {
-            @include media-breakpoint-up(md) {
+            @include media-breakpoint-up(lg) {
                 padding-right: 1rem;
             }
         }
@@ -173,7 +178,7 @@ export default class Sidebar extends Mixins(HasLifetime) {
         &__filter-button.btn-header {
             padding-right: 1rem;
 
-            @include media-breakpoint-up(md) {
+            @include media-breakpoint-up(lg) {
                 display: none;
             }
         }
@@ -251,11 +256,11 @@ export default class Sidebar extends Mixins(HasLifetime) {
         &__content {
             position: relative;
 
-            @include media-breakpoint-down(sm) {
+            @include media-breakpoint-down(md) {
                 display: none;
             }
 
-            @include media-breakpoint-up(md) {
+            @include media-breakpoint-up(lg) {
                 flex: 1 1 auto;
                 display: flex;
                 min-height: 0;

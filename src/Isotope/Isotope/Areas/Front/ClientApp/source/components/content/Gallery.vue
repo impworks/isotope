@@ -27,8 +27,13 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
     empty: boolean = false;
     contents: FolderContents = null;
     isFilterActive: boolean = false;
-    
+    hasSafePaddings: boolean = false;
+
     indexFeed: IObservable<number> = new Observable<number>();
+
+    $refs: {
+        gallery: HTMLElement
+    }
     
     get isEmpty() {
         return !this.contents?.media?.length
@@ -38,6 +43,9 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
     async mounted() {
         this.observe(this.$filter.onStateChanged, x => this.refresh(x));
         await this.refresh({ ...this.$filter.state, source: null });
+
+        this.checkSafePaddings();
+        window.addEventListener('orientationchange', this.orientationHandler);
     }
     
     async refresh(state: IFilterStateChangedEvent) {
@@ -67,6 +75,10 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             this.error = 'Folder not found!';
         }
     }
+
+    checkSafePaddings() {
+        this.hasSafePaddings = parseFloat(getComputedStyle(this.$refs.gallery).getPropertyValue("--sar")) > 0;
+    }
     
     showFolder(f: Folder) {
         this.$filter.update('list', { folder: f.path })
@@ -83,11 +95,23 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
     getThumbnailPath(m: MediaThumbnail) {
         return 'url(' + this.$host + m.thumbnailPath + ')';
     }
+
+    orientationHandler () {
+        setTimeout(this.checkSafePaddings, 200);
+    }
+
+    beforeDestroy() {
+        window.removeEventListener('orientationchange', this.orientationHandler);
+    }
 } 
 </script>
 
 <template>
-    <div class="gallery">
+    <div 
+        ref="gallery"
+        class="gallery" 
+        :class="{'gallery_safe-paddings': hasSafePaddings}"
+    >
         <gallery-header></gallery-header>
         <loading 
             :is-full-page="true"
@@ -173,13 +197,80 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
         flex: 1 1 auto;
         display: flex;
         flex-direction: column;
+        --sar: env(safe-area-inset-right);
+
+        $content-sizes:
+            3 375px  5.7291666667rem,
+            3 390px  6.0666666667rem,
+            3 414px  6.1666666667rem,
+            3 438px  6.6666666667rem,
+            3 504px  8.0416666667rem,
+            4 507px  5.546875rem,
+            4 551px  6.234375rem,
+            4 568px  6.5rem,
+            4 639px  7.609375rem,
+            5 667px  6.0125rem,
+            5 678px  6.15rem,
+            5 694px  6.35rem,
+            5 736px  6.875rem,
+            6 768px  7.275rem,
+            6 800px  6.0416666667rem,
+            6 812px  6.1666666667rem,
+            6 834px  6.3958333333rem,
+            6 844px  6.5rem,
+            6 896px  7.0416666667rem,
+            6 926px  7.3541666667rem,
+            6 981px  7.9270833333rem,
+            5 992px  5.875rem,
+            5 1024px 6.275rem,
+            5 1112px 7.375rem,
+            6 1280px 7.5416666667rem,
+            6 1366px 8.4375rem,
+            6 1440px 9.2083333333rem;
+
+        &_safe-paddings #{&}__item #{&}__item__content {
+            @each $amount, $screen-size, $content-size in $content-sizes {
+                @media only screen and (min-width: $screen-size) {
+                    width: calc(#{$content-size} - (((env(safe-area-inset-left)* 2) - 2rem)  / #{$amount}));
+                }
+            }
+        }
+
+        &:not(#{&}_safe-paddings) #{&}__item #{&}__item__content{
+            @each $amount, $screen-size, $content-size in $content-sizes {
+                @media only screen and (min-width: $screen-size) {
+                    width: $content-size;
+                }
+            }
+        }
+
+        &_safe-paddings #{&}__item_picture #{&}__item__icon {
+            @each $amount, $screen-size, $content-size in $content-sizes {
+                @media only screen and (min-width: $screen-size) {
+                    height: calc(#{$content-size} - (((env(safe-area-inset-left)* 2) - 2rem)  / #{$amount}));
+                }
+            }
+        }
+
+        &:not(#{&}_safe-paddings) #{&}__item_picture #{&}__item__icon {
+            @each $amount, $screen-size, $content-size in $content-sizes {
+                @media only screen and (min-width: $screen-size) {
+                    height: $content-size;
+                }
+            }
+        }
 
         &__content {
             width: 100%;
             flex: 1 1 auto;
             display: block;
 
-            @include media-breakpoint-up(md) {
+            @supports(padding: max(0px)) {
+                padding-left: max(0px, calc(env(safe-area-inset-left) - 1rem));
+                padding-right: max(0px, calc(env(safe-area-inset-right) - 1rem));
+            }
+
+            @include media-breakpoint-up(lg) {
                 height: 0;
             }
         }
@@ -223,30 +314,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             flex: 0 0 auto;
             display: flex;
 
-            $content-sizes:
-                375px  5.7291666667rem,
-                414px  6.1666666667rem,
-                438px  6.6666666667rem,
-                504px  8.0416666667rem,
-                507px  5.546875rem,
-                551px  6.234375rem,
-                568px  6.5rem,
-                639px  7.609375rem,
-                667px  6.0125rem,
-                678px  6.15rem,
-                694px  6.35rem,
-                736px  5.375rem,
-                768px  7.375rem,
-                800px  8.0416666667rem,
-                834px  8.75rem,
-                981px  8.328125rem,
-                992px  8.5rem,
-                1024px 8.375rem,
-                1112px 7.375rem,
-                1280px 7.5416666667rem,
-                1366px 8.4375rem,
-                1440px 9.2083333333rem;
-
             &__content {
                 display: block;
                 margin: 0.5rem;
@@ -263,12 +330,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                     padding: 0.5rem;
                 }
 
-                @each $screen-size, $content-size in $content-sizes {
-                    @media only screen and (min-width: $screen-size) {
-                        width: $content-size;
-                    }
-                }
-
                 &:hover {
                     border-color: $gray-400;
                     box-shadow: $box-shadow-sm;
@@ -279,7 +340,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 padding-top: 0.5rem;
                 text-align: center;
 
-                @include media-breakpoint-down(sm) {
+                @include media-breakpoint-down(md) {
                     font-size: 0.8rem;
                 }
             }
@@ -298,7 +359,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 background-size: auto 200%;
                 background-position: center 0;
 
-                @include media-breakpoint-down(sm) {
+                @include media-breakpoint-down(md) {
                     height: 3rem;
                 }
             }
@@ -309,14 +370,8 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 background-image: url(../../../images/image.svg);
                 background-size: auto 3rem;
 
-                @include media-breakpoint-up(md) {
+                @include media-breakpoint-up(lg) {
                     background-size: auto 4rem;
-                }
-
-                @each $screen-size, $content-size in $content-sizes {
-                    @media only screen and (min-width: $screen-size) {
-                        height: $content-size;
-                    }
                 }
             }
 

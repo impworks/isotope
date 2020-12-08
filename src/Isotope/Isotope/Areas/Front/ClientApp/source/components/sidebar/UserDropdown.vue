@@ -103,7 +103,7 @@ export default class UserDropdown extends Vue {
             position: absolute;
             z-index: $zindex-dropdown;
 
-            @include media-breakpoint-down(sm) {
+            @include media-breakpoint-down(md) {
                 right: 0;
             }
 

@@ -36,7 +36,7 @@ export default class MediaContent extends Vue {
 
     mounted () {
         this.conutMaxHeight();
-        this.isMobile = BreakpointHelper.down(Breakpoints.md);
+        this.isMobile = BreakpointHelper.down(Breakpoints.lg);
         window.addEventListener("resize", this.resizeHandler);
     }
 
@@ -56,7 +56,7 @@ export default class MediaContent extends Vue {
     @Bind()
     resizeHandler() {
         this.conutMaxHeight();
-        this.isMobile = BreakpointHelper.down(Breakpoints.md);
+        this.isMobile = BreakpointHelper.down(Breakpoints.lg);
     }
 
     conutMaxHeight () {
@@ -185,11 +185,16 @@ interface ICachedMedia extends IMedia {
         justify-content: center;
         will-change: contents;
 
-        @include media-breakpoint-down(sm) {
+        @include media-breakpoint-down(md) {
             padding: 0.5rem;
+
+            @supports(padding: max(0px)) {
+                padding-left: max(0.5rem, env(safe-area-inset-left));
+                padding-right: max(0.5rem, env(safe-area-inset-right));
+            }
         }
 
-        @include media-breakpoint-up(md) {
+        @include media-breakpoint-up(lg) {
             padding: 1rem;
         }
 
@@ -210,19 +215,19 @@ interface ICachedMedia extends IMedia {
             z-index: $zindex-modal;
             border-radius: $border-radius;
 
-            @include media-breakpoint-down(sm) {
+            @include media-breakpoint-down(md) {
                 padding: 0.5rem;
                 box-shadow: $box-shadow;
             }
 
-            @include media-breakpoint-up(md) {
+            @include media-breakpoint-up(lg) {
                 padding: 1rem;
                 box-shadow: $box-shadow-lg;
             }
 
             &:hover .media-content__overlay {
 
-                @include media-breakpoint-up(md) {
+                @include media-breakpoint-up(lg) {
                     opacity: 1;
                 }
             }
@@ -235,7 +240,7 @@ interface ICachedMedia extends IMedia {
             background-repeat: no-repeat;
             background-image: url(../../../images/image.svg);
             
-            @include media-breakpoint-down(sm) {
+            @include media-breakpoint-down(md) {
                 $min-size: 6rem;
 
                 min-height: $min-size;
@@ -243,7 +248,7 @@ interface ICachedMedia extends IMedia {
                 background-size: auto 3rem;
             }
 
-            @include media-breakpoint-up(md) {
+            @include media-breakpoint-up(lg) {
                 $min-size: 8rem;
 
                 min-height: $min-size;
@@ -277,7 +282,7 @@ interface ICachedMedia extends IMedia {
             background: none;
             position: absolute;
 
-            @include media-breakpoint-down(sm) {
+            @include media-breakpoint-down(md) {
                 display: none;
             }
 
@@ -316,7 +321,7 @@ interface ICachedMedia extends IMedia {
         &__overlay {
             @include position-absolute();
 
-            @include media-breakpoint-up(md) {
+            @include media-breakpoint-up(lg) {
                 opacity: 0;
                 transition: opacity 300ms linear;
             }
@@ -327,7 +332,7 @@ interface ICachedMedia extends IMedia {
 
             @include position-absolute();
 
-            @include media-breakpoint-down(sm) {
+            @include media-breakpoint-down(md) {
                 display: none;
             }
         }

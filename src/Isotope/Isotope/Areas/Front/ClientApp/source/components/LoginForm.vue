@@ -57,6 +57,7 @@ export default class LoginForm extends Mixins(HasAsyncState()) {
                         type="text" 
                         class="form-control" 
                         placeholder="Username" 
+                        autocapitalize="off"
                         v-model="username" 
                         :disabled="asyncState.isLoading"
                         v-autofocus

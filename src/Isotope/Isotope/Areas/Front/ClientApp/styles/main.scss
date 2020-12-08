@@ -15,7 +15,7 @@ html, body {
     font-family: "Rubik", sans-serif;
     background: $gray-200;
 
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
         background: $gray-100;
     }
 }
@@ -46,13 +46,13 @@ html, body {
 }
 
 .hide-mobile {
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
         display: none !important;
     }
 }
 
 .hide-desktop {
-    @include media-breakpoint-up(md) {
+    @include media-breakpoint-up(lg) {
         display: none !important;
     }
 }

@@ -122,7 +122,7 @@ export default class OverlayTag extends Vue {
             border-color 200ms linear,
             opacity 200ms linear;
 
-        @include media-breakpoint-down(sm) {
+        @include media-breakpoint-down(md) {
             visibility: hidden;
         }
 
@@ -140,7 +140,7 @@ export default class OverlayTag extends Vue {
         }
 
         &_tapped .popover {
-            @include media-breakpoint-down(sm) {
+            @include media-breakpoint-down(md) {
                 opacity: 1 !important;
                 border-color: rgba($white, 0.5);
             }
@@ -156,12 +156,12 @@ export default class OverlayTag extends Vue {
         }
         
         &:hover {
-            @include media-breakpoint-up(md) {
+            @include media-breakpoint-up(lg) {
                 border-color: rgba($white, 0.5);
             }
 
             .popover {
-                @include media-breakpoint-up(md) {
+                @include media-breakpoint-up(lg) {
                     opacity: 1;
                 }
             }

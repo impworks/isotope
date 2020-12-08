@@ -157,7 +157,7 @@ export default class MediaDetails extends Vue {
         bottom: 0;
         color: $light;
 
-        @include media-breakpoint-down(sm) {
+        @include media-breakpoint-down(md) {
             opacity: 0;
             width: 100%;
             position: fixed;
@@ -166,7 +166,7 @@ export default class MediaDetails extends Vue {
             transition: opacity 200ms linear;
         }
 
-        @include media-breakpoint-up(md) {
+        @include media-breakpoint-up(lg) {
             z-index: 2;
             min-width: 30%;
             min-height: 2.5rem;
@@ -181,7 +181,7 @@ export default class MediaDetails extends Vue {
         &_open {
             z-index: $zindex-tooltip;
 
-            @include media-breakpoint-down(sm) {
+            @include media-breakpoint-down(md) {
                 opacity: 1;
                 visibility: visible;
             }
@@ -201,7 +201,7 @@ export default class MediaDetails extends Vue {
 
         &_mobile {
 
-            @include media-breakpoint-up(md) {
+            @include media-breakpoint-up(lg) {
                 display: none;
             }
 
@@ -222,7 +222,7 @@ export default class MediaDetails extends Vue {
             background-color: $background;
             transition: opacity 200ms linear;
 
-            @include media-breakpoint-down(sm) {
+            @include media-breakpoint-down(md) {
                 display: none;
             }
 
@@ -248,7 +248,12 @@ export default class MediaDetails extends Vue {
             padding: 1rem;
             background-color: $background;
 
-            @include media-breakpoint-up(md) {
+            @supports(padding: max(0px)) {
+                padding-left: max(1rem, env(safe-area-inset-left));
+                padding-right: max(1rem, env(safe-area-inset-right));
+            }
+
+            @include media-breakpoint-up(lg) {
                 border-radius: 0 $border-radius 0 0;
             }
         }

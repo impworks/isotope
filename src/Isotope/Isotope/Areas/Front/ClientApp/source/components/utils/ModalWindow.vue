@@ -10,10 +10,25 @@ export default class ModalWindow extends Vue {
 
     mounted() {
         this.isVisible = this.model;
+        window.addEventListener('orientationchange', this.orientationHandler);
+    }
+
+    beforeDestroy() {
+        window.removeEventListener('orientationchange', this.orientationHandler);
     }
 
     close() {
         this.isVisible = false;
+    }
+
+    orientationHandler() {
+        document.documentElement.style.height = `initial`;
+        setTimeout(() => {
+            document.documentElement.style.height = `100%`;
+            setTimeout(() => {
+                window.scrollTo(0, 1);
+            }, 200);
+        }, 200);
     }
 
     @Watch('model')
@@ -79,18 +94,18 @@ export default class ModalWindow extends Vue {
         display: flex;
         z-index: $zindex-modal-backdrop;
 
-        @include media-breakpoint-down(sm) {
+        @include media-breakpoint-down(md) {
             justify-content: flex-end;
         }
 
-        @include media-breakpoint-up(md) {
+        @include media-breakpoint-up(lg) {
             padding: 1rem;
             align-items: center;
             justify-content: center;
         }
 
         &_mobile-only {
-            @include media-breakpoint-up(md) {
+            @include media-breakpoint-up(lg) {
                 display: none;
             }
         }
@@ -117,11 +132,11 @@ export default class ModalWindow extends Vue {
             
                 .modal-window {
                     
-                    @include media-breakpoint-down(sm) {
+                    @include media-breakpoint-down(md) {
                         transition: transform 400ms cubic-bezier(.645,.045,.355,1);
                     }
 
-                    @include media-breakpoint-up(md) {
+                    @include media-breakpoint-up(lg) {
                         transition: opacity 200ms cubic-bezier(.645,.045,.355,1);
                     }
                 }
@@ -135,11 +150,11 @@ export default class ModalWindow extends Vue {
 
                 .modal-window {
 
-                    @include media-breakpoint-down(sm) {
+                    @include media-breakpoint-down(md) {
                         transform: translateX(100%);
                     }
 
-                    @include media-breakpoint-up(md) {
+                    @include media-breakpoint-up(lg) {
                         opacity: 0;
                     }
                 }
@@ -162,13 +177,13 @@ export default class ModalWindow extends Vue {
             width: 90%;
         }
 
-        @include media-breakpoint-down(sm) {
+        @include media-breakpoint-down(md) {
             height: 100%;
             width: 18.5rem;
             box-shadow: $box-shadow;
         }
 
-        @include media-breakpoint-up(md) {
+        @include media-breakpoint-up(lg) {
             width: 33rem;
             max-height: 100%;
             box-shadow: $box-shadow-lg;
@@ -193,7 +208,11 @@ export default class ModalWindow extends Vue {
             }
 
             &__actions {
-                
+
+                @supports(padding: max(0px)) {
+                    padding-right: max(0px, calc(env(safe-area-inset-right) - 1rem));
+                }
+
                 .btn-header:last-child {
                     padding-right: 1rem;
                 }
@@ -204,6 +223,10 @@ export default class ModalWindow extends Vue {
             display: flex;
             flex: 1 1 auto;
             overflow: hidden;
+
+            @supports(padding: max(0px)) {
+                padding-right: max(0px, calc(env(safe-area-inset-right) - 1rem));
+            }
         }
 
         &__scrollable {
@@ -215,10 +238,15 @@ export default class ModalWindow extends Vue {
             flex: 0 0 auto;
             padding: 1rem;
             border-top: 1px solid $gray-300;
+
+            @supports(padding: max(0px)) {
+                padding-right: max(1rem, calc(env(safe-area-inset-right)));
+            }
         }
     }
 
     .modal-window-open {
+        touch-action: none;
         overflow: hidden;
     }
 </style>
