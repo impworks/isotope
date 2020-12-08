@@ -109,7 +109,9 @@ interface ICachedMedia extends IMedia {
             <div 
                 ref="card"
                 class="media-content__card" 
-                :class="{ 'media-content__card_visible': !hover }"
+                @mouseover="hover = true"
+                @mouseleave="hover = false"
+                :class="{ 'media-content__card_visible': hover }"
             >
                 <div class="media-content__wrapper">
                     <template v-if="!elem.isLoading">
