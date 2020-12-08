@@ -209,12 +209,12 @@ export default class ModalWindow extends Vue {
 
             &__actions {
 
-                @supports(padding: max(0px)) {
-                    padding-right: max(0px, calc(env(safe-area-inset-right) - 1rem));
-                }
-
                 .btn-header:last-child {
                     padding-right: 1rem;
+
+                    @supports(padding: max(0px)) {
+                        padding-right: max(1rem, env(safe-area-inset-right));
+                    }
                 }
             }
         }
@@ -223,15 +223,15 @@ export default class ModalWindow extends Vue {
             display: flex;
             flex: 1 1 auto;
             overflow: hidden;
-
-            @supports(padding: max(0px)) {
-                padding-right: max(0px, calc(env(safe-area-inset-right) - 1rem));
-            }
         }
 
         &__scrollable {
             padding: 1rem;
             flex: 1 1 auto;
+
+            @supports(margin: max(0px)) {
+                margin-right: max(1rem, calc(env(safe-area-inset-right) - 1rem));
+            }
         }
 
         &__footer {

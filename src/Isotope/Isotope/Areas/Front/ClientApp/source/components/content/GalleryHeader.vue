@@ -182,11 +182,6 @@ interface Crumb {
         align-items: center;
         background: $gray-200;
 
-        @supports(padding: max(0px)) {
-            padding-left: max(0px, calc(env(safe-area-inset-left)) - 1rem);
-            padding-right: max(0px, calc(env(safe-area-inset-right)) - 1rem);
-        }
-
         @include media-breakpoint-up(lg) {
             display: none;
         }
@@ -222,10 +217,18 @@ interface Crumb {
 
             &:first-child .btn-header {
                 padding-left: 1rem;
+
+                @supports(padding: max(0px)) {
+                    padding-left: max(1rem, env(safe-area-inset-left));
+                }
             }
 
             &:last-child .btn-header {
                 padding-right: 1rem;
+
+                @supports(padding: max(0px)) {
+                    padding-right: max(1rem, env(safe-area-inset-right));
+                }
             }
         }
     }

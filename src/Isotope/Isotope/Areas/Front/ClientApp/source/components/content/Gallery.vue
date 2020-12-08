@@ -265,11 +265,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             flex: 1 1 auto;
             display: block;
 
-            @supports(padding: max(0px)) {
-                padding-left: max(0px, calc(env(safe-area-inset-left) - 1rem));
-                padding-right: max(0px, calc(env(safe-area-inset-right) - 1rem));
-            }
-
             @include media-breakpoint-up(lg) {
                 height: 0;
             }
@@ -279,6 +274,11 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             font-size: 0;
             line-height: 1;
             padding: 0.5rem 1rem;
+
+            @supports(padding: max(0px)) {
+                padding-left: max(1rem, env(safe-area-inset-left));
+                padding-right: max(1rem, env(safe-area-inset-right));
+            }
 
             &__item {
                 color: $white;
@@ -303,6 +303,11 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
 
         &__grid {
             padding: 0.5rem 0.5rem 1.5rem;
+
+            @supports(padding: max(0px)) {
+                padding-left: max(0.5rem, calc(env(safe-area-inset-left) - 0.5rem));
+                padding-right: max(0.5rem, calc(env(safe-area-inset-right) - 0.5rem));
+            }
 
             &__row {
                 display: flex;

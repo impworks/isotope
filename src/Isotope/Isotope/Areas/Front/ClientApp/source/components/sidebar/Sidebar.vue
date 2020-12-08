@@ -161,7 +161,6 @@ export default class Sidebar extends Mixins(HasLifetime) {
 
             @supports(padding: max(0px)) {
                 padding-left: max(1rem, env(safe-area-inset-left));
-                padding-right: max(0px, calc(env(safe-area-inset-right)) - 1rem);
             }
 
             &__actions {
@@ -177,6 +176,10 @@ export default class Sidebar extends Mixins(HasLifetime) {
 
         &__filter-button.btn-header {
             padding-right: 1rem;
+
+            @supports(padding: max(0px)) {
+                padding-right: max(1rem, env(safe-area-inset-right));
+            }
 
             @include media-breakpoint-up(lg) {
                 display: none;
