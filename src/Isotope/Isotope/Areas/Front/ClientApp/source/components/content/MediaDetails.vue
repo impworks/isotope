@@ -293,7 +293,10 @@ export default class MediaDetails extends Vue {
         
         &__original {
             font-size: 0;
-            margin-top: 0.5rem;
+            
+            &:not(:first-child) {
+                margin-top: 0.5rem;
+            }
             
             &__button {
                 font-size: 1rem;
