@@ -21,6 +21,7 @@ export default class MediaContent extends Vue {
     @Prop({ required: false }) isMobileOverlayVisible: boolean;
 
     maxHeight: number = 0;
+    hover: boolean = false;
     isMobile: boolean = false;
     isOverlayVisible: boolean = false;
     tappedTag: TagBindingWithLocation = null;
@@ -108,6 +109,7 @@ interface ICachedMedia extends IMedia {
             <div 
                 ref="card"
                 class="media-content__card" 
+                :class="{ 'media-content__card_visible': !hover }"
             >
                 <div class="media-content__wrapper">
                     <template v-if="!elem.isLoading">
@@ -225,11 +227,8 @@ interface ICachedMedia extends IMedia {
                 box-shadow: $box-shadow-lg;
             }
 
-            &:hover .media-content__overlay {
-
-                @include media-breakpoint-up(lg) {
-                    opacity: 1;
-                }
+            &_visible .media-content__overlay {
+                opacity: 1;
             }
         }
 

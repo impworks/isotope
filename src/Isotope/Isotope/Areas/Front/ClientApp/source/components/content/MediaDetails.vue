@@ -17,38 +17,19 @@ export default class MediaDetails extends Vue {
     
     @Dep('$filter') $filter: FilterStateService;
     
-    height: string = 'auto';
+    height: string = '0px';
+    isAnimated: boolean = false;
     isOpen: boolean = false;
     isTransitioning: boolean = false;
     info: GalleryInfo = null;
 
     $refs: {
-        button: HTMLElement,
+        wrapper: HTMLElement,
         content: HTMLElement
     }
     
     get canFilter() {
         return !this.$filter.shareId;
-    }
-
-    mounted () {
-        if (!this.isMobile) {
-            this.countHeight();
-            window.addEventListener("resize", this.resizeHandler);
-        }
-    }
-
-    beforeDestroy() {
-        if (!this.isMobile) {
-            window.removeEventListener('resize', this.resizeHandler);
-        }
-    }
-
-    countHeight() {
-        let height = this.$refs.button.clientHeight;
-        if(this.isOpen)
-            height += this.$refs.content.clientHeight;
-        this.height = height + 'px';
     }
 
     filterByTag(binding: TagBinding) {
@@ -68,16 +49,36 @@ export default class MediaDetails extends Vue {
         );
     }
 
-    @Debounce(50)
-    @Bind()
-    resizeHandler() {
-        this.countHeight();
+    @Watch('isOpen')
+    onOpenChanged(value: boolean) {
+        if (this.isMobile) {
+            return;
+        }
+
+        const wrapper = this.$refs.wrapper;
+        const content = this.$refs.content;
+
+        if (value) {
+            this.isAnimated = true;
+            this.height = content.clientHeight + 'px';
+        } else {
+            this.height = content.clientHeight + 'px';
+            
+            setTimeout(() => {
+                this.isAnimated = true;
+                this.height = '0px';
+            }, 1);
+        }
     }
 
-    @Watch('isOpen')
-    onOpenChanged() {
-        if (!this.isMobile) {
-            this.countHeight();
+    @Watch('isTransitioning')
+    onTransitioningChanged(value: boolean) {
+        if(!value && !this.isMobile) {
+            this.isAnimated = false;
+
+            if(this.isOpen) {
+                this.height = 'auto';
+            }
         }
     }
 }
@@ -87,14 +88,13 @@ export default class MediaDetails extends Vue {
     <div 
         v-if="media"
         class="media-details"
-        :style="{height: height}" 
-        @transitionstart.self="isTransitioning = true" 
-        @transitionend.self="isTransitioning = false"
         :class="{ 
             'media-details_open': isOpen || isOpenOnMobile, 
-            'media-details_transitioning': isTransitioning,
-            'media-details_mobile': isMobile
+            'media-details_mobile': isMobile,
+            'media-details_transitioning': isTransitioning
         }"
+        @transitionstart.self="isTransitioning = true" 
+        @transitionend.self="isTransitioning = false"
     >
         <div class="media-details__header">
             <button 
@@ -111,36 +111,44 @@ export default class MediaDetails extends Vue {
             </button>
         </div>
         <div 
-            ref="content"
-            class="media-details__content"
-        >
-            <div v-if="media.date">{{media.date}}</div>
-            <div v-if="media.description">{{media.description}}</div>
+            ref="wrapper"
+            :style="{height: isMobile ? null : height}" 
+            @transitionstart.self="isTransitioning = true" 
+            @transitionend.self="isTransitioning = false"
+            :class="{ 'media-details__wrapper_animated': isAnimated }"
+        >   
             <div 
-                class="media-details__tags"
-                v-if="media.extraTags.length"
+                ref="content" 
+                class="media-details__content"
             >
-                <template v-for="t in media.extraTags">
-                    <a 
-                        class="media-details__tags__item clickable" 
-                        v-if="canFilter" 
-                        :key="t.tag.id"
-                        @click.prevent="filterByTag(t)"
-                    >
-                        {{t.tag.caption}}
+                <div v-if="media.date">{{media.date}}</div>
+                <div v-if="media.description">{{media.description}}</div>
+                <div 
+                    class="media-details__tags"
+                    v-if="media.extraTags.length"
+                >
+                    <template v-for="t in media.extraTags">
+                        <a 
+                            class="media-details__tags__item clickable" 
+                            v-if="canFilter" 
+                            :key="t.tag.id"
+                            @click.prevent="filterByTag(t)"
+                        >
+                            {{t.tag.caption}}
+                        </a>
+                        <span v-else
+                            class="media-details__tags__item"
+                            :key="t.tag.id">
+                            {{t.tag.caption}}
+                        </span>
+                    </template>
+                </div>
+                <div class="media-details__original">
+                    <a class="media-details__original__button"
+                    :href="media.originalPath" target="_blank">
+                    <span class="fa fa-fw fa-download"></span> View original
                     </a>
-                    <span v-else
-                          class="media-details__tags__item"
-                          :key="t.tag.id">
-                        {{t.tag.caption}}
-                    </span>
-                </template>
-            </div>
-            <div class="media-details__original">
-                <a class="media-details__original__button"
-                   :href="media.originalPath" target="_blank">
-                   <span class="fa fa-fw fa-download"></span> View original
-                </a>
+                </div>
             </div>
         </div>
     </div>
@@ -173,7 +181,6 @@ export default class MediaDetails extends Vue {
             max-width: 100%;
             overflow: hidden;
             position: absolute;
-            transition: height 300ms cubic-bezier(.645,.045,.355,1);
         }
 
         $background: rgba(0,0,0, 0.7);
@@ -244,6 +251,12 @@ export default class MediaDetails extends Vue {
             }
         }
 
+        &__wrapper {
+            &_animated {
+                transition: height 300ms cubic-bezier(.645,.045,.355,1);
+            }
+        }
+
         &__content {
             padding: 1rem;
             background-color: $background;
@@ -285,10 +298,10 @@ export default class MediaDetails extends Vue {
             &__button {
                 font-size: 1rem;
                 color: $light;
+                text-decoration: underline;
 
                 &:hover {
                     color: $white;
-                    text-decoration: underline;
                 }
             }
         }
