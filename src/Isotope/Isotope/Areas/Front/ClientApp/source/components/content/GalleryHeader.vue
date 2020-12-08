@@ -104,9 +104,7 @@ interface Crumb {
             </div>
         </div>
         <div class="mobile-navigation">
-            <div 
-                class="mobile-navigation__actions"
-            >
+            <div class="mobile-navigation__actions">
                 <button 
                     class="btn-header"
                     v-if="crumbs.length"
@@ -181,6 +179,7 @@ interface Crumb {
         justify-content: space-between;
         align-items: center;
         background: $gray-200;
+        min-height: 3.125rem;
 
         @include media-breakpoint-up(lg) {
             display: none;
