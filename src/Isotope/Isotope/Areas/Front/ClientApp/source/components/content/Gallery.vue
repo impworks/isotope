@@ -144,10 +144,10 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                             >
                                 <div 
                                     class="folder-large"
-                                    :class="{'folder-large_no-media': f.mediaCount === 0}"
+                                    :class="{'folder-large_no-thumbnail': !f.thumbnailPath }"
                                 >
                                     <div 
-                                        v-if="f.mediaCount > 0"
+                                        v-if="f.thumbnailPath"
                                         class="folder-large__thumbnail" 
                                     >
                                         <div class="folder-large__thumbnail__icon">
@@ -451,7 +451,7 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             background-position: center bottom;
         }
 
-        &_no-media:after {
+        &_no-thumbnail:after {
             background-position: center;
         }
 
