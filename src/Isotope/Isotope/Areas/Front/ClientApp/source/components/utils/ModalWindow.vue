@@ -229,8 +229,10 @@ export default class ModalWindow extends Vue {
             padding: 1rem;
             flex: 1 1 auto;
 
-            @supports(margin: max(0px)) {
-                margin-right: max(1rem, calc(env(safe-area-inset-right) - 1rem));
+            @include media-breakpoint-down(md) {
+                @supports(margin: max(0px)) {
+                    margin-right: max(1px, calc(env(safe-area-inset-right) - 1rem));
+                }
             }
         }
 
