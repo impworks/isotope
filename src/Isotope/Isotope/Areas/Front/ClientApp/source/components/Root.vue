@@ -58,12 +58,12 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
                 class="root__centered-content" 
                 v-if="loaded && (error || authRequired)"
             >
-                <div 
-                    class="alert alert-danger"
-                    v-if="error" 
-                >
-                    <strong>Error</strong><br />
-                    <span>{{error}}</span>
+                <div v-if="error" class="gallery__error">
+                    <div class="gallery__error__content">
+                        <div class="gallery__error__image"></div>
+                        <h3>Error</h3>
+                        <p>{{error}}</p>
+                    </div>
                 </div>
                 <LoginForm v-if="!error && authRequired" />
             </div>

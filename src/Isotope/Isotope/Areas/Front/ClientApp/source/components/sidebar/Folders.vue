@@ -57,7 +57,13 @@ export default class Folders extends Mixins(HasAsyncState(), HasLifetime) {
 <template>
     <loading :is-loading="asyncState.isLoading" :is-full-page="true">
         <simplebar class="folder-tree" ref="scroll">
-                <FolderTreeItem v-for="f in folders" :folder="f" :key="f.path" :depth="0" :current-path="currentPath" />
+            <div 
+                class="alert alert-warning m-3"
+                v-if="folders && folders.length === 0" 
+            >
+                <span>There are no folders yet.</span>
+            </div>
+            <FolderTreeItem v-for="f in folders" :folder="f" :key="f.path" :depth="0" :current-path="currentPath" />
         </simplebar>
     </loading>
 </template>

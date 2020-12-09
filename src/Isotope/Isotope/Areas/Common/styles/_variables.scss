@@ -11,12 +11,11 @@ $gray-900: #273444;
 $black:    #000;
 
 $primary:       #00aeee;
-$secondary:     #e4e6ef;
+$secondary:     $gray-200;
 $success:       #2cca8c;
-$info:          #8950fc;
-$warning:       #ffbe3e;
+$warning:       #feb96b;
 $danger:        #f03e3e;
-$light:         #edf2f9;
+$light:         $gray-200;
 $dark:          $gray-900;
 
 $box-shadow-sm: 0 0.1rem 1rem 0.25rem rgba(0, 0, 0, 0.05);
@@ -32,11 +31,8 @@ $card-border-color: $gray-300;
 $card-spacer-y:     1rem;
 $card-spacer-x:     1rem;
 
-$alert-padding-y:     0.4rem;
-$alert-padding-x:     0.8rem;
-$alert-bg-level:      0;
-$alert-border-level:  0;
-$alert-color-level:   -10;
+$alert-padding-y:     0.5rem;
+$alert-padding-x:     1rem;
 
 $input-btn-padding-y: 0.4rem;
 $input-btn-padding-x: 0.8rem;

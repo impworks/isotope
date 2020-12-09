@@ -186,17 +186,20 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 </div>
             </simplebar>
         </loading>
-        <div v-if="!asyncState.isLoading && isEmpty" class="gallery__error">
+        <div v-if="!asyncState.isLoading && isEmpty && !error" class="gallery__error">
             <div class="gallery__error__content">
-                <div class="gallery__error__image"></div>
+                <div class="gallery__error__image gallery__error__image_cat"></div>
                 <h3>Oops…</h3>
                 <p v-if="isFilterActive">No matching media found.</p>
                 <p v-else>This folder is empty.</p>
             </div>
         </div>
-        <div v-if="!asyncState.isLoading && error" class="alert alert-danger ml-5 mr-5 mt-5">
-            <strong>Error</strong><br/>
-            {{error}}
+        <div v-if="!asyncState.isLoading && error" class="gallery__error">
+            <div class="gallery__error__content">
+                <div class="gallery__error__image"></div>
+                <h3>Error</h3>
+                <p>{{error}}</p>
+            </div>
         </div>
         <MediaViewer :index-feed="indexFeed" :source="contents.media" v-if="contents && contents.media && contents.media.length"></MediaViewer>
     </div>
@@ -409,12 +412,17 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
 
             &__image {
                 display: block;
-                height: 10rem;
-                background-image: url(../../../images/cat.svg);
+                height: 7rem;
                 background-repeat: no-repeat;
                 background-position: center;
                 background-size: auto 100%;
                 margin-bottom: 1rem;
+                background-image: url(../../../images/error.svg);
+
+                &_cat {
+                    height: 10rem;
+                    background-image: url(../../../images/cat.svg);
+                }
             }
         }
     }
@@ -438,12 +446,12 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             position: absolute;
             content: "";
             background-image: url(../../../images/folder-large.svg);
-            background-size: auto 300%;
+            background-size: auto 200%;
         }
 
         &:before {
             z-index: 1;
-            background-position: center 0;
+            background-position: center top;
         }
 
         &:after {
@@ -451,16 +459,19 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             background-position: center bottom;
         }
 
-        &_no-thumbnail:after {
-            background-position: center;
+        &_no-thumbnail {
+            &:before,
+            &:after {
+                background-image: url(../../../images/folder-large_empty.svg);
+            }
         }
 
         &__thumbnail {
             top: 9%;
             left: 10%;
             z-index: 2;
-            width: 82%;
-            height: 82%;
+            width: 80%;
+            height: 80%;
             padding: 0.2rem;
             position: absolute;
             background: $white;
