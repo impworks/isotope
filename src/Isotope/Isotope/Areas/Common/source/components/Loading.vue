@@ -11,7 +11,7 @@ export default class Loading extends Vue {
 
 <template>
     <fragment>
-        <div v-if="isLoading && isFullPage" class="d-flex align-items-center justify-content-center flex-grow-1 overflow-hidden">
+        <div v-if="isLoading && isFullPage" class="d-flex align-items-center justify-content-center flex-grow-1 overflow-hidden h-100">
             <div class="spinner-border spinner-large"></div>
         </div>
         <div v-if="isLoading && !isFullPage">
