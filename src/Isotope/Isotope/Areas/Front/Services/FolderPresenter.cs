@@ -139,6 +139,7 @@ namespace Isotope.Areas.Front.Services
             var subfolders = canShowSubfolders
                 ? await _db.Folders
                            .AsNoTracking()
+                           .Include(x => x.Thumbnail)
                            .Where(x => x.Path.StartsWith(folder.Path) && x.Depth == folder.Depth + 1)
                            .OrderBy(x => x.Caption)
                            .ToArrayAsync()
