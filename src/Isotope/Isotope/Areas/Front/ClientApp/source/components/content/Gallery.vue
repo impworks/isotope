@@ -142,7 +142,22 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                                 class="gallery__item__content clickable"
                                 @click.prevent="showFolder(f)"
                             >
-                                <div class="gallery__item__icon"></div>
+                                <div 
+                                    class="folder-large"
+                                    :class="{'folder-large_no-media': f.mediaCount === 0}"
+                                >
+                                    <div 
+                                        v-if="f.mediaCount > 0"
+                                        class="folder-large__thumbnail" 
+                                    >
+                                        <div class="folder-large__thumbnail__icon">
+                                            <div 
+                                                class="folder-large__thumbnail__picture" 
+                                                :style="{backgroundImage: getThumbnailPath(f)}"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="gallery__item__caption">
                                     {{f.caption}}
                                 </div>
@@ -342,7 +357,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
             }
 
             &__caption {
-                padding-top: 0.5rem;
                 text-align: center;
 
                 @include media-breakpoint-down(md) {
@@ -356,17 +370,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 background-repeat: no-repeat;
                 background-size: auto 100%;
                 background-position: center;
-            }
-
-            &_folder &__icon {
-                height: 4rem;
-                background-image: url(../../../images/folder.svg);
-                background-size: auto 200%;
-                background-position: center 0;
-
-                @include media-breakpoint-down(md) {
-                    height: 3rem;
-                }
             }
 
             &_picture &__icon {
@@ -412,6 +415,74 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 background-position: center;
                 background-size: auto 100%;
                 margin-bottom: 1rem;
+            }
+        }
+    }
+
+    .folder-large {
+        width: 5.6rem;
+        height: 5.6rem;
+        margin: 0.5rem auto;
+        position: relative;
+
+        @include media-breakpoint-down(md) {
+            width: 4.6rem;
+            height: 4.6rem;
+        }
+
+        &:before,
+        &:after {
+            width: 100%;
+            height: 100%;
+            display: block;
+            position: absolute;
+            content: "";
+            background-image: url(../../../images/folder-large.svg);
+            background-size: auto 300%;
+        }
+
+        &:before {
+            z-index: 1;
+            background-position: center 0;
+        }
+
+        &:after {
+            z-index: 3;
+            background-position: center bottom;
+        }
+
+        &_no-media:after {
+            background-position: center;
+        }
+
+        &__thumbnail {
+            top: 9%;
+            left: 10%;
+            z-index: 2;
+            width: 82%;
+            height: 82%;
+            padding: 0.2rem;
+            position: absolute;
+            background: $white;
+            border-radius: 0.2rem;
+            box-sizing: border-box;
+            transform: skew(0, 8deg);
+            border: 1px solid $gray-300;
+
+            &__icon {
+                width: 100%;
+                height: 100%;
+                background-image: url(../../../images/image.svg);
+                background-size: auto 50%;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-color: $gray-200;
+            }
+
+            &__picture {
+                width: 100%;
+                height: 100%;
+                background-size: 100% 100%;
             }
         }
     }
