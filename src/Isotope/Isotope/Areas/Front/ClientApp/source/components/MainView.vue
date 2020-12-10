@@ -92,7 +92,6 @@ export default class MainView extends Mixins(HasAsyncState()) {
         &__header {
             flex: 0 0 auto;
             display: flex;
-            border-bottom: 1px solid $gray-300;
 
             @include media-breakpoint-down(md) {
                 flex-direction: column;
@@ -100,6 +99,7 @@ export default class MainView extends Mixins(HasAsyncState()) {
 
             @include media-breakpoint-up(lg) {
                 flex-direction: row;
+                border-bottom: 1px solid $gray-300;
             }
 
             .gallery-header {

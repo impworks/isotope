@@ -128,6 +128,7 @@ export default class MainHeader extends Mixins(HasLifetime) {
             width: 100%;
             z-index: 10;
             position: fixed;
+            border-bottom: 1px solid $gray-300;
         }
         
         @include media-breakpoint-up(lg) {
