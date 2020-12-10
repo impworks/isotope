@@ -54,6 +54,8 @@ namespace Isotope.Code.Config
                     app.UseMiddleware<SimulatedLatencyMiddleware>(Configuration.Debug.Latency.Value);
             }
 
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             if (Configuration.WebServer.RequireHttps)
                 app.UseHttpsRedirection();
 

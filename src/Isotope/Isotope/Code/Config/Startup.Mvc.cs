@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Isotope.Code.Utils;
 using Isotope.Code.Utils.Date;
-using Isotope.Code.Utils.Exceptions;
 using Isotope.Code.Utils.Filters;
-using Isotope.Code.Utils.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -46,10 +40,7 @@ namespace Isotope.Code.Config
                 };
             });
 
-            services.AddMvc(x =>
-                    {
-                        x.Filters.Add(typeof(CommonExceptionFilterAttribute));
-                    })
+            services.AddMvc()
                     .AddNewtonsoftJson(opts =>
                     {
                         var convs = new List<JsonConverter>

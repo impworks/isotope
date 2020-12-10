@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Isotope.Code.Services;
 using Isotope.Code.Utils.Exceptions;
 using Isotope.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,10 +27,16 @@ namespace Isotope.Code.Utils.Filters
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(x => x.NormalizedUserName == userName);
             if (user == null)
-                throw new NotAllowedException("Unauthorized");
-            
-            if(!user.IsAdmin)
-                throw new NotAllowedException("Forbidden");
+            {
+                context.Result = new ObjectResult("Unauthorized") { StatusCode = 403 };
+                return;
+            }
+
+            if (!user.IsAdmin)
+            {
+                context.Result = new ObjectResult("Forbidden") { StatusCode = 403 };
+                return;
+            }
         }
     }
 }
