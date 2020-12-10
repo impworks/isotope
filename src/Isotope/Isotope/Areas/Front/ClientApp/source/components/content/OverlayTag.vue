@@ -154,7 +154,7 @@ export default class OverlayTag extends Vue {
                 outline: none;
             }
         }
-        
+
         &:hover {
             @include media-breakpoint-up(lg) {
                 border-color: rgba($white, 0.5);

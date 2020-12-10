@@ -286,7 +286,12 @@ export default class MediaDetails extends Vue {
                 &:hover {
                     color: $white;
                     text-decoration: none;
-                    background-color: darken($primary, 3%);
+                }
+
+                &:active,
+                .no-touch &:hover {
+                    text-decoration: underline;
+                    background-color: darken($primary, 4%);
                 }
             }
         }
@@ -304,6 +309,11 @@ export default class MediaDetails extends Vue {
                 text-decoration: underline;
 
                 &:hover {
+                    color: $light;
+                }
+                
+                &:active,
+                .no-touch &:hover {
                     color: $white;
                 }
             }

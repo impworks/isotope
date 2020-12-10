@@ -5,9 +5,9 @@
     background: none;
     color: $gray-700;
     padding: 0.75rem 0.5rem;
-    transition: color 150ms linear;
-    
-    &:hover {
+
+    &:active,
+    .no-touch &:hover {
         color: $primary;
     }
 
@@ -40,7 +40,6 @@
         line-height: 1;
         box-sizing: border-box;
         background-color: $gray-200;
-        transition: background 150ms linear;
 
         .icon,
         .avatar {
@@ -79,6 +78,73 @@
 
         .btn-header__content {
             background-color: lighten(saturate(adjust-hue($danger, 2), 7.28), 35.29);
+        }
+    }
+}
+
+.btn:not(:active) {
+    
+    &.btn-primary {
+
+        .touch &:hover {
+            border-color: $primary;
+            background-color: $primary;
+        }
+    }
+
+    &.btn-secondary {
+        
+        .touch &:hover {
+            border-color: $secondary;
+            background-color: $secondary;
+        }
+    }
+    
+    &.btn-success {
+        
+        .touch &:hover {
+            border-color: $success;
+            background-color: $success;
+        }
+    }
+
+    &.btn-danger {
+
+        .touch &:hover {
+            border-color: $danger;
+            background-color: $danger;
+        }
+    }
+
+    &.btn-warning {
+        
+        .touch &:hover {
+            border-color: $warning;
+            background-color: $warning;
+        }
+    }
+
+    &.btn-info {
+        
+        .touch &:hover {
+            border-color: $info;
+            background-color: $info;
+        }
+    }
+
+    &.btn-light {
+        
+        .touch &:hover {
+            border-color: $light;
+            background-color: $light;
+        }
+    }
+
+    &.btn-dark {
+        
+        .touch &:hover {
+            border-color: $dark;
+            background-color: $dark;
         }
     }
 }

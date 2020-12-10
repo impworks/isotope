@@ -66,9 +66,14 @@ export default class FolderTreeItem extends Vue {
     padding: 0.5em 1em;
     color: $gray-800;
 
-    &:hover:not(#{&}_active) {
+    &:hover {
         color: $gray-800;
         text-decoration: none;
+    }
+
+    &:active,
+    .no-touch &:hover:not(#{&}_active) {
+        color: $gray-800;
         background-color: $gray-200;
     }
 

@@ -6,6 +6,7 @@ import { HasLifetime } from "./mixins/HasLifetime";
 import { ApiService } from "../services/ApiService";
 import { FilterStateService } from "../services/FilterStateService";
 import { AuthService } from "../../../../Common/source/services/AuthService";
+import { DeviceHelper } from "../utils/DeviceHelper";
 
 import LoginForm from "./LoginForm.vue";
 
@@ -20,10 +21,14 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
     error: string = null;
     authRequired: boolean = true;
     loaded: boolean = false;
-    
+    isTouchDevice: boolean = false;
+
     async created() {
         this.$filter.updateFromRoute(this.$route);
         this.observe(this.$filter.onUrlChanged, x => this.$router.replace(x));
+
+        this.isTouchDevice = DeviceHelper.isTouch();
+        document.addEventListener("touchstart", function() {}, false); // enables :active pseudo for iOS Safari
         
         try {
             await this.showLoading(async () => {
@@ -53,7 +58,13 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
         :is-loading="asyncState.isLoading" 
         :is-full-page="true"
     >
-        <div class="root">
+        <div 
+            class="root"
+            :class="{
+                'touch': isTouchDevice,
+                'no-touch': !isTouchDevice
+            }"
+        >
             <div 
                 class="root__centered-content" 
                 v-if="loaded && (error || authRequired)"

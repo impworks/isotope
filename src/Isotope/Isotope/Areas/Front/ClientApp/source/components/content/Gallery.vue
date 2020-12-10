@@ -310,7 +310,13 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 &:hover {
                     color: $white;
                     text-decoration: none;
-                    background-color: darken($primary, 3%);
+                }
+
+                &:active,
+                .no-touch &:hover {
+                    color: $white;
+                    text-decoration: underline;
+                    background-color: darken($primary, 4%);
                 }
             }
 
@@ -354,8 +360,16 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                 }
 
                 &:hover {
+                    color: $gray-800;
+                    text-decoration: none;
+                }
+
+                &:active,
+                .no-touch &:hover {
+                    color: $gray-900;
                     border-color: $gray-400;
                     box-shadow: $box-shadow-sm;
+                    text-decoration: underline;
                 }
             }
 

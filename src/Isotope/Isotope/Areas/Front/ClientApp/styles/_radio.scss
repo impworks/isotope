@@ -56,8 +56,9 @@
             border: none;
             background-color: $primary;
         }
-
-        &:not(:disabled):not(:checked)~ .custom-control-label:hover{
+        
+        &:not(:disabled):not(:checked)~ .custom-control-label:active,
+        .no-touch &:not(:disabled):not(:checked)~ .custom-control-label:hover{
             cursor: pointer;
             
             &::after {

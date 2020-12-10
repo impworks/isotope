@@ -250,7 +250,14 @@ interface Crumb {
                 color: $gray-700;
 
                 &:hover {
+                    color: $gray-700;
+                    text-decoration: none;
+                }
+
+                &:active,
+                .no-touch &:hover {
                     color: $gray-800;
+                    text-decoration: underline;
                 }
             }
             

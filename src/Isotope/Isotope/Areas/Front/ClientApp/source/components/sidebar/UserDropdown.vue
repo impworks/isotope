@@ -65,7 +65,7 @@ export default class UserDropdown extends Vue {
                 v-if="isOpen"
             >
                 <ul>
-                    <li><a href="/@admin" v-if="info.isAdmin">Admin panel</a></li>
+                    <li v-if="info.isAdmin"><a href="/@admin">Admin panel</a></li>
                     <li><a class="clickable" @click.prevent="logout">Log out</a></li>
                 </ul>
             </div>
@@ -152,7 +152,8 @@ export default class UserDropdown extends Vue {
                                 margin-right: calc(-0.5rem - 1px);
                             }
 
-                            &:hover:after {
+                            &:active,
+                            .no-touch &:hover:after {
                                 border-bottom-color: $gray-200;
                             }
                         }
@@ -174,6 +175,11 @@ export default class UserDropdown extends Vue {
                         &:hover {
                             color: $gray-800;
                             text-decoration: none;
+                        }
+
+                        &:active,
+                        .no-touch &:hover {
+                            color: $gray-800;
                             background-color: $gray-200;
                         }
                     }

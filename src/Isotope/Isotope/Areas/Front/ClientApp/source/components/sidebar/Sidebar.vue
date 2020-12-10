@@ -199,9 +199,15 @@ export default class Sidebar extends Mixins(HasLifetime) {
 
             &:hover {
                 color: $gray-800;
+                background: $gray-200;
+                text-decoration: none;
+            }
+
+            &:active,
+            .no-touch &:hover {
+                color: $gray-800;
                 background: $gray-300;
                 border-color: $gray-400;
-                text-decoration: none;
 
                 &:after {
                     background: $gray-400;
