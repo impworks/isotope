@@ -112,7 +112,6 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
         class="gallery" 
         :class="{'gallery_safe-paddings': hasSafePaddings}"
     >
-        <gallery-header></gallery-header>
         <loading 
             :is-full-page="true"
             :is-loading="asyncState.isLoading"

@@ -68,7 +68,8 @@
     &_danger {
         color: $danger;
 
-        &:hover {
+        &:active,
+        .no-touch &:hover {
             color: $danger;
 
             .btn-header__content {

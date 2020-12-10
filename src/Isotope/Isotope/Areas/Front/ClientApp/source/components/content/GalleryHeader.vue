@@ -70,7 +70,7 @@ interface Crumb {
 </script>
 
 <template>
-    <div class="gallery__header">
+    <div class="gallery-header">
         <div class="desktop-navigation">
             <div class="desktop-navigation__content">
                 <ul class="breadcrumbs">
@@ -140,10 +140,8 @@ interface Crumb {
     @import "./node_modules/bootstrap/scss/variables";
     @import "./node_modules/bootstrap/scss/mixins";
 
-    .gallery__header {
-        flex: 0 1 auto;
+    .gallery-header {
         background: $white;
-        border-bottom: 1px solid $gray-300;
 
         @include media-breakpoint-down(md) {
             margin-top: -1px;

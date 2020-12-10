@@ -74,10 +74,5 @@ export default class Folders extends Mixins(HasAsyncState(), HasLifetime) {
     .folder-tree {
         height: 0;
         flex: 1 1 auto;
-        border-top: 1px solid $gray-300;
-    }
-
-    .desktop-filters + .folder-tree {
-        border-top: none;
     }
 </style>

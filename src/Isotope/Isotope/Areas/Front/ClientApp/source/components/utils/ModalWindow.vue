@@ -245,6 +245,10 @@ export default class ModalWindow extends Vue {
                 padding-right: max(1rem, calc(env(safe-area-inset-right)));
             }
         }
+
+        .simplebar-content-wrapper {
+            height: 100% !important;
+        }
     }
 
     .modal-window-open {

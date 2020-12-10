@@ -4,7 +4,7 @@ import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { HasLifetime } from "../mixins/HasLifetime";
 
-import Filters from "./Filters.vue";
+import Filters from "../content/Filters.vue";
 
 @Component({
     components: { Filters }
