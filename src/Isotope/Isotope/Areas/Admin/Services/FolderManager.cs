@@ -117,7 +117,10 @@ namespace Isotope.Areas.Admin.Services
             var folders = await _db.Folders
                                    .Where(x => x.Path == folder.Path || x.Path.StartsWith(folder.Path + "/"))
                                    .ToListAsync();
-            
+
+            await _db.SharedLinks.RemoveWhereAsync(x => x.Folder.Path == folder.Path || x.Folder.Path.StartsWith(folder.Path + "/"));
+            await _db.SaveChangesAsync();
+
             _db.Folders.RemoveRange(folders);
             await _db.SaveChangesAsync();
             
