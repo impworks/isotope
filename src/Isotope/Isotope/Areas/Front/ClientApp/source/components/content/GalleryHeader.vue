@@ -146,6 +146,7 @@ interface Crumb {
         @include media-breakpoint-down(md) {
             margin-top: -1px;
             border-top: 1px solid $gray-300;
+            border-bottom: 1px solid $gray-300;
         }
     }
 
