@@ -18,7 +18,7 @@ namespace Isotope.Areas.Admin.Dto
                   .Map(x => x.Id, x => x.Id)
                   .Map(x => x.Caption, x => x.Caption)
                   .Map(x => x.Type, x => x.Type)
-                  .Map(x => x.Count, x => x.MediaTagBindings.Count());
+                  .Map(x => x.Count, x => x.MediaTagBindings == null ? 0 : x.MediaTagBindings.Count());
 
             config.NewConfig<TagVM, Tag>()
                   .Map(x => x.Caption, x => x.Caption)
