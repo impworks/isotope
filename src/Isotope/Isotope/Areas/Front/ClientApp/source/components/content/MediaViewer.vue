@@ -317,6 +317,15 @@ interface ICachedMedia extends IMedia {
                 v-hammer:swipe.left.right="handleHorizontalTouchEvents"
                 :class="{'media-viewer_closing' : isClosing}" 
             > 
+                <button 
+                    class="btn-header media-viewer__close-btn"
+                    v-if="isMobileOverlayVisible"
+                    @click.prevent="hide()"
+                >
+                    <div class="btn-header__content">
+                        <i class="icon icon-cross"></i>
+                    </div>
+                </button>
                 <div class="media-viewer__content"
                     v-hammer:tap="onTap"
                     :class="transitionClass" 
@@ -415,6 +424,18 @@ interface ICachedMedia extends IMedia {
             &-enter, 
             &-leave-to {
                 opacity: 0;
+            }
+        }
+
+        &__close-btn.btn-header {
+            top: 0;
+            right: 0;
+            z-index: 999;
+            position: absolute;
+            padding-right: 1rem;
+
+            @supports(padding: max(0px)) {
+                padding-right: max(1rem, env(safe-area-inset-right));
             }
         }
     }
