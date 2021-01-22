@@ -56,7 +56,7 @@ namespace Isotope.Code.Utils
         {
             ctx.Response.StatusCode = httpCode;
             ctx.Response.ContentType = "application/json";
-            var result = data is string str ? str : JsonConvert.SerializeObject(data);
+            var result = JsonConvert.SerializeObject(new { error = data });
             await ctx.Response.WriteAsync(result);
         }
     }
