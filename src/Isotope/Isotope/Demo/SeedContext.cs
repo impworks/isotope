@@ -75,7 +75,7 @@ namespace Isotope.Demo
 
             var dir = Directory.GetCurrentDirectory();
             var sourceFullPath = Path.Combine(dir, "Demo", "Media", path);
-            var targetFullPath = Path.Combine(dir, "wwwroot", targetPath);
+            var targetFullPath = Path.Combine(dir, "App_Data", targetPath);
             Directory.CreateDirectory(Path.GetDirectoryName(targetFullPath));
 
             File.Copy(sourceFullPath, targetFullPath);

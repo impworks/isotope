@@ -42,7 +42,7 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         private static byte[] GetOrCreateSecret()
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Isotope.key");
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "Isotope.key");
             if (File.Exists(path))
                 return File.ReadAllBytes(path);
 

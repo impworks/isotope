@@ -125,14 +125,14 @@ namespace Isotope.Demo
         public static async Task ClearPreviousDataAsync()
         {
             var dir = Directory.GetCurrentDirectory();
-            var mediaPath = Path.Combine(dir, "wwwroot", "@media");
+            var mediaPath = Path.Combine(dir, "App_Data", "@media");
             if (Directory.Exists(mediaPath))
             {
                 await Task.Run(() => Directory.Delete(mediaPath, true));
                 Directory.CreateDirectory(mediaPath);
             }
 
-            var dataPath = Path.Combine(dir, "Storage", "Isotope.db");
+            var dataPath = Path.Combine(dir, "App_Data", "Isotope.db");
             if(File.Exists(dataPath))
                 File.Delete(dataPath);
         }

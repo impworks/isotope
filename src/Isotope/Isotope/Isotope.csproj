@@ -12,6 +12,7 @@
     <Folder Include="Areas\Front\ClientApp\source\components\mixins" />
     <Folder Include="Areas\Front\ClientApp\source\config\" />
     <Folder Include="Data\Migrations" />
+    <Folder Include="App_Data\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -156,7 +157,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\@media\**\*.*" CopyToPublishDirectory="Never" />
-    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+      <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 </Project>

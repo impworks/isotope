@@ -354,5 +354,6 @@ Isotope.db-wal
 Isotope.db-shm
 Isotope.key
 wwwroot/
+App_Data/
 .idea/
 .dist-tmp/

@@ -129,7 +129,7 @@ namespace Isotope.Areas.Admin.Services
 
             foreach (var f in folders)
             {
-                var dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "@media", f.Key);
+                var dir = Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "@media", f.Key);
                 if(Directory.Exists(dir))
                     Directory.Delete(dir, true);
             }

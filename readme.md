@@ -30,7 +30,14 @@ docker pull impworks/isotope:latest
 
 ## Backups
 
-You need to mount the following folders to the container for backups:
+You need to mount the following folder to the container for backups:
 
-`/app/Storage` - database and encryption keys (about 1MB)
-`/app/wwwroot/@media` - actual media (size may vary)
+```
+/app/App_Data
+```
+
+It will contain:
+
+* `Isotope.db`: the database file (SQLite)
+* `Isotope.key`: random key for access token encryption
+* `@media`: folder with all uploaded media content and thumbnails

@@ -74,7 +74,7 @@ namespace Isotope.Code.Config
         /// </summary>
         private void CreateStorageFolder()
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Storage");
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "@media");
             Directory.CreateDirectory(path);
         }
     }

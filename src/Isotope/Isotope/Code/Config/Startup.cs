@@ -1,12 +1,15 @@
 using System.Globalization;
+using System.IO;
 using Isotope.Code.Services.Config;
 using Isotope.Code.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -66,6 +69,7 @@ namespace Isotope.Code.Config
 
             app.UseForwardedHeaders(GetForwardedHeadersOptions())
                .UseStaticFiles()
+               .UseStaticFiles(GetAppDataStaticFilesProvider())
                .UseRouting()
                .UseAuthentication()
                .UseAuthorization()
@@ -102,6 +106,20 @@ namespace Isotope.Code.Config
                 DefaultRequestCulture = new RequestCulture(culture),
                 SupportedCultures = new[] { culture },
                 SupportedUICultures = new[] { culture }
+            };
+        }
+
+        /// <summary>
+        /// Configures the static file provider to retrieve files from App_Data/@media.
+        /// </summary>
+        private StaticFileOptions GetAppDataStaticFilesProvider()
+        {
+            return new StaticFileOptions
+            {
+                RequestPath = new PathString("/@media"),
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "@media")
+                )
             };
         }
     }
