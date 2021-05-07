@@ -221,18 +221,18 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState({ isSkippin
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <div class="mb-2">
-                                    <div class="pull-right">
-                                        <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                @click.prevent="toggleCreatingTagMode(true)"
-                                                :disabled="asyncState.isSaving || isCreatingTag">
-                                            <span class="fa fa-plus-circle"></span>
-                                            <span v-if="isCreatingTag">Adding tag: Esc to cancel</span>
-                                            <span v-else title="Add a new tag (Ctrl + Space)">Add tag</span>
-                                        </button>
-                                    </div>
-                                    <div class="clearfix"></div>
+                                <div class="pull-right">
+                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                            @click.prevent="toggleCreatingTagMode(true)"
+                                            :disabled="asyncState.isSaving || isCreatingTag">
+                                        <span class="fa fa-plus-circle"></span>
+                                        <span v-if="isCreatingTag">Adding tag: Esc to cancel</span>
+                                        <span v-else title="Add a new tag (Ctrl + Space)">Add tag</span>
+                                    </button>
                                 </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="form-group media-container">
                                 <div class="media-wrapper" :class="{'crosshair': this.isCreatingTag}"
                                      @mousedown.prevent="createTagStarted($event)"
                                      @mousemove.prevent="createTagMoved($event)"
@@ -293,26 +293,30 @@ export default class MediaTagsEditorDlg extends Mixins(HasAsyncState({ isSkippin
 </template>
 
 <style lang="scss" scoped>
-.media-wrapper {
-    width: 100%;
-    position: relative;
-    
-    img {
-        width: 100%;
-        height: auto;
-    }
-    
-    .tag-wrapper {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-    }
-    
-    &.crosshair {
-        cursor: crosshair;
+.media-container {
+    display: flex;
+    justify-content: center;
+  
+    .media-wrapper {
+        position: relative;
+        
+        img {
+            max-width: 100%;
+            max-height: 700px;
+        }
+        
+        .tag-wrapper {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        &.crosshair {
+            cursor: crosshair;
+        }
     }
 }
 </style>

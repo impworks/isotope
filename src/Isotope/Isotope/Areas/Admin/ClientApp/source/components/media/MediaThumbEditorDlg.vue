@@ -68,7 +68,7 @@ export default class MediaThumbEditorDlg extends Mixins(HasAsyncState(), DialogB
                             <button type="button" class="close" @click="$close(false)">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
+                            <div class="form-group media-container">
                                 <div class="media-wrapper">
                                     <img :src="media.fullPath" ref="img" />
                                     <div class="tag-wrapper">
@@ -95,22 +95,27 @@ export default class MediaThumbEditorDlg extends Mixins(HasAsyncState(), DialogB
 </template>
 
 <style lang="scss" scoped>
-.media-wrapper {
-    width: 100%;
-    position: relative;
-
-    img {
-        width: 100%;
-        height: auto;
-    }
-
-    .tag-wrapper {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
+.media-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0;
+  
+    .media-wrapper {
+        position: relative;
+    
+        img {
+            max-width: 100%;
+            max-height: 800px;
+        }
+    
+        .tag-wrapper {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
     }
 }
 </style>
