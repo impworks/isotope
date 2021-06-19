@@ -101,7 +101,7 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
             </tr>
             </tbody>
             <tbody v-else>
-                <FolderRow v-for="f in folders" :folder="f" :depth="0"></FolderRow>
+                <FolderRow v-for="f in folders" :folder="f" :depth="0" :key="f.key + '/' + f.depth"></FolderRow>
             </tbody>
         </table>
         <portal to="context-menu">

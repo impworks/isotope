@@ -10,7 +10,6 @@ import SharedLinksPage from "../shared-links/SharedLinksPage.vue";
 })
 export default class FolderRow extends Vue {
     @Prop({ required: true }) folder: FolderTitle;
-    @Prop({ required: true}) depth: number;
     
     showMenu(e: MouseEvent, f: FolderTitle) {
         this.$root.$emit('menu-requested', { event: e, folder: f });
@@ -21,7 +20,7 @@ export default class FolderRow extends Vue {
 <template>
     <fragment>
         <tr v-action-row class="hover-actions" @contextmenu.prevent="showMenu($event, folder)">
-            <td :style="{'padding-left': (depth + 1) + 'rem'}">
+            <td :style="{'padding-left': (folder.depth + 1) + 'rem'}">
                 <div v-if="folder.thumbnailPath" class="folder-thumb" :style="{'background-image': 'url(' + folder.thumbnailPath + ')'}"></div>
                 <span v-else class="fa fa-fw fa-folder-o"></span>
                 <router-link :to="'/folders/' + folder.key">
@@ -38,7 +37,7 @@ export default class FolderRow extends Vue {
                 </a>
             </td>
         </tr>
-        <FolderRow v-for="s in folder.subfolders" :folder="s" :depth="depth + 1"></FolderRow>
+        <FolderRow v-for="s in folder.subfolders" :folder="s" :key="s.key + '/' + s.depth"></FolderRow>
     </fragment>
 </template>
 
