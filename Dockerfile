@@ -10,7 +10,7 @@ ADD src/Isotope/Isotope/ .
 RUN find .
 RUN npm run build
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 as net-builder
+FROM mcr.microsoft.com/dotnet/sdk:5.0 as net-builder
 WORKDIR /build
 ADD src/Isotope/Isotope.sln .
 ADD src/Isotope/Isotope/Isotope.csproj Isotope/
@@ -18,7 +18,7 @@ ADD src/Isotope/Isotope/Isotope.csproj Isotope/
 RUN dotnet restore
 COPY --from=node /build Isotope/
 
-RUN dotnet publish --output ../out/ --configuration Release --runtime linux-musl-x64 --self-contained true Isotope/Isotope.csproj
+RUN dotnet publish --output ../out/ --configuration Release --runtime linux-musl-x64 --self-contained true -p:PublishTrimmed=true Isotope/Isotope.csproj
 
 FROM alpine:latest
 
