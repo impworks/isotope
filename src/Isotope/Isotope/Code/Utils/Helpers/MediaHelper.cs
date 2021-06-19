@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Isotope.Data.Models;
 
 namespace Isotope.Code.Utils.Helpers
@@ -42,11 +41,11 @@ namespace Isotope.Code.Utils.Helpers
         }
 
         /// <summary>
-        /// Returns the full path by relative path to wwwroot (as stored in DB).
+        /// Returns the full path by relative path to data root (as stored in DB).
         /// </summary>
         public static string GetFullMediaPath(string path)
         {
-            var parts = new List<string> {Directory.GetCurrentDirectory(), "wwwroot"};
+            var parts = new List<string> {Directory.GetCurrentDirectory(), "App_Data"};
             parts.AddRange(path.Split('/', StringSplitOptions.RemoveEmptyEntries));
             return Path.Combine(parts.ToArray());
         }
