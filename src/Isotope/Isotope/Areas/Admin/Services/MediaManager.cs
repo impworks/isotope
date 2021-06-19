@@ -378,24 +378,26 @@ namespace Isotope.Areas.Admin.Services
         {
             if(vm == null)
                 throw new OperationException("Rect is not specified for " + descr);
-            
-            if(vm.X < 0 || vm.X > 1)
-                throw new OperationException($"X coordinate must be in 0..1 range for {descr}.");
-            
-            if(vm.Y < 0 || vm.Y > 1)
-                throw new OperationException($"Y coordinate must be in 0..1 range for {descr}.");
-            
-            if(vm.Width < 0 || vm.Width > 1)
-                throw new OperationException($"Width must be in 0..1 range for {descr}.");
-            
-            if(vm.Height < 0 || vm.Height > 1)
-                throw new OperationException($"Height must be in 0..1 range for {descr}.");
-            
-            if(vm.X + vm.Width > 1)
-                throw new OperationException($"Width must not exceed media size for {descr}.");
-            
-            if(vm.Y + vm.Height > 1)
-                throw new OperationException($"Width must not exceed media size for {descr}.");
+
+            vm.X = Clamp(vm.X);
+            vm.Y = Clamp(vm.Y);
+            vm.Width = Clamp(vm.Width);
+            vm.Height = Clamp(vm.Height);
+
+            if (vm.X + vm.Width > 1)
+                vm.Width = Clamp(1 - vm.X);
+
+            if (vm.Y + vm.Height > 1)
+                vm.Height = Clamp(1 - vm.Y);
+
+            double Clamp(double value)
+            {
+                if (value < 0)
+                    return 0;
+                if (value > 1)
+                    return 1;
+                return value;
+            }
         }
         
         #endregion
