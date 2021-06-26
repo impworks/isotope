@@ -5,7 +5,11 @@ import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { AuthService } from "../../../../../Common/source/services/AuthService";
 
-@Component
+import ChangePasswordDialog from "./dialogs/ChangePasswordDialog.vue";
+
+@Component({
+    components: { ChangePasswordDialog }
+})
 export default class UserDropdown extends Vue {
     @Dep('$api') $api: ApiService;
     @Dep('$auth') $auth: AuthService;
@@ -14,6 +18,8 @@ export default class UserDropdown extends Vue {
     isOpen: boolean = false;
     
     info: GalleryInfo = null;
+    
+    isChangePasswordVisible: boolean = false
 
     async mounted() {
         try {
@@ -36,6 +42,10 @@ export default class UserDropdown extends Vue {
     
     logout() {
         this.$auth.user = null;
+    }
+    
+    changePassword() {
+        this.isChangePasswordVisible = true;
     }
 }
 </script>
@@ -66,10 +76,12 @@ export default class UserDropdown extends Vue {
             >
                 <ul>
                     <li v-if="info.isAdmin"><a href="/@admin">Admin panel</a></li>
+                    <li><a class="clickable" @click.prevent="changePassword">Change password</a></li>
                     <li><a class="clickable" @click.prevent="logout">Log out</a></li>
                 </ul>
             </div>
         </transition>
+        <change-password-dialog v-model="isChangePasswordVisible"></change-password-dialog>
     </div>
 </template>
 

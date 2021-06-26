@@ -90,6 +90,7 @@
     <TypeScriptCompile Include="Areas\Common\source\vms\LoginResponse.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\MediaType.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\Rect.ts" />
+    <TypeScriptCompile Include="Areas\Common\source\vms\ChangePasswordRequest.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\SearchScope.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\TagBindingType.ts" />
     <TypeScriptCompile Include="Areas\Common\source\vms\TagType.ts" />
@@ -97,11 +98,13 @@
     <TypeScriptCompile Include="Areas\Common\types\vue-draggable-resizable.d.ts" />
     <TypeScriptCompile Include="Areas\Common\types\vue-fragment.d.ts" />
     <TypeScriptCompile Include="Areas\Common\types\vue-global-events.d.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\components\utils\DialogBase.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\config\Injector.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\config\Router.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\front-main.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\ApiService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\FilterStateService.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\utils\AxiosHelpers.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Folder.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContents.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\FolderContentsRequest.ts" />

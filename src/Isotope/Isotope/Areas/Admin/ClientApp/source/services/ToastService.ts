@@ -1,5 +1,5 @@
-import { AxiosError } from "axios";
 import * as toastr from "toastr";
+import { isAxiosError } from "../../../../Front/ClientApp/source/utils/AxiosHelpers";
 
 export class ToastService {
     /**
@@ -24,10 +24,6 @@ export class ToastService {
     }
 
     private isSilent(e: any) {
-        return this.isAxiosError(e) && [404, 501].indexOf(e.response.status) != -1;
-    }
-
-    private isAxiosError(e: any): e is AxiosError {
-        return e && e.isAxiosError;
+        return isAxiosError(e) && [404, 501].indexOf(e.response.status) != -1;
     }
 }

@@ -4,7 +4,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Isotope.Areas.Admin.Utils;
 using Isotope.Areas.Front.Dto;
+using Isotope.Areas.Front.Services;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
@@ -85,6 +87,28 @@ namespace Isotope.Code.Services
         }
 
         /// <summary>
+        /// Attempts to change the user's password.
+        /// </summary>
+        public async Task ChangePasswordAsync(ChangePasswordRequestVM request, UserContext userCtx)
+        {
+            if (request.NewPassword != request.NewPasswordRepeat)
+                throw new OperationException("Passwords do not match!");
+            
+            if(request.NewPassword?.Length < 6)
+                throw new OperationException("Password must contain at least 6 characters!");
+
+            var oldCheck = await _userMgr.CheckPasswordAsync(userCtx.User, request.OldPassword);
+            if (!oldCheck)
+                throw new OperationException("Old password is invalid!");
+
+            var result = await _userMgr.ChangePasswordAsync(userCtx.User, request.OldPassword, request.NewPassword);
+            if (!result.Succeeded)
+                throw new OperationException("Failed to change password!");
+        }
+        
+        #region Private helpers
+
+        /// <summary>
         /// Generates the JWT token for an authorized user.
         /// </summary>
         private string GenerateToken(AppUser user, IEnumerable<string> roles)
@@ -106,5 +130,7 @@ namespace Isotope.Code.Services
             
             return handler.WriteToken(token);
         }
+        
+        #endregion
     }
 }

@@ -53,7 +53,6 @@ namespace Isotope.Areas.Front.Services
                 return null;
             
             return await _db.Users
-                            .AsNoTracking()
                             .FirstOrDefaultAsync(x => x.UserName == username);
         }
         

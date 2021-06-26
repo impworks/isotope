@@ -6,11 +6,12 @@ import { FilterStateService } from "../../services/FilterStateService";
 import { HasLifetime } from "../mixins/HasLifetime";
 import { Folder } from "../../vms/Folder";
 import { GalleryInfo } from "../../vms/GalleryInfo";
+
 import ModalWindow from "../utils/ModalWindow.vue";
-import ShareLink from "./ShareLink.vue";
+import ShareLinkDialog from "./dialogs/ShareLinkDialog.vue";
 
 @Component({
-    components: { ModalWindow, ShareLink }
+    components: { ModalWindow, ShareLinkDialog }
 })
 export default class GalleryHeader extends Mixins(HasLifetime) {
     @Dep('$api') $api: ApiService;
@@ -130,7 +131,7 @@ interface Crumb {
                 </button>
             </div>
         </div>
-        <share-link v-model="isShareLinkVisible"></share-link>
+        <share-link-dialog v-model="isShareLinkVisible"></share-link-dialog>
     </div>
 </template>
 
