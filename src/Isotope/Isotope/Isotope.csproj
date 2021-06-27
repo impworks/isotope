@@ -48,6 +48,7 @@
     
   <ItemGroup>
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\admin-main.ts" />
+    <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\media\MediaEditorDlgTab.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\mixins\DialogBase.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\mixins\HasAsyncState.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\mixins\index.ts" />

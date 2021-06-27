@@ -1,3 +1,5 @@
+using System;
+
 namespace Isotope.Data.Models
 {
     /// <summary>
@@ -24,5 +26,18 @@ namespace Isotope.Data.Models
         /// Height of the bounding box (in 0..1 coordinate space).
         /// </summary>
         public double Height { get; set; }
+
+        /// <summary>
+        /// Checks if the two rectangles are equal.
+        /// </summary>
+        public bool Equals(Rect rect)
+        {
+            return Eq(X, rect.X)
+                && Eq(Y, rect.Y)
+                && Eq(Width, rect.Width)
+                && Eq(Height, rect.Height);
+            
+            bool Eq(double a, double b) => Math.Abs(a - b) < 0.00001;
+        }
     }
 }

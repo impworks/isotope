@@ -9,19 +9,12 @@ import { DateHelper } from "../../../../../Common/source/utils/DateHelper";
 import { Folder } from "../../vms/Folder";
 
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
-import MediaPropsEditorDlg from "./MediaPropsEditorDlg.vue";
-import MediaTagsEditorDlg from "./MediaTagsEditorDlg.vue";
-import MediaThumbEditorDlg from "./MediaThumbEditorDlg.vue";
 import MediaOrderEditorDlg from "./MediaOrderEditorDlg.vue";
 import MediaEditorDlg from "./MediaEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
-const propsEditor = create<{mediaKey: string}>(MediaPropsEditorDlg);
-const tagEditor = create<{mediaKey: string}>(MediaTagsEditorDlg);
-const thumbEditor = create<{mediaKey: string}>(MediaThumbEditorDlg);
+const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabKey: MediaEditorDlgTab}>(MediaEditorDlg);
 const orderEditor = create<{folderKey: string}>(MediaOrderEditorDlg);
-
-const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[]}>(MediaEditorDlg);
 
 @Component
 export default class MediaPage extends Mixins(HasAsyncState()) {
@@ -66,23 +59,8 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         );
     }
     
-    async editProps(m: MediaThumbnail) {
-        if(await propsEditor({ mediaKey: m.key }))
-            await this.load();
-    }
-    
-    async editTags(m: MediaThumbnail) {
-      if(await tagEditor({ mediaKey: m.key }))
-          await this.load();
-    }
-
-    async editThumb(m: MediaThumbnail) {
-        if(await thumbEditor({ mediaKey: m.key }))
-            await this.load();
-    }
-    
-    async edit(m: MediaThumbnail) {
-        if(await mediaEditor({ mediaKey: m.key, otherMedia: this.media }))
+    async edit(m: MediaThumbnail, tab: MediaEditorDlgTab) {
+        if(await mediaEditor({ mediaKey: m.key, otherMedia: this.media, tabKey: tab }))
             await this.load();
     }
     
@@ -160,17 +138,13 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         </template>
         <portal to="context-menu">
             <context-menu ref="menu" v-slot="{data}">
-                <a class="dropdown-item clickable" @click.prevent="edit(data)">
-                    <span class="fa fa-fw fa-edit"></span> Edit
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item clickable" @click.prevent="editProps(data)">
+                <a class="dropdown-item clickable" @click.prevent="edit(data, 'props')">
                     <span class="fa fa-fw fa-edit"></span> Edit properties
                 </a>
-                <a class="dropdown-item clickable" @click.prevent="editTags(data)">
+                <a class="dropdown-item clickable" @click.prevent="edit(data, 'tags')">
                     <span class="fa fa-fw fa-tags"></span> Edit tags
                 </a>
-                <a class="dropdown-item clickable" @click.prevent="editThumb(data)">
+                <a class="dropdown-item clickable" @click.prevent="edit(data, 'thumb')">
                     <span class="fa fa-fw fa-crop"></span> Update thumbnail
                 </a>
                 <div class="dropdown-divider"></div>

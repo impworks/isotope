@@ -5,8 +5,14 @@ import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { Media } from "../../vms/Media";
+import { Rect } from "../../../../../Common/source/vms/Rect";
 
-@Component
+import MediaThumbEditor from "./editors/MediaThumbEditor.vue";
+import MediaPropsEditor from "./editors/MediaPropsEditor.vue";
+
+@Component({
+    components: { MediaPropsEditor, MediaThumbEditor }
+})
 export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) {
     
     // -----------------------------------
@@ -17,22 +23,25 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
     
     @Prop({ required: true }) otherMedia: MediaThumbnail[];
     @Prop({ required: true }) mediaKey: string;
+    @Prop({ required: false }) tabKey: string;
 
     // -----------------------------------
     // Properties
     // -----------------------------------
     
     media: Media = null;
+    thumbRect: Rect = null;
     currKey: string = null;
     currIndex: number = null;
     
-    tabs: MediaEditorDlgTab[] = [
-        { key: 'props', caption: 'Properties' },
-        { key: 'tags', caption: 'Tags' },
-        { key: 'thumb', caption: 'Thumbnail' }
+    tabs: MediaEditorDlgTabInfo[] = [
+        { key: 'props', caption: 'Properties', tooltip: 'Description and date (Ctrl + 1)' },
+        { key: 'tags', caption: 'Tags', tooltip: 'Depicted people (Ctrl + 2)' },
+        { key: 'thumb', caption: 'Thumbnail', tooltip: 'Preview image section (Ctrl + 3)' }
     ];
-    tab: MediaEditorDlgTab = null;
+    tab: MediaEditorDlgTabInfo = null;
     
+    result: boolean = false;
     editNextOnSave: boolean = false;
     
     get hasPrev() {
@@ -48,7 +57,7 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
     // -----------------------------------
     
     async created() {
-        this.tab = this.tabs[0];
+        this.tab = (this.tabKey ? this.tabs.find(x => x.key == this.tabKey) : null) || this.tabs[0];
         await this.load(this.otherMedia.findIndex(t => t.key === this.mediaKey));
     }
 
@@ -63,6 +72,9 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
                 this.currKey = this.otherMedia[idx].key;
                 
                 this.media = await this.$api.media.get(this.currKey);
+                this.thumbRect = await this.$api.media.getThumb(this.currKey);
+                
+                await this.loadImage(this.media.fullPath);
             },
             'Failed to load media!'
         );
@@ -72,8 +84,16 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
         await this.showSaving(
             async () => {
                 await this.$api.media.update(this.currKey, this.media);
-                if(this.editNextOnSave)
+                await this.$api.media.updateThumb(this.currKey, this.thumbRect);
+                
+                this.result = true;
+                
+                if(this.editNextOnSave) {
                     await this.next();
+                } else {
+                    this.$close(true);
+                    this.$toast.success('Media updated.');
+                }
             },
             'Failed to save media!'
         );
@@ -98,45 +118,60 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
     // -----------------------------------
     // Private helpers
     // -----------------------------------
+
+    private loadImage(path: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.addEventListener('load', () => resolve());
+            img.addEventListener('error', err => reject(err));
+            img.src = path;
+        });
+    }
 }
 
-interface MediaEditorDlgTab {
-    key: TabKey;
+interface MediaEditorDlgTabInfo {
+    key: MediaEditorDlgTab;
     caption: string;
+    tooltip: string;
 }
-
-type TabKey = 'props' | 'tags' | 'thumb';
 </script>
 
 <template>
     <div>
         <div class="modal fade show">
             <form @submit.prevent="save()">
-                <div class="modal-dialog" v-if="media">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header pb-0">
                             <h5 class="modal-title">Update media</h5>
-                            <button type="button" class="close" @click="$close(false)">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <ul class="nav nav-pills nav-fill">
+                            <ul class="nav nav-tabs nav-tabs-embedded ml-5">
                                 <li class="nav-item" v-for="t in tabs" :key="t.key">
-                                    <a class="nav-link"
+                                    <a class="nav-link clickable"
                                        :class="{'active': t === tab}"
-                                       @click.prevent="tab = t"
-                                       >{{t.caption}}</a>
+                                       :title="t.tooltip"
+                                       @click.prevent="tab = t">
+                                        {{t.caption}}
+                                    </a>
                                 </li>
                             </ul>
+                            <button type="button" class="close" @click="$close(result)">&times;</button>
+                        </div>
+                        <div class="modal-body" v-if="!asyncState.isLoading && media && thumbRect">
                             <div v-if="tab && tab.key === 'props'">
-                                Props
+                                <MediaPropsEditor :media="media"></MediaPropsEditor>
                             </div>
                             <div v-if="tab && tab.key === 'tags'">
                                 Tags
                             </div>
                             <div v-if="tab && tab.key === 'thumb'">
-                                Thumb
+                                <MediaThumbEditor :media="media" :rect="thumbRect"></MediaThumbEditor>
                             </div>
-                            <span>{{currKey}}</span>
+                        </div>
+                        <div class="modal-body text-center" v-else>
+                            <p class="m-5">
+                                <span class="fa fa-spinner spinner"></span>
+                                Loading...
+                            </p>
                         </div>
                         <div class="modal-footer">
                             <div class="mr-auto">
@@ -167,7 +202,7 @@ type TabKey = 'props' | 'tags' | 'thumb';
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Update</span>
                             </button>
-                            <button type="button" class="btn btn-secondary" @click.prevent="$close(false)">Cancel</button>
+                            <button type="button" class="btn btn-secondary" @click.prevent="$close(result)">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -184,3 +219,47 @@ type TabKey = 'props' | 'tags' | 'thumb';
         </GlobalEvents>
     </div>
 </template>
+
+<style lang="scss">
+.media-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0;
+
+    .media-wrapper {
+        position: relative;
+
+        img {
+            max-width: 100%;
+            max-height: 800px;
+        }
+
+        .tag-wrapper {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+    }
+}
+
+.nav-tabs.nav-tabs-embedded {
+    border-bottom: 0;
+    
+    .nav-link {
+        border-bottom: 0;
+    }
+}
+
+.spinner {
+    -webkit-animation:spin 2s linear infinite;
+    -moz-animation:spin 2s linear infinite;
+    animation:spin 2s linear infinite;
+}
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+</style>

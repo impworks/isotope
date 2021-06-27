@@ -267,7 +267,11 @@ namespace Isotope.Areas.Admin.Services
             if(media == null)
                 throw new OperationException($"Media '{key}' does not exist.");
 
-            media.ThumbnailRect = _mapper.Map<Rect>(vm);
+            var rect = _mapper.Map<Rect>(vm);
+            if (media.ThumbnailRect.Equals(rect))
+                return;
+
+            media.ThumbnailRect = rect; 
             await _db.SaveChangesAsync();
 
             await _jobSvc.RunAsync(JobBuilder.For<UpdateThumbnailJob>().WithArgs(media.Key));
