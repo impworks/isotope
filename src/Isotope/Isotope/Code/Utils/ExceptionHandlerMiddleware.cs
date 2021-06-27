@@ -45,7 +45,6 @@ namespace Isotope.Code.Utils
                     _logger.Error(ex.Demystify(), "Unhandled exception in " + ctx.Request.GetDisplayUrl());
                     await ErrorAsync(ctx, 500, "Unknown error");
                 }
-                
             }
         }
 

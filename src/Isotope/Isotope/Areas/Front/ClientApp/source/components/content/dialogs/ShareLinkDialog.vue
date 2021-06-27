@@ -1,23 +1,22 @@
 <script lang="ts">
-import { Component, Mixins, Model, Watch } from "vue-property-decorator";
-import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
-import { ApiService } from "../../services/ApiService";
-import { FilterStateService, IFilterState } from "../../services/FilterStateService";
-import { HasAsyncState } from "../mixins/HasAsyncState";
-import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
-import { ArrayHelper } from "../../../../../Common/source/utils/ArrayHelper";
-import { DateHelper } from "../../../../../Common/source/utils/DateHelper";
-import ModalWindow from "../utils/ModalWindow.vue";
+import { Component, Mixins, Watch } from "vue-property-decorator";
+import { Dep } from "../../../../../../Common/source/utils/VueInjectDecorator";
+import { ApiService } from "../../../services/ApiService";
+import { FilterStateService, IFilterState } from "../../../services/FilterStateService";
+import { HasAsyncState } from "../../mixins/HasAsyncState";
+import { SearchScope } from "../../../../../../Common/source/vms/SearchScope";
+import { ArrayHelper } from "../../../../../../Common/source/utils/ArrayHelper";
+import { DateHelper } from "../../../../../../Common/source/utils/DateHelper";
+import { DialogBase } from "../../utils/DialogBase";
+
+import ModalWindow from "../../utils/ModalWindow.vue";
 
 @Component({
     components: { ModalWindow }
 })
-export default class ShareLink extends Mixins(HasAsyncState()) {
+export default class ShareLinkDialog extends Mixins(DialogBase, HasAsyncState()) {
     @Dep('$api') $api: ApiService;
     @Dep('$filter') $filter: FilterStateService;
-    
-    @Model() model: boolean;
-    isVisible: boolean = false;
     
     caption: string = null;
     tags: string[] = [];
@@ -27,25 +26,13 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
     state: LinkCreationState = 'new';
     link: string = null;
 
-    async mounted() {
-        this.isVisible = this.model;
-    }
-
-    close() {
-        this.isVisible = false;
-    }
-
     @Watch('model')
     onModelChanged() {
         this.isVisible = this.model;
         if(this.isVisible)
             this.load();
     }
-
-    @Watch('isVisible')
-    onVisibilityChanged(value: boolean) {
-        this.$emit('model', value);
-    }
+    
     
     get canCreate(): boolean {
         return this.state == 'new'
@@ -63,7 +50,7 @@ export default class ShareLink extends Mixins(HasAsyncState()) {
                 this.tags = await this.getTagNames(state);
                 this.scope = await this.getFolderName(state);
                 this.dates = this.getDateDescription(state);
-            })
+            });
         } catch (e) {
             console.log('Failed to load filter data', e);
             this.isVisible = false;
@@ -138,7 +125,7 @@ type LinkCreationState = 'new' | 'succeeded' | 'failed';
 </script>
 
 <template>
-    <modal-window v-model="isVisible" >
+    <modal-window v-model="isVisible">
         <template v-slot:header>
             <div class="modal-window__header__caption">
                 Link sharing

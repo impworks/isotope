@@ -12,6 +12,7 @@ import { StaticHelper } from "../../../../Common/source/utils/StaticHelper";
 import { AuthService } from "../../../../Common/source/services/AuthService";
 import { LoginRequest } from '../../../../Common/source/vms/LoginRequest';
 import { LoginResponse } from "../../../../Common/source/vms/LoginResponse";
+import { ChangePasswordRequest } from "../../../../Common/source/vms/ChangePasswordRequest";
 
 export class ApiService {
     // -----------------------------------
@@ -85,6 +86,15 @@ export class ApiService {
         const url = this.getRequestUrl('auth/login');
         const response = await axios.post<LoginResponse>(url, request);
         return response.data;
+    }
+
+    /**
+     * Changes the password.
+     */
+    async changePassword(request: ChangePasswordRequest): Promise<any> {
+        const url = this.getRequestUrl('auth/change-password');
+        const cfg = this.getRequestConfig();
+        return await axios.post<any>(url, request, cfg);
     }
 
     // -----------------------------------

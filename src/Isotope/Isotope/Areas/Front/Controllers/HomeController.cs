@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Isotope.Areas.Front.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Isotope.Areas.Front.Controllers
 {
@@ -8,6 +9,11 @@ namespace Isotope.Areas.Front.Controllers
     [Route("")]
     public class HomeController: FrontControllerBase
     {
+        public HomeController(UserContextManager ucm)
+            : base(ucm)
+        {
+        }
+        
         /// <summary>
         /// Hack to workaround regex not matching an empty string.
         /// </summary>

@@ -12,15 +12,15 @@ namespace Isotope.Areas.Front.Controllers
     /// </summary>
     [Route("~/@api"), ApiController]
     [JwtAuthorize]
-    public class ApiController: ControllerBase
+    public class ApiController: FrontControllerBase
     {
         public ApiController(GalleryInfoPresenter info, FolderPresenter folders, TagsPresenter tags, MediaPresenter media, UserContextManager ucm)
+            : base(ucm)
         {
             _info = info;
             _folders = folders;
             _tags = tags;
             _media = media;
-            _ucm = ucm;
         }
 
         private readonly GalleryInfoPresenter _info;
@@ -73,17 +73,5 @@ namespace Isotope.Areas.Front.Controllers
         {
             return await _tags.GetTagsAsync(await GetUserContextAsync());
         }
-
-        #region Helpers
-
-        /// <summary>
-        /// Returns the current user context.
-        /// </summary>
-        private async Task<UserContext> GetUserContextAsync(bool checkAuth = true)
-        {
-            return await _ucm.GetUserContextAsync(HttpContext, checkAuth);
-        }
-
-        #endregion
     }
 }

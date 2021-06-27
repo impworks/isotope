@@ -81,10 +81,10 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         private async Task ValidateAsync(SharedLinkVM vm)
         {
-            if(!string.IsNullOrEmpty(vm.From) && vm.From.TryParse<DateTime>() == null)
+            if(!string.IsNullOrEmpty(vm.From) && vm.From.TryParse<DateTime?>() == null)
                 throw new OperationException($"Date '{vm.From}' is not valid.");
             
-            if(!string.IsNullOrEmpty(vm.To) && vm.To.TryParse<DateTime>() == null)
+            if(!string.IsNullOrEmpty(vm.To) && vm.To.TryParse<DateTime?>() == null)
                 throw new OperationException($"Date '{vm.To}' is not valid.");
             
             if(!Enum.IsDefined(typeof(SearchScope), vm.Scope))
