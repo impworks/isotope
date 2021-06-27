@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Vue } from "vue-property-decorator";
-import GlobalEvents from "vue-global-events";
+import { GlobalEvents } from "vue-global-events";
 
 import { HasAsyncState, DialogBase } from "../mixins";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
