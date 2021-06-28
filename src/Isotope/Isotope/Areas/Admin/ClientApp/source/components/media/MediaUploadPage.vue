@@ -9,11 +9,9 @@ import { HasAsyncState } from "../mixins";
 
 import FilePicker from "./FilePicker.vue";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
-import MediaTagsEditorDlg from "./MediaTagsEditorDlg.vue";
 import MediaEditorDlg from "./MediaEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
-const tagEditor = create<{mediaKey: string}>(MediaTagsEditorDlg);
 const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabKey: MediaEditorDlgTab}>(MediaEditorDlg);
 
 @Component({
@@ -70,15 +68,16 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
     }
 
     async edit(m: MediaThumbnail, tab: MediaEditorDlgTab) {
-        const result = await propsEditor({ mediaKey: m.key });
-        if(result) {
-            for(let u of this.uploads) {
-                if(!u.result)
-                    continue;
-                
-                const newNonce = Math.ceil(Math.random() * 10000);
-                u.result.thumbnailPath = u.result.thumbnailPath.replace(/nonce=([0-9]+)$/, 'nonce=' + newNonce);
-            }
+        const otherMedia = this.uploads.filter(x => !!x.result).map(x => x.result);
+        const result = await mediaEditor({ mediaKey: m.key, otherMedia: otherMedia, tabKey: tab });
+        
+        if(!result)
+            return;
+        
+        // refresh all thumbnails because it's impossible to know which ones have been modified
+        for(let m of otherMedia) {
+            const newNonce = Math.ceil(Math.random() * 10000);
+            m.thumbnailPath = m.thumbnailPath.replace(/nonce=([0-9]+)$/, 'nonce=' + newNonce);
         }
     }
 
