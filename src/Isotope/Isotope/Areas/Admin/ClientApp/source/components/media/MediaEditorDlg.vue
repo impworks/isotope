@@ -9,9 +9,11 @@ import { Rect } from "../../../../../Common/source/vms/Rect";
 
 import MediaThumbEditor from "./editors/MediaThumbEditor.vue";
 import MediaPropsEditor from "./editors/MediaPropsEditor.vue";
+import MediaTagsEditor from "./editors/MediaTagsEditor.vue";
+import { Tag } from "../../vms/Tag";
 
 @Component({
-    components: { MediaPropsEditor, MediaThumbEditor }
+    components: { MediaTagsEditor, MediaPropsEditor, MediaThumbEditor }
 })
 export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) {
     
@@ -40,6 +42,8 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
         { key: 'thumb', caption: 'Thumbnail', tooltip: 'Preview image section (Ctrl + 3)' }
     ];
     tab: MediaEditorDlgTabInfo = null;
+    
+    tags: Tag[] = null;
     
     result: boolean = false;
     editNextOnSave: boolean = false;
@@ -74,6 +78,9 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
                 this.media = await this.$api.media.get(this.currKey);
                 this.thumbRect = await this.$api.media.getThumb(this.currKey);
                 
+                if(this.tags == null)
+                    this.tags = await this.$api.tags.getList();
+                
                 await this.loadImage(this.media.fullPath);
             },
             'Failed to load media!'
@@ -81,22 +88,25 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
     }
     
     async save() {
-        await this.showSaving(
+        const success = await this.showSaving(
             async () => {
                 await this.$api.media.update(this.currKey, this.media);
                 await this.$api.media.updateThumb(this.currKey, this.thumbRect);
                 
                 this.result = true;
-                
-                if(this.editNextOnSave) {
-                    await this.next();
-                } else {
-                    this.$close(true);
-                    this.$toast.success('Media updated.');
-                }
             },
             'Failed to save media!'
         );
+        
+        if(!success)
+            return;
+
+        if(this.editNextOnSave && this.hasNext) {
+            await this.next();
+        } else {
+            this.$close(true);
+            this.$toast.success('Media updated.');
+        }
     }
     
     async prev() {
@@ -161,7 +171,7 @@ interface MediaEditorDlgTabInfo {
                                 <MediaPropsEditor :media="media"></MediaPropsEditor>
                             </div>
                             <div v-if="tab && tab.key === 'tags'">
-                                Tags
+                                <MediaTagsEditor :media="media" :tags-lookup="tags"></MediaTagsEditor>
                             </div>
                             <div v-if="tab && tab.key === 'thumb'">
                                 <MediaThumbEditor :media="media" :rect="thumbRect"></MediaThumbEditor>
@@ -176,7 +186,9 @@ interface MediaEditorDlgTabInfo {
                         <div class="modal-footer">
                             <div class="mr-auto">
                                 <div class="btn-group-toggle d-inline-block mr-2">
-                                    <label class="btn btn-sm btn-outline-secondary" title="Keep the dialog open and edit next media in folder after saving">
+                                    <label class="btn btn-sm btn-outline-secondary"
+                                           :class="editNextOnSave ? 'active' : ''"
+                                           title="Keep the dialog open and edit next media in folder after saving">
                                         <span class="fa fa-fw" :class="editNextOnSave ? 'fa-check-square-o' : 'fa-square-o'"></span>
                                         <input type="checkbox" v-model="editNextOnSave" /> Edit next
                                     </label>
@@ -184,21 +196,21 @@ interface MediaEditorDlgTabInfo {
                                 <div class="btn-group btn-group-sm">
                                     <button type="button"
                                             class="btn btn-outline-secondary"
-                                            title="Go to previous media in folder"
+                                            title="Go to previous media in folder without saving"
                                             @click.prevent="prev()"
-                                            :disabled="!hasPrev">
+                                            :disabled="!hasPrev || asyncState.isSaving || asyncState.isLoading">
                                         &larr;
                                     </button>
                                     <button type="button"
                                             class="btn btn-outline-secondary"
-                                            title="Go to next media in folder"
+                                            title="Go to next media in folder without saving"
                                             @click.prevent="next()"
-                                            :disabled="!hasNext">
+                                            :disabled="!hasNext || asyncState.isSaving || asyncState.isLoading">
                                         &rarr;
                                     </button>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" :disabled="asyncState.isSaving" title="Ctrl + S">
+                            <button type="submit" class="btn btn-primary" :disabled="asyncState.isSaving || asyncState.isLoading" title="Ctrl + S">
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Update</span>
                             </button>
@@ -250,6 +262,8 @@ interface MediaEditorDlgTabInfo {
     
     .nav-link {
         border-bottom: 0;
+        padding: 0.25rem 1rem;
+        height: 40px;
     }
 }
 

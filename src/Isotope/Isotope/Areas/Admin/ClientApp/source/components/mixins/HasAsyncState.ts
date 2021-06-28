@@ -32,15 +32,15 @@ export function HasAsyncState<T>(arg?: T) {
         /**
          * Displays a loading indicator.
          */
-        protected async showLoading(action: Func<Promise<any>>, error: string): Promise<void> {
-            await this.showProgress('isLoading', action, error);
+        protected async showLoading(action: Func<Promise<any>>, error: string): Promise<boolean> {
+            return this.showProgress('isLoading', action, error);
         }
 
         /**
          * Displays a saving indicator.
          */
-        protected async showSaving(action: Func<Promise<any>>, error: string): Promise<void> {
-            await this.showProgress('isSaving', action, error);
+        protected async showSaving(action: Func<Promise<any>>, error: string): Promise<boolean> {
+            return this.showProgress('isSaving', action, error);
         }
 
         /**
@@ -49,17 +49,19 @@ export function HasAsyncState<T>(arg?: T) {
          * @param prop Indicator property.
          * @param error Error message to display.
          */
-        protected async showProgress(prop: keyof (IAsyncState & T), action: Func<Promise<any>>, error: string): Promise<void> {
+        protected async showProgress(prop: keyof (IAsyncState & T), action: Func<Promise<any>>, error: string): Promise<boolean> {
             const propName = prop as string;
             Vue.set(this.asyncState, propName, true);
             try {
                 await action();
+                return true;
             } catch (e) {
                 if(e.response?.status === 400) {
                     this.$toast.error(e.response.data.error);
                 } else {
                     this.$toast.error(error, e);
                 }
+                return false;
             } finally {
                 Vue.set(this.asyncState, propName, false);
             }
