@@ -159,40 +159,6 @@ namespace Isotope.Areas.Admin.Services
         }
 
         /// <summary>
-        /// Returns the next / previous photo around the specified one.
-        /// </summary>
-        public async Task<KeyResultVM> GetNeighbourAsync(string key, bool next)
-        {
-            var folderKey = await _db.Media
-                                     .Where(x => x.Key == key)
-                                     .Select(x => x.FolderKey)
-                                     .FirstOrDefaultAsync();
-            
-            if(string.IsNullOrEmpty(folderKey))
-                throw new OperationException($"Media '{key}' does not exist.");
-
-            var folderKeys = await _db.Media
-                                      .Where(x => x.FolderKey == folderKey)
-                                      .OrderBy(x => x.Order)
-                                      .Select(x => x.Key)
-                                      .ToListAsync();
-
-            var currIdx = folderKeys.IndexOf(key);
-            if(currIdx == -1)
-                throw new OperationException($"Media '{key}' does not exist.");
-
-            var nextIdx = currIdx + (next ? 1 : -1);
-            
-            // wrap around
-            if (nextIdx >= folderKeys.Count)
-                nextIdx = 0;
-            else if (nextIdx < 0)
-                nextIdx = folderKeys.Count - 1;
-
-            return new KeyResultVM {Key = folderKeys[nextIdx]};
-        }
-
-        /// <summary>
         /// Updates the media description.
         /// </summary>
         public async Task UpdateAsync(string key, MediaVM vm)

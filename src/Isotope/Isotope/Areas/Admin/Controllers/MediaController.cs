@@ -84,24 +84,6 @@ namespace Isotope.Areas.Admin.Controllers
         }
 
         /// <summary>
-        /// Returns the next media after current one (by order).
-        /// </summary>
-        [HttpGet, Route("{key}/next")]
-        public Task<KeyResultVM> GetNextMedia(string key)
-        {
-            return _mediaMgr.GetNeighbourAsync(key, true);
-        }
-        
-        /// <summary>
-        /// Returns the prev media after current one (by order).
-        /// </summary>
-        [HttpGet, Route("{key}/prev")]
-        public Task<KeyResultVM> GetPreviousMedia(string key)
-        {
-            return _mediaMgr.GetNeighbourAsync(key, false);
-        }
-        
-        /// <summary>
         /// Retrieves current thumbnail location.
         /// </summary>
         [HttpDelete, Route("{key}")]
