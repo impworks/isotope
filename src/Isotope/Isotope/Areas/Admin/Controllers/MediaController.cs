@@ -84,15 +84,6 @@ namespace Isotope.Areas.Admin.Controllers
         }
 
         /// <summary>
-        /// Returns the next untagged media after current one.
-        /// </summary>
-        [HttpGet, Route("{key}/next-untagged")]
-        public Task<KeyResultVM> GetNextUntagged(string key)
-        {
-            return _mediaMgr.GetNextUntaggedAsync(key);
-        }
-        
-        /// <summary>
         /// Retrieves current thumbnail location.
         /// </summary>
         [HttpDelete, Route("{key}")]

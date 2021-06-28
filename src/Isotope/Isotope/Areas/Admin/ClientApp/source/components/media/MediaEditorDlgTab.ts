@@ -1,0 +1,1 @@
+type MediaEditorDlgTab = 'props' | 'tags' | 'thumb';

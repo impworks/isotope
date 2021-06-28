@@ -9,14 +9,10 @@ import { HasAsyncState } from "../mixins";
 
 import FilePicker from "./FilePicker.vue";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
-import MediaPropsEditorDlg from "./MediaPropsEditorDlg.vue";
-import MediaTagsEditorDlg from "./MediaTagsEditorDlg.vue";
-import MediaThumbEditorDlg from "./MediaThumbEditorDlg.vue";
+import MediaEditorDlg from "./MediaEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
-const propsEditor = create<{mediaKey: string}>(MediaPropsEditorDlg);
-const tagEditor = create<{mediaKey: string}>(MediaTagsEditorDlg);
-const thumbEditor = create<{mediaKey: string}>(MediaThumbEditorDlg);
+const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabKey: MediaEditorDlgTab}>(MediaEditorDlg);
 
 @Component({
     components: { FilePicker }
@@ -71,17 +67,18 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
         }
     }
 
-    editProps(m: MediaThumbnail) {
-        propsEditor({ mediaKey: m.key });
-    }
-
-    editTags(m: MediaThumbnail) {
-        tagEditor({ mediaKey: m.key });
-    }
-
-    async editThumb(m: MediaThumbnail) {
-        if(await thumbEditor({ mediaKey: m.key }))
-            m.thumbnailPath = m.thumbnailPath.replace(/nonce=([0-9]+)$/, 'nonce=' + Math.ceil(Math.random() * 10000));
+    async edit(m: MediaThumbnail, tab: MediaEditorDlgTab) {
+        const otherMedia = this.uploads.filter(x => !!x.result).map(x => x.result);
+        const result = await mediaEditor({ mediaKey: m.key, otherMedia: otherMedia, tabKey: tab });
+        
+        if(!result)
+            return;
+        
+        // refresh all thumbnails because it's impossible to know which ones have been modified
+        for(let m of otherMedia) {
+            const newNonce = Math.ceil(Math.random() * 10000);
+            m.thumbnailPath = m.thumbnailPath.replace(/nonce=([0-9]+)$/, 'nonce=' + newNonce);
+        }
     }
 
     async remove(u: IUploadWrapper) {
@@ -152,14 +149,14 @@ interface IUploadWrapper {
                                 <div class="card-body">
                                     <div class="card-actions">
                                         <div class="pull-left">
-                                            <a class="clickable" @click.prevent="editProps(u.result)" title="Edit">
+                                            <a class="clickable" @click.prevent="edit(u.result, 'props')" title="Edit properties">
                                                 <span class="fa fa-fw fa-edit"></span>
                                             </a>
-                                            <a class="clickable" @click.prevent="editThumb(u.result)" title="Edit thumbnail">
-                                                <span class="fa fa-fw fa-crop"></span>
-                                            </a>
-                                            <a class="clickable" @click.prevent="editTags(u.result)" title="Edit tags">
+                                            <a class="clickable" @click.prevent="edit(u.result, 'tags')" title="Edit tags">
                                                 <span class="fa fa-fw fa-tags"></span>
+                                            </a>
+                                            <a class="clickable" @click.prevent="edit(u.result, 'thumb')" title="Edit thumbnail">
+                                                <span class="fa fa-fw fa-crop"></span>
                                             </a>
                                         </div>
                                         <div class="pull-right">
