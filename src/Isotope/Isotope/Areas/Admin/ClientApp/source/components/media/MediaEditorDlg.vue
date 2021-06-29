@@ -1,16 +1,20 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from "vue-property-decorator";
+import { create } from "vue-modal-dialogs";
 import { DialogBase, HasAsyncState } from "../mixins";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { Media } from "../../vms/Media";
 import { Rect } from "../../../../../Common/source/vms/Rect";
+import { Tag } from "../../vms/Tag";
 
 import MediaThumbEditor from "./editors/MediaThumbEditor.vue";
 import MediaPropsEditor from "./editors/MediaPropsEditor.vue";
 import MediaTagsEditor from "./editors/MediaTagsEditor.vue";
-import { Tag } from "../../vms/Tag";
+import MediaEditorTagsPickerDlg from "./MediaEditorTagsPickerDlg.vue";
+
+const tagPicker = create<{ allTags: Tag[], pickedTags: Tag[] }, Tag[]>(MediaEditorTagsPickerDlg);
 
 @Component({
     components: { MediaTagsEditor, MediaPropsEditor, MediaThumbEditor }
@@ -43,7 +47,13 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
     ];
     tab: MediaEditorDlgTabInfo = null;
     
-    tags: Tag[] = null;
+    allTags: Tag[] = null;
+    pickedTags: Tag[] = null;
+    get tags(): Tag[] {
+        return this.pickedTags?.length > 0
+            ? this.pickedTags
+            : this.allTags;
+    }
     
     result: boolean = false;
     editNextOnSave: boolean = false;
@@ -78,8 +88,8 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
                 this.media = await this.$api.media.get(this.currKey);
                 this.thumbRect = await this.$api.media.getThumb(this.currKey);
                 
-                if(this.tags == null)
-                    this.tags = await this.$api.tags.getList();
+                if(this.allTags == null)
+                    this.allTags = await this.$api.tags.getList();
                 
                 await this.loadImage(this.media.fullPath);
             },
@@ -124,6 +134,10 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
         this.currIndex++;
         await this.load(this.currIndex);
     }
+    
+    async showTagPicker() {
+        this.pickedTags = await tagPicker({ allTags: this.allTags, pickedTags: this.pickedTags });
+    }
 
     // -----------------------------------
     // Private helpers
@@ -148,6 +162,8 @@ interface MediaEditorDlgTabInfo {
 
 <template>
     <div>
+        <div class="modal-backdrop show fade">
+        </div>
         <div class="modal fade show">
             <form @submit.prevent="save()">
                 <div class="modal-dialog modal-lg">
@@ -171,7 +187,7 @@ interface MediaEditorDlgTabInfo {
                                 <MediaPropsEditor :media="media"></MediaPropsEditor>
                             </div>
                             <div v-if="tab && tab.key === 'tags'">
-                                <MediaTagsEditor :media="media" :tags-lookup="tags"></MediaTagsEditor>
+                                <MediaTagsEditor :media="media" :tags-lookup="tags" @pick-tags="showTagPicker"></MediaTagsEditor>
                             </div>
                             <div v-if="tab && tab.key === 'thumb'">
                                 <MediaThumbEditor :media="media" :rect="thumbRect"></MediaThumbEditor>
@@ -219,8 +235,6 @@ interface MediaEditorDlgTabInfo {
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="modal-backdrop show fade">
         </div>
         <GlobalEvents @keydown.ctrl.83.stop.prevent="save()"
                       @keydown.ctrl.49.stop.prevent="tab = tabs[0]"

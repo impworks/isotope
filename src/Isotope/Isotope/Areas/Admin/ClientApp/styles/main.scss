@@ -86,3 +86,11 @@ html, body {
   top: 0;
   left: 0;
 }
+
+.modal {
+  z-index: unset !important;
+}
+
+.modal-backdrop {
+  z-index: unset !important;
+}

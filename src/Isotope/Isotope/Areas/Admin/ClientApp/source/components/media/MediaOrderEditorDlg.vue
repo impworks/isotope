@@ -39,6 +39,8 @@ export default class MediaOrderEditorDlg extends Mixins(HasAsyncState(), DialogB
 
 <template>
     <div>
+        <div class="modal-backdrop show fade">
+        </div>
         <div class="modal fade show">
             <form @submit.prevent="save()">
                 <div class="modal-dialog modal-lg" v-if="media">
@@ -62,8 +64,6 @@ export default class MediaOrderEditorDlg extends Mixins(HasAsyncState(), DialogB
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="modal-backdrop show fade">
         </div>
     </div>
 </template>

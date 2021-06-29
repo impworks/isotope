@@ -146,12 +146,17 @@ export default class MediaTagsEditor extends Vue {
     <div>
         <div class="form-group">
             <div class="pull-right">
-                <button class="btn btn-sm btn-outline-secondary" type="button"
+                <button class="btn btn-sm btn-outline-secondary mr-2" type="button"
                         @click.prevent="toggleCreatingTagMode(true)"
                         :disabled="isCreatingTag">
                     <span class="fa fa-plus-circle"></span>
                     <span v-if="isCreatingTag">Adding tag: Esc to cancel</span>
                     <span v-else title="Add a new tag (Ctrl + Space)">Add tag</span>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" type="button"
+                        @click.prevent="$emit('pick-tags')"
+                        title="Configure tags">
+                    <span class="fa fa-cog"></span>
                 </button>
             </div>
             <div class="clearfix"></div>
