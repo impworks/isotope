@@ -35,6 +35,7 @@
 
 @import "../../../Common/styles/datepicker";
 @import "draggable.scss";
+@import "fixes.scss";
 
 html, body {
   height: 100%;
@@ -69,28 +70,16 @@ html, body {
   }
 }
 
-.modal {
-  display: block;
+.spinner {
+  -webkit-animation:spin 2s linear infinite;
+  -moz-animation:spin 2s linear infinite;
+  animation:spin 2s linear infinite;
 }
 
-.vdp-datepicker input {
-  @extend .form-control;
-}
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
-.vs__clear {
-  margin-top: -4px;
-}
-
-.vue-portal-target {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.modal {
-  z-index: unset !important;
-}
-
-.modal-backdrop {
-  z-index: unset !important;
+.text-red {
+  color: #ff0000;
 }

@@ -65,6 +65,16 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
     get hasNext() {
         return this.currIndex < this.otherMedia.length - 1;
     }
+    
+    get canSave() {
+        return !this.asyncState.isLoading
+            && !this.asyncState.isSaving
+            && !this.hasInvalidTags;
+    }
+    
+    get hasInvalidTags() {
+        return this.media?.overlayTags?.some(x => !x.tagId);
+    }
 
     // -----------------------------------
     // Hooks
@@ -98,6 +108,9 @@ export default class MediaEditorDlg extends Mixins(DialogBase, HasAsyncState()) 
     }
     
     async save() {
+        if(!this.canSave)
+            return;
+        
         const success = await this.showSaving(
             async () => {
                 await this.$api.media.update(this.currKey, this.media);
@@ -157,6 +170,7 @@ interface MediaEditorDlgTabInfo {
     key: MediaEditorDlgTab;
     caption: string;
     tooltip: string;
+    check?: () => boolean;
 }
 </script>
 
@@ -176,6 +190,10 @@ interface MediaEditorDlgTabInfo {
                                        :class="{'active': t === tab}"
                                        :title="t.tooltip"
                                        @click.prevent="tab = t">
+                                        <span class="fa fa-exclamation-circle text-red"
+                                              v-if="t.key === 'tags' && hasInvalidTags"
+                                              title="Some tags are incomplete">
+                                        </span>
                                         {{t.caption}}
                                     </a>
                                 </li>
@@ -226,7 +244,7 @@ interface MediaEditorDlgTabInfo {
                                     </button>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" :disabled="asyncState.isSaving || asyncState.isLoading" title="Ctrl + S">
+                            <button type="submit" class="btn btn-primary" :disabled="!canSave" title="Ctrl + S">
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Update</span>
                             </button>
@@ -254,6 +272,10 @@ interface MediaEditorDlgTabInfo {
 
     .media-wrapper {
         position: relative;
+        
+        &.crosshair {
+            cursor: crosshair;
+        }
 
         img {
             max-width: 100%;
@@ -280,14 +302,4 @@ interface MediaEditorDlgTabInfo {
         height: 40px;
     }
 }
-
-.spinner {
-    -webkit-animation:spin 2s linear infinite;
-    -moz-animation:spin 2s linear infinite;
-    animation:spin 2s linear infinite;
-}
-
-@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
-@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 </style>

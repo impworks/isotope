@@ -162,7 +162,7 @@ export default class MediaTagsEditor extends Vue {
             <div class="clearfix"></div>
         </div>
         <div class="form-group media-container">
-            <div class="media-wrapper" :class="{'crosshair': this.isCreatingTag}"
+            <div class="media-wrapper" :class="{'crosshair': isCreatingTag }"
                  @mousedown.prevent="createTagStarted($event)"
                  @mousemove.prevent="createTagMoved($event)"
                  @mouseup.prevent="createTagCompleted()"
