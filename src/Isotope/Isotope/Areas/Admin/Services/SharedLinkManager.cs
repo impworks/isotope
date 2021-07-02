@@ -56,6 +56,7 @@ namespace Isotope.Areas.Admin.Services
             var link = new SharedLink
             {
                 Key = UniqueKey.Get(),
+                CreationDate = DateTime.Now,
                 Folder = folder,
             };
             _mapper.Map(vm, link);

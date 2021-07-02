@@ -14,6 +14,6 @@ export class DateHelper {
      */
     static formatFull(d: string | Date) {
         const dt = typeof d === "string" ? DateTime.fromISO(d) : DateTime.fromJSDate(d);
-        return dt.setLocale('en').toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
+        return dt.setLocale('en').toFormat("yyyy-MM-dd TT");
     }
 }
