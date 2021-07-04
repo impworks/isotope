@@ -37,6 +37,8 @@ export default class UserPasswordDlg extends Mixins(HasAsyncState(), DialogBase)
 
 <template>
     <div>
+        <div class="modal-backdrop show fade">
+        </div>
         <div class="modal fade show">
             <form @submit.prevent="save()">
                 <div class="modal-dialog" v-if="value">
@@ -70,8 +72,6 @@ export default class UserPasswordDlg extends Mixins(HasAsyncState(), DialogBase)
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="modal-backdrop show fade">
         </div>
         <GlobalEvents @keydown.ctrl.83.stop.prevent="save()"></GlobalEvents>
     </div>

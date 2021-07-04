@@ -51,6 +51,8 @@ export default class UserCreatorDlg extends Mixins(HasAsyncState(), DialogBase) 
 
 <template>
     <div>
+        <div class="modal-backdrop show fade">
+        </div>
         <div class="modal fade show">
             <form @submit.prevent="save()">
                 <div class="modal-dialog">
@@ -102,8 +104,6 @@ export default class UserCreatorDlg extends Mixins(HasAsyncState(), DialogBase) 
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="modal-backdrop show fade">
         </div>
     </div>
 </template>

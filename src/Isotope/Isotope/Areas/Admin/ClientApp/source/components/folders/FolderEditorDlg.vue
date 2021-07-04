@@ -112,6 +112,8 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
 
 <template>
     <div>
+        <div class="modal-backdrop show fade">
+        </div>
         <div class="modal fade show">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -200,8 +202,6 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
                         </loading>
                     </div>
                 </div>
-        </div>
-        <div class="modal-backdrop show fade">
         </div>
         <GlobalEvents @keydown.ctrl.83.stop.prevent="save()"></GlobalEvents>
     </div>

@@ -11,6 +11,8 @@ export default class ConfirmationDlg extends Mixins(DialogBase) {
 
 <template>
     <div>
+        <div class="modal-backdrop show fade">
+        </div>
         <div class="modal fade show">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -25,8 +27,6 @@ export default class ConfirmationDlg extends Mixins(DialogBase) {
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="modal-backdrop show fade">
         </div>
     </div>
 </template>

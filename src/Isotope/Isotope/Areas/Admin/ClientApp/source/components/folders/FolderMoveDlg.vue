@@ -73,6 +73,8 @@ interface NestedFolderTitle extends FolderTitle {
 
 <template>
     <div>
+        <div class="modal-backdrop show fade">
+        </div>
         <div class="modal fade show">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -127,8 +129,6 @@ interface NestedFolderTitle extends FolderTitle {
                     </loading>
                 </div>
             </div>
-        </div>
-        <div class="modal-backdrop show fade">
         </div>
     </div>
 </template>
