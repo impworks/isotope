@@ -18,4 +18,15 @@ export class ArrayHelper {
         
         return null;
     }
+
+    /**
+     * Removes an item if it exists in the array.
+     * @param arr
+     * @param item
+     */
+    static removeItem<T>(arr: T[], item: T) {
+        const idx = arr.indexOf(item);
+        if(idx !== -1)
+            arr.splice(idx, 1);
+    }
 }

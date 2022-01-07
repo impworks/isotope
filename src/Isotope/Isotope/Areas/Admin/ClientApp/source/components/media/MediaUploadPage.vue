@@ -6,6 +6,7 @@ import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { Folder } from "../../vms/Folder";
 import { HasAsyncState } from "../mixins";
+import { ArrayHelper } from "../../../../../Common/source/utils/ArrayHelper";
 
 import FilePicker from "./FilePicker.vue";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
@@ -24,6 +25,7 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
     batchSize: number = null;
     batchIndex: number = 1;
     uploads: IUploadWrapper[] = [];
+    media: MediaThumbnail[] = [];
     
     async mounted() {
         const key = this.$route.params['key'];
@@ -56,6 +58,8 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
         
         try {
             wrap.result = await this.$api.media.upload(this.folder.key, file, pc => wrap.progress = pc);
+            if(wrap.result)
+                this.media.push(wrap.result);
         } catch (e) {
             if(e.response?.status === 400) {
                 wrap.error = e.response.data.error;
@@ -68,14 +72,13 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
     }
 
     async edit(m: MediaThumbnail, tab: MediaEditorDlgTab) {
-        const otherMedia = this.uploads.filter(x => !!x.result).map(x => x.result);
-        const result = await mediaEditor({ mediaKey: m.key, otherMedia: otherMedia, tabKey: tab });
+        const result = await mediaEditor({ mediaKey: m.key, otherMedia: this.media, tabKey: tab });
         
         if(!result)
             return;
         
         // refresh all thumbnails because it's impossible to know which ones have been modified
-        for(let m of otherMedia) {
+        for(let m of this.media) {
             const newNonce = Math.ceil(Math.random() * 10000);
             m.thumbnailPath = m.thumbnailPath.replace(/nonce=([0-9]+)$/, 'nonce=' + newNonce);
         }
@@ -89,8 +92,9 @@ export default class MediaUploadPage extends Mixins(HasAsyncState()) {
         await this.showSaving(
             async () => {
                 await this.$api.media.remove(u.result.key);
-                const idx = this.uploads.indexOf(u);
-                this.uploads.splice(idx, 1);
+                
+                ArrayHelper.removeItem(this.media, u.result);
+                ArrayHelper.removeItem(this.uploads, u);
 
                 this.$toast.success('Media removed');
             },
