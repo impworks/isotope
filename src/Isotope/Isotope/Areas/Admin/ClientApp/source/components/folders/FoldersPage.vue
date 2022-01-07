@@ -7,7 +7,6 @@ import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { HasAsyncState } from "../mixins";
 import { FolderTitle } from "../../vms/FolderTitle";
 
-import FolderRow from "./FolderRow.vue";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import FolderEditorDlg from "./FolderEditorDlg.vue";
 import FolderMoveDlg from "./FolderMoveDlg.vue";
@@ -16,9 +15,7 @@ const confirmation = create<{text: string}>(ConfirmationDlg);
 const editDlg = create<{folder: FolderTitle, parent: FolderTitle}>(FolderEditorDlg);
 const moveDlg = create<{folder: FolderTitle}>(FolderMoveDlg); 
 
-@Component({
-    components: { FolderRow }
-})
+@Component
 export default class FoldersPage extends Mixins(HasAsyncState()) {
     @Dep('$api') $api: ApiService;
 
