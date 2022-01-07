@@ -1,11 +1,11 @@
 <script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
+import { create } from "vue-modal-dialogs";
+
 import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { HasAsyncState } from "../mixins";
 import { FolderTitle } from "../../vms/FolderTitle";
-
-import { create } from "vue-modal-dialogs";
 
 import FolderRow from "./FolderRow.vue";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
@@ -23,10 +23,23 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
     @Dep('$api') $api: ApiService;
 
     folders: FolderTitle[] = [];
+    
+    get flatFolders(): FolderTitle[] {
+        const result = [] as FolderTitle[];
+        flatten(this.folders);
+        return result;
+        
+        function flatten(list: FolderTitle[]) {
+            for(let item of list) {
+                result.push(item);
+                if(item.subfolders && item.subfolders.length)
+                    flatten(item.subfolders);
+            }
+        }
+    }
 
     async mounted() {
         await this.load(true);
-        this.$root.$on('menu-requested', e => this.$refs.menu.open(e.event, e.folder));
     }
     
     beforeDestroy() {
@@ -71,6 +84,10 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
         if(await moveDlg({ folder: f }))
             await this.load();
     }
+    
+    showMenu(e: MouseEvent, f: FolderTitle) {
+        this.$refs.menu.open(e, f);
+    }
 }
 </script>
 
@@ -101,7 +118,24 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
             </tr>
             </tbody>
             <tbody v-else>
-                <FolderRow v-for="f in folders" :folder="f" :depth="0" :key="f.key + '/' + f.depth"></FolderRow>
+                <tr v-for="f in flatFolders" :key="f.key + '/' + f.depth" v-action-row class="hover-actions" @contextmenu.prevent="showMenu($event, f)">
+                    <td :style="{'padding-left': (f.depth + 1) + 'rem'}">
+                        <div v-if="f.thumbnailPath" class="folder-thumb" :style="{'background-image': 'url(' + f.thumbnailPath + ')'}"></div>
+                        <span v-else class="fa fa-fw fa-folder-o"></span>
+                        <router-link :to="'/folders/' + f.key">
+                            {{ f.caption }}
+                        </router-link>
+                    </td>
+                    <td>
+                        <span v-if="f.mediaCount > 0">{{ f.mediaCount }}</span>
+                        <span v-else title="Empty folder">&mdash;</span>
+                    </td>
+                    <td>
+                        <a class="hover-action" @click.stop="showMenu($event, f)" title="Actions">
+                            <span class="fa fa-fw fa-ellipsis-v"></span>
+                        </a>
+                    </td>
+                </tr>
             </tbody>
         </table>
         <portal to="context-menu">
@@ -132,3 +166,16 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
         </portal>
     </loading>
 </template>
+
+<style scoped lang="scss">
+    .folder-thumb {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        background-position: center center;
+        background-size: cover;
+        vertical-align: middle;
+        margin: -5px;
+        margin-right: 8px;
+    }
+</style>
