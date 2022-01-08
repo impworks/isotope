@@ -17,6 +17,8 @@ namespace Isotope
         public static void Main(string[] args)
         {
             AppContext.SetSwitch("Microsoft.AspNetCore.Routing.UseCorrectCatchAllBehavior", true);
+            AppContext.SetSwitch("System.Drawing.EnableUnixSupport", true);
+
             CreateHostBuilder(args).Build().Run();
         }
 

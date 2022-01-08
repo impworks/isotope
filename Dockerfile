@@ -1,4 +1,4 @@
-FROM node:lts-alpine as node
+FROM node:14-alpine as node
 RUN apk add --no-cache util-linux
 WORKDIR /build/
 
@@ -10,7 +10,7 @@ ADD src/Isotope/Isotope/ .
 RUN find .
 RUN npm run build
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 as net-builder
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as net-builder
 WORKDIR /build
 ADD src/Isotope/Isotope.sln .
 ADD src/Isotope/Isotope/Isotope.csproj Isotope/
