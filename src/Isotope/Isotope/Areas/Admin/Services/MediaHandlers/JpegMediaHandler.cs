@@ -61,6 +61,9 @@ namespace Isotope.Areas.Admin.Services.MediaHandlers
             try
             {
                 var exif = media.FullImage.Metadata.ExifProfile;
+                if (exif == null)
+                    return;
+
                 media.Date = ParseDate(exif.Values.FirstOrDefault(x => x.Tag == ExifTag.DateTimeOriginal)?.GetValue()?.ToString());
                 media.ExtraData = GetMetadata(exif);
             }
