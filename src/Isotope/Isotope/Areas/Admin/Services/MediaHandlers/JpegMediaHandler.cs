@@ -1,16 +1,18 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Isotope.Code.Utils.Helpers;
+using Impworks.Utils.Linq;
 using Isotope.Data.Models;
-using MetadataExtractor;
-using MetadataExtractor.Formats.Exif;
 using Serilog;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+using SixLabors.ImageSharp.Processing;
 
 namespace Isotope.Areas.Admin.Services.MediaHandlers
 {
@@ -36,12 +38,8 @@ namespace Isotope.Areas.Admin.Services.MediaHandlers
         /// </summary>
         public async Task<MediaInfo> ProcessAsync(string key, string path)
         {
-            var image = await Task.Run(() =>
-            {
-                var img = Image.FromFile(path);
-                ImageHelper.ApplyExifRotation(img);
-                return img;
-            });
+            var image = await Image.LoadAsync(path);
+            image.Mutate(x => x.AutoOrient());
 
             var media = new MediaInfo
             {
@@ -50,7 +48,7 @@ namespace Isotope.Areas.Admin.Services.MediaHandlers
                 MediaType = MediaType.Photo
             };
 
-            await PopulateMetadataAsync(media, path);
+            PopulateMetadata(media);
 
             return media;
         }
@@ -58,17 +56,13 @@ namespace Isotope.Areas.Admin.Services.MediaHandlers
         /// <summary>
         /// Extracts additional data from the media.
         /// </summary>
-        private async Task PopulateMetadataAsync(MediaInfo media, string path)
+        private void PopulateMetadata(MediaInfo media)
         {
             try
             {
-                var dirs = await Task.Run(() => ImageMetadataReader.ReadMetadata(path));
-                var exifDir = dirs.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-                if (exifDir == null)
-                    return;
-
-                media.Date = ParseDate(exifDir.GetDescription(ExifDirectoryBase.TagDateTimeOriginal));
-                media.ExtraData = GetMetadata(exifDir);
+                var exif = media.FullImage.Metadata.ExifProfile;
+                media.Date = ParseDate(exif.Values.FirstOrDefault(x => x.Tag == ExifTag.DateTimeOriginal)?.GetValue()?.ToString());
+                media.ExtraData = GetMetadata(exif);
             }
             catch (Exception ex)
             {
@@ -97,10 +91,28 @@ namespace Isotope.Areas.Admin.Services.MediaHandlers
         /// <summary>
         /// Returns metadata entries.
         /// </summary>
-        private Dictionary<string, string> GetMetadata(ExifSubIfdDirectory dir)
+        private Dictionary<string, string> GetMetadata(ExifProfile profile)
         {
             // todo: only extract a couple of "interesting" tags
-            return dir.Tags.ToDictionary(x => x.Name, x => x.Description);
+            return profile.Values
+                          .Select(x => new {Tag = x.Tag.ToString(), Value = GetReadableValue(x) })
+                          .Where(x => x.Value?.Length > 0 && x.Value != "0")
+                          .ToDictionary(x => x.Tag, x => x.Value);
+
+            string GetReadableValue(IExifValue entry)
+            {
+                var value = entry.GetValue();
+                if (!entry.IsArray)
+                    return value?.ToString();
+
+                if(value is IList<byte> bytes && bytes.Any(x => x != 0))
+                    return "[" + bytes.JoinString(", ") + "]";
+
+                if (value is IList<short> shorts && shorts.Any(x => x != 0))
+                    return "[" + shorts.JoinString(", ") + "]";
+
+                return null;
+            }
         }
 
         #endregion

@@ -18,7 +18,7 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using FolderVM = Isotope.Areas.Front.Dto.FolderVM;
+using SixLabors.ImageSharp;
 
 namespace Isotope.Areas.Admin.Services
 {
@@ -97,7 +97,7 @@ namespace Isotope.Areas.Admin.Services
 
             var key = UniqueKey.Get();
             var paths = await SaveUploadAsync(file, folder, key);
-            var mediaInfo = await handler.ProcessAsync(key, paths.Path);
+            using var mediaInfo = await handler.ProcessAsync(key, paths.Path);
 
             var tagsIds = await GetInheritedTagsAsync(folder);
             var tags = tagsIds.Select(x => new MediaTagBinding {TagId = x, Type = TagBindingType.Inherited}).ToList();
@@ -116,7 +116,7 @@ namespace Isotope.Areas.Admin.Services
                 Date = mediaInfo.Date?.ToString("yyyy.MM.dd"),
                 Width = mediaInfo.FullImage.Width,
                 Height = mediaInfo.FullImage.Height,
-                ThumbnailRect = ImageHelper.GetDefaultThumbnailRect(mediaInfo.FullImage.Size),
+                ThumbnailRect = ImageHelper.GetDefaultThumbnailRect(mediaInfo.FullImage.Size()),
                 UploadDate = DateTime.Now,
                 VersionDate = DateTime.Now,
                 Order = maxOrder + 1,
@@ -132,9 +132,7 @@ namespace Isotope.Areas.Admin.Services
             folder.MediaCount = await _db.Media.CountAsync(x => x.FolderKey == folderKey);
             await _db.SaveChangesAsync();
 
-            ImageHelper.CreateThumbnails(mediaInfo.FullImage, paths.Path);
-
-            mediaInfo.FullImage.Dispose();
+            await ImageHelper.CreateThumbnailsAsync(mediaInfo.FullImage, paths.Path);
 
             return await _db.Media
                             .Where(x => x.Key == key)

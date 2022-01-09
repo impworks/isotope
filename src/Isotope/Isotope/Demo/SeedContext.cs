@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +11,7 @@ using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
 using Isotope.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
 
 namespace Isotope.Demo
 {
@@ -78,8 +78,8 @@ namespace Isotope.Demo
             Directory.CreateDirectory(Path.GetDirectoryName(targetFullPath));
 
             File.Copy(sourceFullPath, targetFullPath);
-            using var srcImg = Image.FromFile(sourceFullPath);
-            ImageHelper.CreateThumbnails(srcImg, targetFullPath);
+            using var srcImg = await Image.LoadAsync(sourceFullPath);
+            await ImageHelper.CreateThumbnailsAsync(srcImg, targetFullPath);
 
             var media = new Media
             {
@@ -92,7 +92,7 @@ namespace Isotope.Demo
                 FolderKey = folder.Key,
                 Order = order,
                 Path = $"/@media/{folder.Key}/{key}.jpg",
-                ThumbnailRect = ImageHelper.GetDefaultThumbnailRect(srcImg.Size),
+                ThumbnailRect = ImageHelper.GetDefaultThumbnailRect(srcImg.Size()),
                 IsReady = true,
                 Width = srcImg.Width,
                 Height = srcImg.Height,

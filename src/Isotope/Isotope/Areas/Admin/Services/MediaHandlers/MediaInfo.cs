@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using Isotope.Data.Models;
+using SixLabors.ImageSharp;
 
 namespace Isotope.Areas.Admin.Services.MediaHandlers
 {
     /// <summary>
     /// Details of a media processed by a handler.
     /// </summary>
-    public class MediaInfo
+    public class MediaInfo: IDisposable
     {
         /// <summary>
         /// Original image extracted for thumbnail generation.
@@ -34,5 +34,13 @@ namespace Isotope.Areas.Admin.Services.MediaHandlers
         /// Additional metadata (EXIF, etc).
         /// </summary>
         public Dictionary<string, string> ExtraData { get; set; }
+
+        /// <summary>
+        /// Releases the image resources back to the pool.
+        /// </summary>
+        public void Dispose()
+        {
+            FullImage?.Dispose();
+        }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Linq;
+using System.Threading.Tasks;
 using Isotope.Data.Models;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 
 namespace Isotope.Code.Utils.Helpers
 {
@@ -23,16 +24,14 @@ namespace Isotope.Code.Utils.Helpers
                 MediaSize = MediaSize.Small,
                 Size = new Size(200, 200),
                 ResizeFunc = ResizeToFill,
-                Codec = ImageCodecInfo.GetImageEncoders().First(x => x.MimeType == "image/jpeg"),
-                CodecArgs = new EncoderParameters { Param = new [] { new EncoderParameter(Encoder.Quality, 80L) } }
+                Codec = new JpegEncoder { Quality = 80 },
             },
             [MediaSize.Large] = new ImagePreset
             {
                 MediaSize = MediaSize.Large,
                 Size = new Size(1024, 768),
                 ResizeFunc = ResizeToFit,
-                Codec = ImageCodecInfo.GetImageEncoders().First(x => x.MimeType == "image/jpeg"),
-                CodecArgs = new EncoderParameters { Param = new[] { new EncoderParameter(Encoder.Quality, 90L) } }
+                Codec = new JpegEncoder { Quality = 90 }
             }
         };
 
@@ -41,7 +40,7 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static Image ResizeToFit(Image source, Size maxSize)
         {
-            return GetPortion(source, new Rectangle(Point.Empty, source.Size), GetInscribeSize(source.Size, maxSize));
+            return GetPortion(source, new Rectangle(Point.Empty, source.Size()), GetInscribeSize(source.Size(), maxSize));
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static Image ResizeToFill(Image source, Size maxSize)
         {
-            return GetPortion(source, GetFillRectangle(source.Size, maxSize), maxSize);
+            return GetPortion(source, GetFillRectangle(source.Size(), maxSize), maxSize);
         }
         
         /// <summary>
@@ -74,21 +73,11 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static Image GetPortion(Image source, Rectangle srcRect, Size size)
         {
-            var bmp = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
-            using var gfx = Graphics.FromImage(bmp);
-
-            var destRect = new Rectangle(Point.Empty, size);
-            
-            gfx.Clear(Color.Transparent);
-            gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            gfx.DrawImage(
-                source,
-                destRect,
-                srcRect,
-                GraphicsUnit.Pixel
-            );
-
-            return bmp;
+            return source.Clone(x =>
+            {
+                x.Crop(srcRect);
+                x.Resize(size, KnownResamplers.Lanczos3, true);
+            });
         }
 
         /// <summary>
@@ -122,42 +111,14 @@ namespace Isotope.Code.Utils.Helpers
         /// <summary>
         /// Saves thumbnails for an image.
         /// </summary>
-        public static void CreateThumbnails(Image originalImage, string originalPath)
+        public static async Task CreateThumbnailsAsync(Image originalImage, string originalPath)
         {
             foreach (var preset in ImagePresets.Values)
             {
                 var path = MediaHelper.GetSizedMediaPath(originalPath, preset.MediaSize);
                 using var image = preset.ResizeFunc(originalImage, preset.Size);
-                image.Save(path, preset.Codec, preset.CodecArgs);
+                await image.SaveAsync(path, preset.Codec);
             }
-        }
-
-        /// <summary>
-        /// Rotates the image if it has an EXIF orientation tag.
-        /// </summary>
-        public static void ApplyExifRotation(Image img)
-        {
-            const int EXIF_ORIENTATION = 274;
-            
-            if (!img.PropertyIdList.Contains(EXIF_ORIENTATION))
-                return;
-
-            var prop = img.GetPropertyItem(EXIF_ORIENTATION);
-            int val = BitConverter.ToUInt16(prop.Value, 0);
-            var rot = RotateFlipType.RotateNoneFlipNone;
-
-            if (val == 3 || val == 4)
-                rot = RotateFlipType.Rotate180FlipNone;
-            else if (val == 5 || val == 6)
-                rot = RotateFlipType.Rotate90FlipNone;
-            else if (val == 7 || val == 8)
-                rot = RotateFlipType.Rotate270FlipNone;
-
-            if (val == 2 || val == 4 || val == 5 || val == 7)
-                rot |= RotateFlipType.RotateNoneFlipX;
-
-            if (rot != RotateFlipType.RotateNoneFlipNone)
-                img.RotateFlip(rot);
         }
 
         /// <summary>
@@ -184,7 +145,6 @@ namespace Isotope.Code.Utils.Helpers
         public MediaSize MediaSize { get; set; }
         public Size Size { get; set; }
         public Func<Image, Size, Image> ResizeFunc { get; set; }
-        public ImageCodecInfo Codec { get; set; }
-        public EncoderParameters CodecArgs { get; set; }
+        public IImageEncoder Codec { get; set; }
     }
 }

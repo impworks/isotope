@@ -1,6 +1,6 @@
-﻿using System.Drawing;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Isotope.Data.Models;
+using SixLabors.ImageSharp;
 
 namespace Isotope.Areas.Admin.Services.MediaHandlers
 {
@@ -19,7 +19,7 @@ namespace Isotope.Areas.Admin.Services.MediaHandlers
         /// </summary>
         public async Task<MediaInfo> ProcessAsync(string key, string path)
         {
-            var image = await Task.Run(() => Image.FromFile(path));
+            var image = await Image.LoadAsync(path);
             return new MediaInfo
             {
                 FullImage = image,

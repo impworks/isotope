@@ -6,7 +6,6 @@ using Isotope.Data;
 using Isotope.Data.Models;
 using Isotope.Data.Utils;
 using Isotope.Demo;
-using MetadataExtractor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
