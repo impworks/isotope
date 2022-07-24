@@ -64,10 +64,11 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
                 'touch': isTouchDevice,
                 'no-touch': !isTouchDevice
             }"
+            v-if="loaded"
         >
             <div 
                 class="root__centered-content" 
-                v-if="loaded && (error || authRequired)"
+                v-if="error || authRequired"
             >
                 <div v-if="error" class="gallery__error">
                     <div class="gallery__error__content">
@@ -76,7 +77,7 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
                         <p>{{error}}</p>
                     </div>
                 </div>
-                <LoginForm v-if="!error && authRequired" />
+                <LoginForm v-else></LoginForm>
             </div>
             <router-view v-else></router-view>
             <portal-target name="overlay"></portal-target>

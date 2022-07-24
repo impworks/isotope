@@ -9,6 +9,8 @@ import { Bind, Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { IObservable } from "../../../../../Common/source/utils/Interfaces";
+import { EventBusService } from "../../services/EventBusService";
+
 import MediaContent from "./MediaContent.vue";
 import MediaDetails from "./MediaDetails.vue";
 
@@ -19,6 +21,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     @Dep('$host') $host: string;
     @Dep('$api') $api: ApiService;
     @Dep('$filter') $filter: FilterStateService;
+    @Dep('$eventBus') $eventBus: EventBusService;
 
     @Prop({ required: true }) indexFeed: IObservable<number>;
     @Prop({ required: true, type: Array }) source: MediaThumbnail[];
@@ -70,6 +73,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
             document.documentElement.style.height = `100%`;
             setTimeout(() => {
                 window.scrollTo(0, 1);
+                this.$eventBus.uiUpdated.notify();
             }, 200);
         }, 200);
     }
@@ -78,6 +82,7 @@ export default class MediaViewer extends Mixins(HasLifetime) {
     @Bind()
     resizeHandler() {
         this.isMobile = BreakpointHelper.down(Breakpoints.lg);
+        this.$eventBus.uiUpdated.notify();
     }
 
     hide() {

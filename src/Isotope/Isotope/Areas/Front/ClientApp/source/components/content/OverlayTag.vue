@@ -1,13 +1,18 @@
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import Popper from 'popper.js';
+import { Component, Mixins, Prop, Watch } from "vue-property-decorator";
 import { TagBindingWithLocation } from "../../vms/TagBinding";
 import { FilterStateService } from "../../services/FilterStateService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
+import { EventBusService } from "../../services/EventBusService";
+import { HasLifetime } from "../mixins/HasLifetime";
 
 @Component
-export default class OverlayTag extends Vue {
+export default class OverlayTag extends Mixins(HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
+    @Dep('$eventBus') $eventBus: EventBusService;
+    
     @Prop({ required: true }) value: TagBindingWithLocation;
     @Prop({ required: false }) isMobile: boolean;
     @Prop({ required: false }) isMobileOverlayVisible: boolean;
@@ -15,6 +20,13 @@ export default class OverlayTag extends Vue {
 
     isTransitioning: boolean = false;
     isTapped: boolean = false;
+    
+    $refs: {
+        frame: HTMLElement;
+        popover: HTMLElement;
+    };
+    
+    private p: Popper;
     
     get canFilter() {
         return !this.$filter.shareId;
@@ -32,8 +44,19 @@ export default class OverlayTag extends Vue {
         }
     }
     
-    get id() {
-        return 'tag-' + this.value.id;
+    created() {
+        this.$nextTick(() => {
+            this.p = new Popper(this.$refs.frame, this.$refs.popover, {
+                placement: 'bottom',
+                eventsEnabled: true,
+                modifiers: {
+                    arrow: {
+                        element: '.arrow'
+                    }
+                }
+            });
+            this.observe(this.$eventBus.uiUpdated, () => this.p.scheduleUpdate());
+        });
     }
 
     onTap() {
@@ -76,6 +99,7 @@ export default class OverlayTag extends Vue {
     <div>
         <div 
             v-hammer:tap="onTap"
+            ref="frame"
             class="overlay-tag tooltip-target" 
             :class="{
                 'overlay-tag_mobile' : isMobile, 
@@ -83,29 +107,26 @@ export default class OverlayTag extends Vue {
                 'overlay-tag_transitioning': isTransitioning,
                 'overlay-tag_tapped': isTapped
             }"
-            :style="style" 
-            :id="id"
+            :style="style"
             @transitionstart.self="isTransitioning = true" 
             @transitionend.self="isTransitioning = false"
-        ></div>
-        <b-popover 
-            :target="id" 
-            :container="id" 
-            :show="true"
-            triggers="manual"
-            placement="bottom" 
         >
-            <a 
-                v-if="canFilter" 
-                class="clickable" 
-                @click.prevent="filterByTag()"
-            >
-                {{value.tag.caption}}
-            </a>
-            <span v-else>
-                {{value.tag.caption}}
-            </span>
-        </b-popover>
+            <div class="popover bs-popover-bottom tag-popover" ref="popover">
+                <div class="arrow"></div>
+                <div class="popover-body">
+                    <a
+                        v-if="canFilter"
+                        class="clickable"
+                        @click.prevent="filterByTag()"
+                    >
+                        {{value.tag.caption}}
+                    </a>
+                    <span v-else>
+                    {{value.tag.caption}}
+                </span>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 

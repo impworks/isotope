@@ -42,10 +42,10 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
         :is-full-page="true"
     >
         <div class="root">
-            <div class="root__centered-content" v-if="!isAuthorized">
+            <MainView v-if="isAuthorized"></MainView>
+            <div class="root__centered-content" v-else>
                 <LoginForm></LoginForm>
             </div>
-            <MainView v-else></MainView>
         </div>
     </loading>
 </template>

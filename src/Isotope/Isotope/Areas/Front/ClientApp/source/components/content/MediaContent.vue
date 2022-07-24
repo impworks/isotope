@@ -6,6 +6,7 @@ import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
 import { TagBindingWithLocation } from "../../vms/TagBinding";
+
 import OverlayTag from "./OverlayTag.vue";
 import MediaDetails from "./MediaDetails.vue";
 
@@ -14,6 +15,7 @@ import MediaDetails from "./MediaDetails.vue";
 })
 export default class MediaContent extends Vue {
     @Dep('$host') $host: string;
+    
     @Prop({ required: true }) elem: ICachedMedia;
     @Prop({ required: false }) isFirst: boolean;
     @Prop({ required: false }) isLast: boolean;
@@ -36,7 +38,7 @@ export default class MediaContent extends Vue {
     }
 
     mounted () {
-        this.conutMaxHeight();
+        this.updateMaxHeight();
         this.isMobile = BreakpointHelper.down(Breakpoints.lg);
         window.addEventListener("resize", this.resizeHandler);
     }
@@ -56,11 +58,11 @@ export default class MediaContent extends Vue {
     @Debounce(50)
     @Bind()
     resizeHandler() {
-        this.conutMaxHeight();
+        this.updateMaxHeight();
         this.isMobile = BreakpointHelper.down(Breakpoints.lg);
     }
 
-    conutMaxHeight () {
+    updateMaxHeight () {
         if (this.$refs.card && this.$refs.wrapper && this.elem && this.elem.media) {
             const imageHeight = this.elem.media.height;
             const windowHeight = window.innerHeight;
@@ -80,7 +82,7 @@ export default class MediaContent extends Vue {
     @Watch('elem')
     @Watch('elem.isLoading')
     onElemChanged(value: boolean) {
-        this.conutMaxHeight();
+        this.updateMaxHeight();
     }
 
     @Watch('isMobileOverlayVisible')

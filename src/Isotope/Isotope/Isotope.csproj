@@ -114,6 +114,7 @@
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\config\Router.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\front-main.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\ApiService.ts" />
+    <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\EventBusService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\services\FilterStateService.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\utils\AxiosHelpers.ts" />
     <TypeScriptCompile Include="Areas\Front\ClientApp\source\vms\Folder.ts" />
