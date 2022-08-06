@@ -179,7 +179,7 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tags</label>
                                         <div class="col-sm-9">
-                                            <v-select multiple :options="tags" v-model="value.tags" label="caption" :reduce="x => x.id">
+                                            <v-select multiple :options="tags" v-model="value.tags" label="caption" :reduce="x => x.id" v-burst-selection>
                                                 <template slot="no-options">No tags created yet.</template>                                       
                                             </v-select>
                                         </div>

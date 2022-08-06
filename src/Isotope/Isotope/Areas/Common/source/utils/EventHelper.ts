@@ -8,4 +8,12 @@ export class EventHelper {
         evt.initEvent(evtType, true, true);
         el.dispatchEvent(evt);
     }
+
+    /**
+     * Imitates a click on the element.
+     */
+    public static sendMouseClick(el: HTMLElement) {
+        EventHelper.sendMouseEvent(el, 'mousedown');
+        EventHelper.sendMouseEvent(el, 'mouseup');
+    }
 }

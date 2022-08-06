@@ -118,8 +118,7 @@ export default class MediaTagsEditor extends Vue {
         setTimeout(() => {
             const rects = this.$refs['rects'];
             const lastElem = rects[rects.length - 1].$el as HTMLElement;
-            EventHelper.sendMouseEvent(lastElem, 'mousedown');
-            EventHelper.sendMouseEvent(lastElem, 'mouseup');
+            EventHelper.sendMouseClick(lastElem);
         }, 50);
     }
 
@@ -185,7 +184,7 @@ export default class MediaTagsEditor extends Vue {
             <label class="col-sm-3 col-form-label">Custom tags</label>
             <div class="col-sm-9">
                 <v-select multiple :options="tagsLookup" v-model="extraTags" label="caption" :reduce="x => x.id"
-                          :disabled="isCreatingTag">
+                          :disabled="isCreatingTag" v-burst-selection>
                     <template slot="no-options">No tags created yet.</template>
                 </v-select>
             </div>

@@ -1,7 +1,9 @@
 <script lang="ts">
-import { Component, Mixins, Prop } from 'vue-property-decorator';
+import { Component, Mixins, Prop, Vue } from 'vue-property-decorator';
 import { DialogBase } from "../mixins";
 import { Tag } from "../../vms/Tag";
+import { EventHelper } from "../../../../../Common/source/utils/EventHelper";
+import { ArrayHelper } from "../../../../../Common/source/utils/ArrayHelper";
 
 @Component
 export default class MediaEditorTagsPickerDlg extends Mixins(DialogBase) {
@@ -9,6 +11,11 @@ export default class MediaEditorTagsPickerDlg extends Mixins(DialogBase) {
     @Prop({ required: true }) pickedTags: Tag[];
     
     result: Tag[] = [];
+    
+    get selectableTags(): Tag[] {
+        const lookup = ArrayHelper.toLookup(this.result, x => x.id, () => true);
+        return this.allTags.filter(x => !(x.id in lookup));
+    }
     
     mounted() {
         this.result = this.pickedTags?.slice(0) || [];
@@ -38,7 +45,7 @@ export default class MediaEditorTagsPickerDlg extends Mixins(DialogBase) {
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Tags</label>
                                 <div class="col-sm-9">
-                                    <v-select multiple :options="allTags" v-model="result" label="caption">
+                                    <v-select multiple :options="selectableTags" v-model="result" label="caption" v-burst-selection>
                                         <template slot="no-options">No tags created yet.</template>
                                     </v-select>
                                 </div>

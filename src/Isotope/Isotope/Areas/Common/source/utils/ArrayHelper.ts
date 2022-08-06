@@ -1,6 +1,21 @@
-import { Func2 } from "./Interfaces";
+import { Func2, ILookup } from "./Interfaces";
+
+type KeyFunc<TItem> = (x: TItem) => number|string;
 
 export class ArrayHelper {
+    /**
+     * Maps the array to a lookup using key and result getters.
+     */
+    public static toLookup<TItem, TResult>(arr: TItem[], keyFunc: KeyFunc<TItem>, resultFunc: Func2<TItem, TResult>): ILookup<TResult> {
+        const result = { } as ILookup<TResult>;
+
+        if(arr?.length)
+            for(let item of arr)
+                result[keyFunc(item)] = resultFunc(item);
+
+        return result;
+    }
+    
     /**
      * Finds a tree element that matches the predicate.
      */

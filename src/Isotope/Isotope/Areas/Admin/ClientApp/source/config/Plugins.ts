@@ -56,5 +56,8 @@ Vue.directive('action-row', createActionRowDirective());
 import { createClickOutsideDirective } from "../directives/ClickOutside";
 Vue.directive('click-outside', createClickOutsideDirective());
 
+import { createBurstSelectionDirective } from "../directives/BurstSelection";
+Vue.directive('burst-selection', createBurstSelectionDirective());
+
 import ContextMenu from "../components/utils/ContextMenu.vue";
 Vue.component("context-menu", ContextMenu);
