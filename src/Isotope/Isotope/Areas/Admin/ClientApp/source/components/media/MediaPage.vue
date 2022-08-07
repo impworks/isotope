@@ -92,46 +92,18 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                 </div>
                 <div class="clearfix"></div>
             </div>
-            <table class="table table-bordered mb-0">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Type</th>
-                    <th width="60%">Upload date</th>
-                    <th>Tags</th>
-                    <th width="1"></th>
-                </tr>
-                </thead>
-                <tbody v-if="media.length === 0">
-                <tr>
-                    <td colspan="5">
-                        <div class="alert alert-info mb-0">
-                            No media in this folder. Click "upload media" to create some.
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-                <tbody v-else>
-                    <tr v-for="m in media" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, m)">
-                        <td class="media-thumb" :style="{'background-image': 'url(' + m.thumbnailPath + ')'}">
-                        </td>
-                        <td>
-                            <span v-if="m.type === 1">Photo</span>
-                            <span v-if="m.type === 2">Video</span>
-                        </td>
-                        <td>{{formatDate(m.uploadDate)}}</td>
-                        <td>
-                            <span v-if="m.tags > 0">{{ m.tags }}</span>
-                            <span v-else title="No tags">&mdash;</span>
-                        </td>
-                        <td>
-                            <a class="hover-action" @click.stop="$refs.menu.open($event, m)" title="Actions">
-                                <span class="fa fa-fw fa-ellipsis-v"></span>
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="media-thumb-list">
+                <div v-for="m in media" v-action-row
+                     class="media-thumb mr-2 hover-actions" :style="{'background-image': 'url(' + m.thumbnailPath + ')'}"
+                     @contextmenu.prevent="$refs.menu.open($event, m)">
+                    <a class="hover-action" @click.stop="$refs.menu.open($event, m)">
+                        <span class="fa fa-fw fa-ellipsis-v"></span>
+                    </a>
+                </div>
+                <div v-if="media.length === 0" class="alert alert-info mb-0">
+                    No media in this folder. Click "upload media" to create some.
+                </div>
+            </div>
         </template>
         <template v-else>
             <div class="alert alert-danger mb-0">Folder does not exist.</div>
@@ -157,10 +129,33 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
 </template>
 
 <style scoped lang="scss">
+    .media-thumb-list {
+        margin-right: -0.6rem;
+    }
     .media-thumb {
-        width: 48px;
-        height: 48px;
+        display: inline-block;
+        width: 162px;
+        height: 162px;
         background-position: center center;
         background-size: cover;
+        position: relative;
+        
+        .hover-action {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: rgba(100%, 100%, 100%, 70%);
+            box-shadow: rgba(0,0,0, 70%) 0 0 5px;
+            border-radius: 15px;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            vertical-align: center;
+            
+            .fa {
+                vertical-align: top;
+                margin-top: 3px;
+            }
+        }
     }
 </style>

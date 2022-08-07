@@ -100,8 +100,8 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
         <table class="table table-bordered mb-0">
             <thead>
             <tr>
-                <th width="75%">Caption</th>
-                <th>Media count</th>
+                <th width="100%">Caption</th>
+                <th width="1">Media</th>
                 <th width="1"></th>
             </tr>
             </thead>
