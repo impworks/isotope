@@ -35,6 +35,8 @@ export default class UserEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
 
 <template>
     <div>
+        <div class="modal-backdrop show fade">
+        </div>
         <div class="modal fade show">
             <form @submit.prevent="save()">
                 <div class="modal-dialog" v-if="value">
@@ -62,14 +64,13 @@ export default class UserEditorDlg extends Mixins(HasAsyncState(), DialogBase) {
                                 <span v-if="asyncState.isSaving">Saving...</span>
                                 <span v-else>Save</span>
                             </button>
-                            <button type="button" class="btn btn-secondary" @click.prevent="$close(false)">Cancel
+                            <button type="button" class="btn btn-secondary" @click.prevent="$close(false)">
+                                Cancel
                             </button>
                         </div>
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="modal-backdrop show fade">
         </div>
         <GlobalEvents @keydown.ctrl.83.stop.prevent="save()"></GlobalEvents>
     </div>
