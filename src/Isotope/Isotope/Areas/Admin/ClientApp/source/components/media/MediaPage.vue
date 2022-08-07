@@ -5,16 +5,13 @@ import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { HasAsyncState } from "../mixins";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
-import { DateHelper } from "../../../../../Common/source/utils/DateHelper";
 import { Folder } from "../../vms/Folder";
 
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
-import MediaOrderEditorDlg from "./MediaOrderEditorDlg.vue";
 import MediaEditorDlg from "./MediaEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabKey: MediaEditorDlgTab}>(MediaEditorDlg);
-const orderEditor = create<{folderKey: string}>(MediaOrderEditorDlg);
 
 @Component
 export default class MediaPage extends Mixins(HasAsyncState()) {
@@ -22,6 +19,9 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
 
     media: MediaThumbnail[] = [];
     folder: Folder = null;
+    
+    mode: Mode = 'View';
+    mediaReorder: MediaThumbnail[] = [];
 
     async mounted() {
         const key = this.$route.params['key'];
@@ -64,15 +64,40 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
             await this.load();
     }
     
-    async reorder() {
-        if(await orderEditor({ folderKey: this.folder.key }))
-            await this.load();
+    startReorder() {
+        this.mode = 'Reorder';
+        this.mediaReorder = [...this.media];
     }
     
-    formatDate(d: string) {
-        return DateHelper.formatFull(d);
+    async confirmReorder() {
+        if(this.mode !== 'Reorder')
+            return;
+        
+        await this.showSaving(
+            async () => {
+                await this.$api.media.reorder(this.folder.key, this.mediaReorder.map(x => x.key));
+                
+                this.media = this.mediaReorder;
+                this.mediaReorder = [];
+                
+                this.$toast.success('Media order updated');
+            },
+            'Failed to update media order'
+        );
+        
+        this.mode = 'View';
+    }
+    
+    async cancelReorder() {
+        if(this.mode !== 'Reorder')
+            return;
+        
+        this.mediaReorder = [];
+        this.mode = 'View';
     }
 }
+
+type Mode = 'View' | 'Reorder' | 'Upload';
 </script>
 
 <template>
@@ -82,24 +107,45 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                 <h5 class="pull-left">
                     {{folder.caption}}
                 </h5>
-                <div class="pull-right">
-                    <button class="btn btn-outline-secondary btn-sm mr-2" type="button" @click.prevent="reorder()" :disabled="!media || media.length < 2">
+                <div class="pull-right" v-if="mode === 'View'">
+                    <button class="btn btn-outline-secondary btn-sm mr-2" type="button" @click.prevent="startReorder" :disabled="!media || media.length < 2">
                         <span class="fa fa-sort"></span> Reorder
                     </button>
                     <router-link class="btn btn-outline-secondary btn-sm" :to="'/folders/' + folder.key + '/upload'">
                         <span class="fa fa-upload"></span> Upload
                     </router-link>
                 </div>
+                <div class="pull-right" v-if="mode === 'Reorder'">
+                    <button class="btn btn-outline-primary btn-sm mr-2" type="button" @click.prevent="confirmReorder">
+                        <span class="fa fa-check"></span> Save
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm mr-2" type="button" @click.prevent="cancelReorder">
+                        <span class="fa fa-times"></span> Cancel
+                    </button>
+                </div>
                 <div class="clearfix"></div>
             </div>
             <div class="media-thumb-list">
-                <div v-for="m in media" v-action-row
-                     class="media-thumb mr-2 hover-actions" :style="{'background-image': 'url(' + m.thumbnailPath + ')'}"
-                     @contextmenu.prevent="$refs.menu.open($event, m)">
-                    <a class="hover-action" @click.stop="$refs.menu.open($event, m)">
-                        <span class="fa fa-fw fa-ellipsis-v"></span>
-                    </a>
-                </div>
+                <template v-if="media.length > 0">
+                    <template v-if="mode === 'Reorder'">
+                        <Draggable v-model="mediaReorder" ghost-class="media-thumb-ghost">
+                            <div v-for="m in mediaReorder"
+                                 class="media-thumb mr-2 media-thumb-reorder"
+                                 :style="{'background-image': 'url(' + m.thumbnailPath + ')'}">
+                            </div>
+                        </Draggable>
+                    </template>
+                    <template v-if="mode === 'View' || mode === 'Upload'">
+                        <div v-for="m in media" v-action-row
+                             class="media-thumb mr-2 hover-actions"
+                             :style="{'background-image': 'url(' + m.thumbnailPath + ')'}"
+                             @contextmenu.prevent="$refs.menu.open($event, m)">
+                            <a class="hover-action" @click.stop="$refs.menu.open($event, m)">
+                                <span class="fa fa-fw fa-ellipsis-v"></span>
+                            </a>
+                        </div>
+                    </template>
+                </template>
                 <div v-if="media.length === 0" class="alert alert-info mb-0">
                     No media in this folder. Click "upload media" to create some.
                 </div>
@@ -132,6 +178,7 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
     .media-thumb-list {
         margin-right: -0.6rem;
     }
+    
     .media-thumb {
         display: inline-block;
         width: 162px;
@@ -157,5 +204,17 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                 margin-top: 3px;
             }
         }
+    }
+    
+    .media-thumb-ghost {
+        display: inline-block;
+        width: 162px;
+        height: 162px;
+        border: 1px #ccc solid;
+        background-image: none !important;
+    }
+    
+    .media-thumb-reorder {
+        cursor: move;
     }
 </style>
