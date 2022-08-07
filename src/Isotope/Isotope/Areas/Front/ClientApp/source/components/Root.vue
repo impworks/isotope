@@ -1,5 +1,5 @@
 ﻿<script lang="ts">
-import { Component, Mixins } from "vue-property-decorator";
+import { Component, Mixins, Watch } from "vue-property-decorator";
 import { Dep } from "../../../../Common/source/utils/VueInjectDecorator";
 import { HasAsyncState } from "./mixins/HasAsyncState";
 import { HasLifetime } from "./mixins/HasLifetime";
@@ -25,7 +25,7 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
 
     async created() {
         this.$filter.updateFromRoute(this.$route);
-        this.observe(this.$filter.onUrlChanged, x => this.$router.replace(x));
+        this.observe(this.$filter.onUrlChanged, x => this.$router.push(x));
 
         this.isTouchDevice = DeviceHelper.isTouch();
         document.addEventListener("touchstart", function() {}, false); // enables :active pseudo for iOS Safari
@@ -49,6 +49,11 @@ export default class Root extends Mixins(HasAsyncState(), HasLifetime) {
         } finally {
             this.loaded = true;
         }
+    }
+    
+    @Watch('$route')
+    onRouteChanged() {
+        this.$filter.updateFromRoute(this.$route);
     }
 }
 </script>
