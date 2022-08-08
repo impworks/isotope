@@ -5,9 +5,13 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 export default class FilePicker extends Vue {
     @Prop({ required: false, default: false, type: Boolean }) multiple: boolean;
     @Prop({ required: false, default: false, type: Boolean }) disabled: boolean;
+    
+    $refs: {
+        input: HTMLInputElement;
+    };
 
     onClick() {
-        (this.$refs.input as HTMLInputElement).click();
+        this.$refs.input.click();
     }
 
     onDrop(e: DragEvent) {
@@ -16,12 +20,16 @@ export default class FilePicker extends Vue {
             this.onChange(files);
     }
 
-    onChange(files: File[]) {
-        const payload = this.multiple == false && files && files.length ? files[0] : files;
-        this.$emit('change', Array.from(payload));
-        setTimeout(() => {
-                const input = this.$refs.input as HTMLInputElement;
-                if(input) input.value = '';
+    onChange(files: FileList) {
+        const payload = this.multiple == false && files?.length > 0
+            ? [files[0]]
+            : Array.from(files);
+        this.$emit('change', payload);
+        
+        setTimeout(
+            () => {
+                if(this.$refs.input)
+                    this.$refs.input.value = '';
             },
             0
         );
