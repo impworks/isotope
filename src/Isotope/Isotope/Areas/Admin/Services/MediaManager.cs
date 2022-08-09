@@ -272,29 +272,86 @@ namespace Isotope.Areas.Admin.Services
         }
 
         /// <summary>
-        /// Removes the specified media by key.
+        /// Removes all media files specified by the list of keys.
+        /// Throws an exception if any of the keys is missing.
         /// </summary>
-        public async Task RemoveAsync(string key)
+        public async Task RemoveAsync(IReadOnlyList<string> keys)
         {
-            var media = await _db.Media
-                                 .Include(x => x.Folder)
-                                 .FirstOrDefaultAsync(x => x.Key == key);
-            if(media == null)
-                throw new OperationException($"Media '{key}' does not exist.");
+            var keyBatches = keys.PartitionBySize(100);
+            var paths = new List<string>(keys.Count);
+            
+            foreach (var keyBatch in keyBatches)
+            {
+                var media = await _db.Media
+                                     .Include(x => x.Folder)
+                                     .Where(x => keyBatch.Contains(x.Key))
+                                     .ToListAsync();
 
-            if (media.Folder.ThumbnailKey == key)
-                media.Folder.Thumbnail = null;
+                var missingKey = keyBatch.Except(media.Select(x => x.Key)).FirstOrDefault();
+                if(missingKey != null)
+                    throw new OperationException($"Media '{missingKey}' does not exist.");
 
-            _db.Media.Remove(media);
+                foreach (var m in media)
+                {
+                    if (m.Folder.ThumbnailKey == m.Key)
+                        m.Folder.Thumbnail = null;
+
+                    m.Folder.MediaCount--;
+
+                    _db.Media.Remove(m);
+                    paths.Add(m.Path);
+                }
+            }
 
             await _db.SaveChangesAsync();
 
-            foreach (var size in EnumHelper.GetEnumValues<MediaSize>())
+            var sizedPaths = from p in paths
+                             from s in EnumHelper.GetEnumValues<MediaSize>()
+                             let sizedPath = MediaHelper.GetSizedMediaPath(p, s)
+                             where File.Exists(sizedPath)
+                             select sizedPath;
+            
+            foreach (var sizedPath in sizedPaths)
+                File.Delete(sizedPath);
+        }
+
+        /// <summary>
+        /// Moves all media files specified by keys to another folder.
+        /// </summary>
+        public async Task MoveAsync(string folderKey, IReadOnlyList<string> keys)
+        {
+            var folder = await _db.Folders
+                                  .FirstOrDefaultAsync(x => x.Key == folderKey)
+                ?? throw new OperationException($"Folder '{folderKey}' does not exist.");
+            
+            var keyBatches = keys.PartitionBySize(100);
+            foreach (var keyBatch in keyBatches)
             {
-                var path = MediaHelper.GetSizedMediaPath(media.Path, size);
-                if(File.Exists(path))
-                    File.Delete(path);
+                var media = await _db.Media
+                                     .Include(x => x.Folder)
+                                     .Where(x => keyBatch.Contains(x.Key))
+                                     .ToListAsync();
+
+                var missingKey = keyBatch.Except(media.Select(x => x.Key)).FirstOrDefault();
+                if(missingKey != null)
+                    throw new OperationException($"Media '{missingKey}' does not exist.");
+
+                foreach (var m in media)
+                {
+                    if(m.FolderKey == folderKey)
+                        throw new OperationException($"Media '{m.Key}' is already in target folder ({folder.Caption}).");
+                            
+                    if (m.Folder.ThumbnailKey == m.Key)
+                        m.Folder.Thumbnail = null;
+
+                    m.Folder.MediaCount--;
+                    folder.MediaCount++;
+                    
+                    m.FolderKey = folderKey;
+                }
             }
+
+            await _db.SaveChangesAsync();
         }
 
         #region Helpers
