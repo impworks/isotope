@@ -172,8 +172,8 @@ namespace Isotope.Areas.Admin.Services
 
             _mapper.Map(vm, media);
 
-            var newTagIds = (vm.OverlayTags?.Select(x => x.TagId) ?? new int[0])
-                            .Concat(vm.ExtraTags?.Select(x => x.TagId) ?? new int[0])
+            var newTagIds = (vm.OverlayTags?.Select(x => x.TagId) ?? Array.Empty<int>())
+                            .Concat(vm.ExtraTags?.Select(x => x.TagId) ?? Array.Empty<int>())
                             .ToList();
             
             var existingTagIds = await _db.Tags
@@ -244,15 +244,15 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Updates the order of all media files in a folder.
         /// </summary>
-        public async Task ReorderAsync(string folderKey, string[] mediaKeys)
+        public async Task ReorderAsync(string folderKey, IReadOnlyList<string> mediaKeys)
         {
             var folder = await _db.Folders.FirstOrDefaultAsync(x => x.Key == folderKey);
             if(folder == null)
                 throw new OperationException($"Folder '{folderKey}' does not exist.");
 
-            var extraCount = mediaKeys.Length;
+            var extraCount = mediaKeys.Count;
             var orderLookup = new Dictionary<string, int>();
-            for (var i = 0; i < mediaKeys.Length; i++)
+            for (var i = 0; i < mediaKeys.Count; i++)
                 orderLookup[mediaKeys[i]] = i;
 
             var media = await _db.Media
@@ -272,29 +272,124 @@ namespace Isotope.Areas.Admin.Services
         }
 
         /// <summary>
-        /// Removes the specified media by key.
+        /// Removes all media files specified by the list of keys.
+        /// Throws an exception if any of the keys is missing.
         /// </summary>
-        public async Task RemoveAsync(string key)
+        public async Task RemoveAsync(IReadOnlyList<string> keys)
         {
-            var media = await _db.Media
-                                 .Include(x => x.Folder)
-                                 .FirstOrDefaultAsync(x => x.Key == key);
-            if(media == null)
-                throw new OperationException($"Media '{key}' does not exist.");
+            var keyBatches = keys.PartitionBySize(100);
+            var paths = new List<string>(keys.Count);
+            
+            foreach (var keyBatch in keyBatches)
+            {
+                var media = await _db.Media
+                                     .Include(x => x.Folder)
+                                     .Where(x => keyBatch.Contains(x.Key))
+                                     .ToListAsync();
 
-            if (media.Folder.ThumbnailKey == key)
-                media.Folder.Thumbnail = null;
+                var missingKey = keyBatch.Except(media.Select(x => x.Key)).FirstOrDefault();
+                if(missingKey != null)
+                    throw new OperationException($"Media '{missingKey}' does not exist.");
 
-            _db.Media.Remove(media);
+                foreach (var m in media)
+                {
+                    if (m.Folder.ThumbnailKey == m.Key)
+                        m.Folder.Thumbnail = null;
+
+                    m.Folder.MediaCount--;
+
+                    _db.Media.Remove(m);
+                    paths.Add(m.Path);
+                }
+            }
 
             await _db.SaveChangesAsync();
 
-            foreach (var size in EnumHelper.GetEnumValues<MediaSize>())
+            var sizedPaths = from p in paths
+                             from s in EnumHelper.GetEnumValues<MediaSize>()
+                             let sizedPath = MediaHelper.GetSizedMediaPath(p, s)
+                             where File.Exists(sizedPath)
+                             select sizedPath;
+            
+            foreach (var sizedPath in sizedPaths)
+                File.Delete(sizedPath);
+        }
+
+        /// <summary>
+        /// Moves all media files specified by keys to another folder.
+        /// </summary>
+        public async Task MoveAsync(string folderKey, IReadOnlyList<string> keys)
+        {
+            var folder = await _db.Folders
+                                  .FirstOrDefaultAsync(x => x.Key == folderKey)
+                ?? throw new OperationException($"Folder '{folderKey}' does not exist.");
+            
+            var keyBatches = keys.PartitionBySize(100);
+            foreach (var keyBatch in keyBatches)
             {
-                var path = MediaHelper.GetSizedMediaPath(media.Path, size);
-                if(File.Exists(path))
-                    File.Delete(path);
+                var media = await _db.Media
+                                     .Include(x => x.Folder)
+                                     .Where(x => keyBatch.Contains(x.Key))
+                                     .ToListAsync();
+
+                var missingKey = keyBatch.Except(media.Select(x => x.Key)).FirstOrDefault();
+                if(missingKey != null)
+                    throw new OperationException($"Media '{missingKey}' does not exist.");
+
+                foreach (var m in media)
+                {
+                    if(m.FolderKey == folderKey)
+                        throw new OperationException($"Media '{m.Key}' is already in target folder ({folder.Caption}).");
+                            
+                    if (m.Folder.ThumbnailKey == m.Key)
+                        m.Folder.Thumbnail = null;
+
+                    m.Folder.MediaCount--;
+                    folder.MediaCount++;
+                    
+                    m.FolderKey = folderKey;
+                }
             }
+
+            await _db.SaveChangesAsync();
+        }
+
+        /**
+         * Updates a list of media files, changing their description and date.
+         */
+        public async Task UpdateAsync(MassMediaUpdateVM vm)
+        {
+            if(vm == null)
+                throw new OperationException("Incorrect request.");
+            
+            if(vm.Date?.IsSet != true && vm.Description?.IsSet != null)
+                throw new OperationException("No properties are set for update.");
+            
+            if((vm.Keys?.Length >= 1) == false)
+                throw new OperationException("No media files are set for update.");
+            
+            var keyBatches = vm.Keys.PartitionBySize(100);
+            foreach (var keyBatch in keyBatches)
+            {
+                var media = await _db.Media
+                                     .Where(x => keyBatch.Contains(x.Key))
+                                     .ToListAsync();
+
+                var missingKey = keyBatch.Except(media.Select(x => x.Key)).FirstOrDefault();
+                if(missingKey != null)
+                    throw new OperationException($"Media '{missingKey}' does not exist.");
+
+                foreach (var m in media)
+                {
+                    if (vm.Date?.IsSet == true)
+                        m.Date = vm.Date.Value;
+
+                    if (vm.Description?.IsSet == true)
+                        m.Description = vm.Description.Value;
+                }
+            }
+
+            await _db.SaveChangesAsync();
         }
 
         #region Helpers

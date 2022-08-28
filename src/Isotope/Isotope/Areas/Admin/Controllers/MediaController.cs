@@ -89,7 +89,34 @@ namespace Isotope.Areas.Admin.Controllers
         [HttpDelete, Route("{key}")]
         public Task Delete(string key)
         {
-            return _mediaMgr.RemoveAsync(key);
+            return _mediaMgr.RemoveAsync(new [] { key });
+        }
+
+        /// <summary>
+        /// Removes a batch of media files.
+        /// </summary>
+        [HttpPost, Route("mass/delete")]
+        public Task Delete([FromBody] MassMediaActionVM vm)
+        {
+            return _mediaMgr.RemoveAsync(vm.Keys);
+        }
+        
+        /// <summary>
+        /// Moves a batch of media files to another folder.
+        /// </summary>
+        [HttpPost, Route("mass/move")]
+        public Task Delete([FromBody] MassMediaMoveVM vm)
+        {
+            return _mediaMgr.MoveAsync(vm.FolderKey, vm.Keys);
+        }
+
+        /// <summary>
+        /// Updates a batch of media files together.
+        /// </summary>
+        [HttpPost, Route("mass/update")]
+        public Task Update([FromBody] MassMediaUpdateVM vm)
+        {
+            return _mediaMgr.UpdateAsync(vm);
         }
     }
 }
