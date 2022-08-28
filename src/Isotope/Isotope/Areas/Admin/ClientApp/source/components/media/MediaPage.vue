@@ -56,6 +56,8 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         
         if(this.folder)
             await this.load(true);
+        
+        this.mode = (this.$route.query['mode'] as Mode) || 'View';
     }
 
     async load(showPreloader: boolean = false) {

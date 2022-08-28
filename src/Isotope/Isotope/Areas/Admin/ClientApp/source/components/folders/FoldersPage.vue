@@ -141,7 +141,7 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
                     <router-link :to="'/folders/' + data.key" class="dropdown-item clickable">
                         <span class="fa fa-fw fa-list"></span> View media
                     </router-link>
-                    <router-link :to="'/folders/' + data.key + '/upload'" class="dropdown-item clickable">
+                    <router-link :to="{path: '/folders/' + data.key, query: {mode: 'Upload'}}" class="dropdown-item clickable">
                         <span class="fa fa-fw fa-upload"></span> Upload
                     </router-link>
                     <div class="dropdown-divider"></div>
