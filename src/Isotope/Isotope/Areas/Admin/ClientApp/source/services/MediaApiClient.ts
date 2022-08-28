@@ -6,6 +6,7 @@ import { Media } from "../vms/Media";
 import { Rect } from "../../../../Common/source/vms/Rect";
 import { Action } from "../../../../Common/source/utils/Interfaces";
 import { KeyResult } from "../../../../Common/source/vms/KeyResult";
+import { MassMediaAction, MassMediaMove, MassMediaUpdate } from "../vms/MassMediaAction";
 
 export class MediaApiClient extends ApiClientBase {
     constructor($host: string, $auth: AuthService) {
@@ -29,11 +30,7 @@ export class MediaApiClient extends ApiClientBase {
         
         const config = this.getCfg();
         config.headers['Content-Type'] = 'multipart/form-data';
-        config.onUploadProgress = evt => {
-            const pc = evt.loaded / evt.total * 100;
-            // console.log('upload: ' + pc + '%');
-            progress(pc);
-        };
+        config.onUploadProgress = evt => progress(evt.loaded / evt.total * 100);
         
         const form = new FormData();
         form.append('file', file);
@@ -64,5 +61,17 @@ export class MediaApiClient extends ApiClientBase {
     
     async remove(key: string) {
         return this.restDelete(key);
+    }
+    
+    async massRemove(req: MassMediaAction) {
+        return this.restPost(req, 'mass/remove');
+    }
+
+    async massMove(req: MassMediaMove) {
+        return this.restPost(req, 'mass/move');
+    }
+
+    async massUpdate(req: MassMediaUpdate) {
+        return this.restPost(req, 'mass/move');
     }
 }

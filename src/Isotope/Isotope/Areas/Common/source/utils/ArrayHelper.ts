@@ -36,12 +36,17 @@ export class ArrayHelper {
 
     /**
      * Removes an item if it exists in the array.
-     * @param arr
-     * @param item
      */
-    static removeItem<T>(arr: T[], item: T) {
+    static removeItem<T>(arr: T[], item: T): void {
         const idx = arr.indexOf(item);
         if(idx !== -1)
             arr.splice(idx, 1);
+    }
+    
+    /**
+     * Counts the number of elements matching the predicate.
+     */
+    static count<T>(arr: T[], predicate: Func2<T, boolean>): number {
+        return arr.reduce((a, b) => a + (predicate(b) ? 1 : 0), 0);
     }
 }

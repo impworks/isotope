@@ -1,8 +1,9 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { IContextMenu } from "./IContextMenu";
 
 @Component
-export default class ContextMenu extends Vue {
+export default class ContextMenu extends Vue implements IContextMenu {
     isShown: boolean = false;
     data: any = null;
     pos: { top: string, left: string } = null;

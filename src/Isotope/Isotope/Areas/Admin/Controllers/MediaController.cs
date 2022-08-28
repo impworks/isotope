@@ -87,7 +87,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Retrieves current thumbnail location.
         /// </summary>
         [HttpDelete, Route("{key}")]
-        public Task Delete(string key)
+        public Task Remove(string key)
         {
             return _mediaMgr.RemoveAsync(new [] { key });
         }
@@ -95,8 +95,8 @@ namespace Isotope.Areas.Admin.Controllers
         /// <summary>
         /// Removes a batch of media files.
         /// </summary>
-        [HttpPost, Route("mass/delete")]
-        public Task Delete([FromBody] MassMediaActionVM vm)
+        [HttpPost, Route("mass/remove")]
+        public Task Remove([FromBody] MassMediaActionVM vm)
         {
             return _mediaMgr.RemoveAsync(vm.Keys);
         }
@@ -105,7 +105,7 @@ namespace Isotope.Areas.Admin.Controllers
         /// Moves a batch of media files to another folder.
         /// </summary>
         [HttpPost, Route("mass/move")]
-        public Task Delete([FromBody] MassMediaMoveVM vm)
+        public Task Move([FromBody] MassMediaMoveVM vm)
         {
             return _mediaMgr.MoveAsync(vm.FolderKey, vm.Keys);
         }

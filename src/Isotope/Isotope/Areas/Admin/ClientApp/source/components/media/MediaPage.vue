@@ -11,6 +11,8 @@ import { ArrayHelper } from "../../../../../Common/source/utils/ArrayHelper";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import MediaEditorDlg from "./MediaEditorDlg.vue";
 import FilePicker from "./FilePicker.vue";
+import { IContextMenu } from "../utils/IContextMenu";
+import { Func2 } from "../../../../../Common/source/utils/Interfaces";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabKey: MediaEditorDlgTab}>(MediaEditorDlg);
@@ -20,6 +22,11 @@ const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabK
 })
 export default class MediaPage extends Mixins(HasAsyncState()) {
     @Dep('$api') $api: ApiService;
+    
+    $refs: {
+        menu: Element & IContextMenu;
+        menuMass: Element & IContextMenu;
+    };
 
     mode: Mode = 'View';
     
@@ -31,6 +38,14 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
     
     batchSize: number = null;
     batchIndex: number = null;
+    
+    get selectedCount(): number {
+        return ArrayHelper.count(this.mediaWraps, x => x.isSelected);
+    }
+    
+    get selectedKeys(): string[] {
+        return this.mediaWraps.filter(x => x.isSelected && !!x.media?.key).map(x => x.media.key);
+    }
 
     async mounted() {
         const key = this.$route.params['key'];
@@ -155,23 +170,81 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         }
     }
     
+    startMassActions() {
+        this.mode = 'MassActions';
+        this.massSelect('None');
+    }
+    
+    cancelMassActions() {
+        this.mode = 'View';
+        this.massSelect('None');
+    }
+    
+    massEdit() {
+        
+    }
+    
+    massMove() {
+        
+    }
+    
+    async massRemove() {
+        const hint = `Are you sure you want to remove the selected media (${this.selectedCount})?`;
+        if(!await confirmation({ text: hint }))
+            return;
+
+        await this.showSaving(
+            async () => {
+                await this.$api.media.massRemove({ keys: this.selectedKeys });
+
+                let idx = this.mediaWraps.length;
+                while(idx--) {
+                    const elem = this.mediaWraps[idx];
+                    if(!elem.isSelected)
+                        continue;
+                    
+                    this.mediaWraps.splice(idx, 1);
+                    this.media.splice(idx, 1);
+                }
+
+                this.$toast.success('Media removed');
+                this.cancelMassActions();
+            },
+            'Failed to remove media'
+        );
+    }
+        
+    massSelect(mode: SelectionMode): void {
+        for(let m of this.mediaWraps) {
+            m.isSelected =
+                mode === 'All'
+                    ? true
+                    : mode === 'None'
+                        ? false
+                        : !m.isSelected;
+        }
+    }
+    
     private wrap(m: MediaThumbnail): MediaWrapper {
         return {
             media: m,
             isUploading: false,
+            isSelected: false,
             progress: null,
             error: null
         };
     }
 }
 
-type Mode = 'View' | 'Reorder' | 'Upload';
+type Mode = 'View' | 'Reorder' | 'Upload' | 'MassActions';
+type SelectionMode = 'All' | 'None' | 'Invert';
 
 type MediaWrapper = {
     media: MediaThumbnail;
     progress: number;
     error: string;
     isUploading: boolean;
+    isSelected: boolean;
 }
 </script>
 
@@ -183,6 +256,9 @@ type MediaWrapper = {
                     {{folder.caption}}
                 </h5>
                 <div class="pull-right" v-if="mode === 'View'">
+                    <button class="btn btn-outline-secondary btn-sm mr-2" type="button" @click.prevent="startMassActions" :disabled="!media || media.length < 2">
+                        <span class="fa fa-cubes"></span> Mass actions
+                    </button>
                     <button class="btn btn-outline-secondary btn-sm mr-2" type="button" @click.prevent="startReorder" :disabled="!media || media.length < 2">
                         <span class="fa fa-sort"></span> Reorder
                     </button>
@@ -202,6 +278,27 @@ type MediaWrapper = {
                     <button class="btn btn-outline-secondary btn-sm" type="button" @click.prevent="cancelUpload">
                         <span class="fa fa-times"></span> Cancel
                     </button>
+                </div>
+                <div class="pull-right" v-if="mode === 'MassActions'">
+                    <div class="btn-toolbar">
+                        <span class="btn btn-outline-secondary btn-sm disabled border-0 mr-2" disabled="disabled">
+                            Selected: {{ selectedCount }}
+                        </span>
+                        <div class="btn-group btn-group-sm mr-2">
+                            <button class="btn btn-outline-secondary" type="button" @click.prevent="massSelect('All')">
+                                <span class="fa fa-check-square-o"></span> Select all
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" @click.prevent="massSelect('None')">
+                                <span class="fa fa-square-o"></span> None
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" @click.prevent="massSelect('Invert')">
+                                <span class="fa fa-refresh"></span> Invert
+                            </button>
+                        </div>
+                        <button class="btn btn-outline-secondary btn-sm" type="button" @click.prevent="cancelMassActions">
+                            <span class="fa fa-times"></span> Cancel
+                        </button>
+                    </div>
                 </div>
                 <div class="clearfix"></div>
             </div>
@@ -225,19 +322,33 @@ type MediaWrapper = {
                             </div>
                         </Draggable>
                     </template>
-                    <template v-if="mode === 'View' || mode === 'Upload'">
-                        <template v-for="w in mediaWraps">
+                    <template v-if="mode === 'View' || mode === 'Upload' || mode === 'MassActions'">
+                        <template v-for="(w, idx) in mediaWraps">
                             <div v-if="w.isUploading" class="media-thumb-ghost mr-2">
                                 <p>{{ w.progress }}%</p>
                             </div>
-                            <template v-else>
-                                <div v-if="w.error" class="media-thumb mr-2">
-                                    <div class="alert alert-danger mb-0">
-                                        <span class="fa fa-exclamation-circle"></span>
-                                        <span>{{ w.error }}</span>
-                                    </div>
+                            
+                            <div v-else-if="w.error" class="media-thumb mr-2">
+                                <div class="alert alert-danger mb-0">
+                                    <span class="fa fa-exclamation-circle"></span>
+                                    <span>{{ w.error }}</span>
                                 </div>
+                            </div>
+                            
+                            <template v-else>
+                                <div v-if="mode === 'MassActions'"
+                                     :key="idx + '.mass'"
+                                     v-action-row
+                                     class="media-thumb mr-2 hover-actions"
+                                     :style="{'background-image': 'url(' + w.media.thumbnailPath + ')'}"
+                                     @contextmenu.prevent="$refs.menuMass.open($event, w)">
+                                    <a class="hover-check" @click.prevent="w.isSelected = !w.isSelected">
+                                        <span class="fa fa-fw" :class="w.isSelected ? 'fa-check-circle-o' : 'fa-circle-o'"></span> 
+                                    </a>
+                                </div>
+                                
                                 <div v-else
+                                     :key="idx + '.thumb'"
                                      v-action-row
                                      class="media-thumb mr-2 hover-actions"
                                      :style="{'background-image': 'url(' + w.media.thumbnailPath + ')'}"
@@ -274,6 +385,19 @@ type MediaWrapper = {
                     <span class="fa fa-fw fa-remove"></span> Remove
                 </a>
             </context-menu>
+
+            <context-menu ref="menuMass" v-slot="{data}">
+                <a class="dropdown-item clickable" :class="{disabled: selectedCount === 0}" @click.prevent="massEdit()">
+                    <span class="fa fa-fw fa-edit"></span> Edit selected
+                </a>
+                <a class="dropdown-item clickable" :class="{disabled: selectedCount === 0}" @click.prevent="massMove()">
+                    <span class="fa fa-fw fa-mail-forward"></span> Move selected to folder
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item clickable" :class="{disabled: selectedCount === 0}" @click.prevent="massRemove()">
+                    <span class="fa fa-fw fa-remove"></span> Remove selected
+                </a>
+            </context-menu>
         </portal>
     </loading>
 </template>
@@ -291,7 +415,7 @@ type MediaWrapper = {
         background-size: cover;
         position: relative;
         
-        .hover-action {
+        .hover-action, .hover-check {
             display: inline-block;
             width: 30px;
             height: 30px;
@@ -299,14 +423,23 @@ type MediaWrapper = {
             box-shadow: rgba(0,0,0, 70%) 0 0 5px;
             border-radius: 15px;
             position: absolute;
-            top: 5px;
-            right: 5px;
             vertical-align: center;
             
             .fa {
                 vertical-align: top;
                 margin-top: 3px;
             }
+        }
+        
+        .hover-action {
+            top: 5px;
+            right: 5px;
+        }
+        
+        .hover-check {
+            top: 5px;
+            left: 5px;
+            font-size: 24px;
         }
     }
     
