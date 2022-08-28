@@ -172,8 +172,8 @@ namespace Isotope.Areas.Admin.Services
 
             _mapper.Map(vm, media);
 
-            var newTagIds = (vm.OverlayTags?.Select(x => x.TagId) ?? new int[0])
-                            .Concat(vm.ExtraTags?.Select(x => x.TagId) ?? new int[0])
+            var newTagIds = (vm.OverlayTags?.Select(x => x.TagId) ?? Array.Empty<int>())
+                            .Concat(vm.ExtraTags?.Select(x => x.TagId) ?? Array.Empty<int>())
                             .ToList();
             
             var existingTagIds = await _db.Tags
@@ -244,15 +244,15 @@ namespace Isotope.Areas.Admin.Services
         /// <summary>
         /// Updates the order of all media files in a folder.
         /// </summary>
-        public async Task ReorderAsync(string folderKey, string[] mediaKeys)
+        public async Task ReorderAsync(string folderKey, IReadOnlyList<string> mediaKeys)
         {
             var folder = await _db.Folders.FirstOrDefaultAsync(x => x.Key == folderKey);
             if(folder == null)
                 throw new OperationException($"Folder '{folderKey}' does not exist.");
 
-            var extraCount = mediaKeys.Length;
+            var extraCount = mediaKeys.Count;
             var orderLookup = new Dictionary<string, int>();
-            for (var i = 0; i < mediaKeys.Length; i++)
+            for (var i = 0; i < mediaKeys.Count; i++)
                 orderLookup[mediaKeys[i]] = i;
 
             var media = await _db.Media
@@ -348,6 +348,44 @@ namespace Isotope.Areas.Admin.Services
                     folder.MediaCount++;
                     
                     m.FolderKey = folderKey;
+                }
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
+        /**
+         * Updates a list of media files, changing their description and date.
+         */
+        public async Task UpdateAsync(MassMediaUpdateVM vm)
+        {
+            if(vm == null)
+                throw new OperationException("Incorrect request.");
+            
+            if(vm.Date?.IsSet != true && vm.Description?.IsSet != null)
+                throw new OperationException("No properties are set for update.");
+            
+            if((vm.Keys?.Length >= 1) == false)
+                throw new OperationException("No media files are set for update.");
+            
+            var keyBatches = vm.Keys.PartitionBySize(100);
+            foreach (var keyBatch in keyBatches)
+            {
+                var media = await _db.Media
+                                     .Where(x => keyBatch.Contains(x.Key))
+                                     .ToListAsync();
+
+                var missingKey = keyBatch.Except(media.Select(x => x.Key)).FirstOrDefault();
+                if(missingKey != null)
+                    throw new OperationException($"Media '{missingKey}' does not exist.");
+
+                foreach (var m in media)
+                {
+                    if (vm.Date?.IsSet == true)
+                        m.Date = vm.Date.Value;
+
+                    if (vm.Description?.IsSet == true)
+                        m.Description = vm.Description.Value;
                 }
             }
 

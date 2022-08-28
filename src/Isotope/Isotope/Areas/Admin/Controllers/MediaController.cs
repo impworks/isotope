@@ -109,5 +109,14 @@ namespace Isotope.Areas.Admin.Controllers
         {
             return _mediaMgr.MoveAsync(vm.FolderKey, vm.Keys);
         }
+
+        /// <summary>
+        /// Updates a batch of media files together.
+        /// </summary>
+        [HttpPost, Route("mass/update")]
+        public Task Update([FromBody] MassMediaUpdateVM vm)
+        {
+            return _mediaMgr.UpdateAsync(vm);
+        }
     }
 }
