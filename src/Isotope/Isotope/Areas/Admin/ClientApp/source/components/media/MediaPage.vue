@@ -12,9 +12,12 @@ import { IContextMenu } from "../utils/IContextMenu";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import MediaEditorDlg from "./MediaEditorDlg.vue";
 import FilePicker from "./FilePicker.vue";
+import MassMoveMediaDlg from "./MassMoveMediaDlg.vue";
+import { FolderTitle } from "../../vms/FolderTitle";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabKey: MediaEditorDlgTab}>(MediaEditorDlg);
+const massMoveDlg = create<{folderKey: string, media: MediaThumbnail[]}>(MassMoveMediaDlg); 
 
 @Component({
     components: { FilePicker }
@@ -184,8 +187,17 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         
     }
     
-    massMove() {
+    async massMove() {
+        const result = await massMoveDlg({
+            folderKey: this.folder.key,
+            media: this.mediaWraps.filter(x => x.isSelected).map(x => x.media)
+        });
         
+        if(result) {
+            this.$toast.success('Media moved');
+            this.removeSelection();
+            this.cancelMassActions();
+        }
     }
     
     async massRemove() {
@@ -196,18 +208,9 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         await this.showSaving(
             async () => {
                 await this.$api.media.massRemove({ keys: this.selectedKeys });
-
-                let idx = this.mediaWraps.length;
-                while(idx--) {
-                    const elem = this.mediaWraps[idx];
-                    if(!elem.isSelected)
-                        continue;
-                    
-                    this.mediaWraps.splice(idx, 1);
-                    this.media.splice(idx, 1);
-                }
-
+                
                 this.$toast.success('Media removed');
+                this.removeSelection();
                 this.cancelMassActions();
             },
             'Failed to remove media'
@@ -233,6 +236,18 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
             progress: null,
             error: null
         };
+    }
+    
+    private removeSelection() {
+        let idx = this.mediaWraps.length;
+        while(idx--) {
+            const elem = this.mediaWraps[idx];
+            if(!elem.isSelected)
+                continue;
+
+            this.mediaWraps.splice(idx, 1);
+            this.media.splice(idx, 1);
+        }
     }
 }
 

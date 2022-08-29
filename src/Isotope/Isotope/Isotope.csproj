@@ -62,6 +62,7 @@
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\mixins\DialogBase.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\mixins\HasAsyncState.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\mixins\index.ts" />
+    <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\utils\FolderHelper.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\components\utils\IContextMenu.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Injector.ts" />
     <TypeScriptCompile Include="Areas\Admin\ClientApp\source\config\Plugins.ts" />
