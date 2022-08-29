@@ -327,16 +327,19 @@ type MediaWrapper = {
                     <template v-if="mode === 'View' || mode === 'Upload' || mode === 'MassActions'">
                         <template v-for="(w, idx) in mediaWraps">
                             <div v-if="w.isUploading" class="media-thumb-ghost mr-2">
-                                <p>{{ w.progress }}%</p>
+                                <div class="loader">
+                                    <div 
+                                        class="loader__progress"
+                                        :style="{'width': w.progress + '%'}"
+                                    ></div>
+                                </div>
                             </div>
-                            
-                            <div v-else-if="w.error" class="media-thumb mr-2">
+                            <div v-if="w.error" class="media-thumb mr-2">
                                 <div class="alert alert-danger mb-0">
                                     <span class="fa fa-exclamation-circle"></span>
                                     <span>{{ w.error }}</span>
                                 </div>
                             </div>
-                            
                             <template v-else>
                                 <div v-if="mode === 'MassActions'"
                                      :key="idx + '.mass'"
@@ -446,6 +449,7 @@ type MediaWrapper = {
     }
     
     .media-thumb-ghost {
+        position: relative;
         display: inline-block;
         width: 162px;
         height: 162px;
@@ -460,5 +464,27 @@ type MediaWrapper = {
     
     .upload-progress {
         height: 48px;
+    }
+
+    .loader {
+        width: calc(100% - 2rem);
+        height: 0.6rem;
+        border-radius: 0.4rem;
+        overflow: hidden;
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #e9ecef;
+
+        text-align: center;
+
+        &__progress {
+            position: absolute;
+            height: 100%;
+            background: #007bff;
+            transition: width 150ms ease-in-out;
+        }
     }
 </style>
