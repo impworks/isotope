@@ -7,12 +7,11 @@ import { HasAsyncState } from "../mixins";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { Folder } from "../../vms/Folder";
 import { ArrayHelper } from "../../../../../Common/source/utils/ArrayHelper";
+import { IContextMenu } from "../utils/IContextMenu";
 
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import MediaEditorDlg from "./MediaEditorDlg.vue";
 import FilePicker from "./FilePicker.vue";
-import { IContextMenu } from "../utils/IContextMenu";
-import { Func2 } from "../../../../../Common/source/utils/Interfaces";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabKey: MediaEditorDlgTab}>(MediaEditorDlg);
@@ -146,7 +145,7 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         }
     }
     
-    async cancelUpload() {
+    cancelUpload() {
         this.mode = 'View';
         this.batchSize = this.batchIndex = null;
     }
@@ -167,8 +166,7 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
                 wrap.error = e;
             }
         } finally {
-            // uncomment this when debugging finishes
-            //wrap.isUploading = false;
+            wrap.isUploading = false;
         }
     }
     
@@ -283,10 +281,18 @@ type MediaWrapper = {
                 </div>
                 <div class="pull-right" v-if="mode === 'MassActions'">
                     <div class="btn-toolbar">
-                        <span class="btn btn-outline-secondary btn-sm disabled border-0 mr-2" disabled="disabled">
-                            Selected: {{ selectedCount }}
-                        </span>
-                        <div class="btn-group btn-group-sm mr-2">
+                        <div class="btn-group btn-group-sm mr-3">
+                            <button class="btn btn-outline-secondary" type="button" @click.prevent="massEdit()" :disabled="selectedCount === 0">
+                                <span class="fa fa-edit"></span> Edit {{ selectedCount > 0 ? selectedCount : '' }}
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" @click.prevent="massMove()" :disabled="selectedCount === 0">
+                                <span class="fa fa-mail-forward"></span> Move {{ selectedCount > 0 ? selectedCount : '' }}
+                            </button>
+                            <button class="btn btn-outline-danger" type="button" @click.prevent="massRemove()" :disabled="selectedCount === 0">
+                                <span class="fa fa-times"></span> Remove {{ selectedCount > 0 ? selectedCount : '' }}
+                            </button>
+                        </div>
+                        <div class="btn-group btn-group-sm mr-3">
                             <button class="btn btn-outline-secondary" type="button" @click.prevent="massSelect('All')">
                                 <span class="fa fa-check-square-o"></span> Select all
                             </button>
@@ -334,7 +340,7 @@ type MediaWrapper = {
                                     ></div>
                                 </div>
                             </div>
-                            <div v-if="w.error" class="media-thumb mr-2">
+                            <div v-else-if="w.error" class="media-thumb mr-2">
                                 <div class="alert alert-danger mb-0">
                                     <span class="fa fa-exclamation-circle"></span>
                                     <span>{{ w.error }}</span>
@@ -344,11 +350,13 @@ type MediaWrapper = {
                                 <div v-if="mode === 'MassActions'"
                                      :key="idx + '.mass'"
                                      v-action-row
-                                     class="media-thumb mr-2 hover-actions"
+                                     class="media-thumb mr-2 hover-actions selectable"
+                                     :class="{'not-selected': !w.isSelected}"
                                      :style="{'background-image': 'url(' + w.media.thumbnailPath + ')'}"
-                                     @contextmenu.prevent="$refs.menuMass.open($event, w)">
-                                    <a class="hover-check" @click.prevent="w.isSelected = !w.isSelected">
-                                        <span class="fa fa-fw" :class="w.isSelected ? 'fa-check-circle-o' : 'fa-circle-o'"></span> 
+                                     @contextmenu.prevent="$refs.menuMass.open($event, w)"
+                                     @click.prevent="w.isSelected = !w.isSelected">
+                                    <a class="hover-check">
+                                        <span v-if="w.isSelected" class="fa fa-fw fa-check"></span> 
                                     </a>
                                 </div>
                                 
@@ -416,6 +424,7 @@ type MediaWrapper = {
         display: inline-block;
         width: 162px;
         height: 162px;
+        border: 1px #ccc solid;
         background-position: center center;
         background-size: cover;
         position: relative;
@@ -445,6 +454,14 @@ type MediaWrapper = {
             top: 5px;
             left: 5px;
             font-size: 24px;
+        }
+        
+        &.selectable {
+            cursor: pointer;
+        }
+        
+        &.not-selected {
+            opacity: 0.6;
         }
     }
     
