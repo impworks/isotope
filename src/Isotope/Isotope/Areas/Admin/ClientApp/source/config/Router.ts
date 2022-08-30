@@ -6,7 +6,6 @@ import TagsPage from "../components/tags/TagsPage.vue";
 import UsersPage from "../components/users/UsersPage.vue";
 import FoldersPage from "../components/folders/FoldersPage.vue";
 import MediaPage from "../components/media/MediaPage.vue";
-import MediaUploadPage from "../components/media/MediaUploadPage.vue";
 
 Vue.use(VueRouter);
 
@@ -18,7 +17,6 @@ export default new VueRouter({
         { path: '/', redirect: '/folders' },
         { path: '/folders', component: FoldersPage },
         { path: '/folders/:key', component: MediaPage },
-        { path: '/folders/:key/upload', component: MediaUploadPage },
         { path: '/tags', component: TagsPage },
         { path: '/shared-links', component: SharedLinksPage },
         { path: '/users', component: UsersPage },
