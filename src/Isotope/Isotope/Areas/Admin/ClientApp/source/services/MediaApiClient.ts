@@ -72,6 +72,6 @@ export class MediaApiClient extends ApiClientBase {
     }
 
     async massUpdate(req: MassMediaUpdate) {
-        return this.restPost(req, 'mass/move');
+        return this.restPost(req, 'mass/update');
     }
 }

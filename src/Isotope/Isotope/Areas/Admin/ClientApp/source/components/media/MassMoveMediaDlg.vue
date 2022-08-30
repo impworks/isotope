@@ -42,7 +42,7 @@ export default class MassMoveMediaDlg extends Mixins(HasAsyncState(), DialogBase
                 });
                 this.$close(true);
             },
-            'Failed to move folder'
+            'Failed to move media'
         )
     }
 }

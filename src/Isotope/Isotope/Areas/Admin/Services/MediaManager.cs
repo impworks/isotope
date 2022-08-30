@@ -362,7 +362,7 @@ namespace Isotope.Areas.Admin.Services
             if(vm == null)
                 throw new OperationException("Incorrect request.");
             
-            if(vm.Date?.IsSet != true && vm.Description?.IsSet != null)
+            if(vm.Date?.IsSet != true && vm.Description?.IsSet != true)
                 throw new OperationException("No properties are set for update.");
             
             if((vm.Keys?.Length >= 1) == false)

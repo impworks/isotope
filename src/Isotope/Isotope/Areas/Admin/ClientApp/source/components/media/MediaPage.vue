@@ -13,11 +13,12 @@ import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import MediaEditorDlg from "./MediaEditorDlg.vue";
 import FilePicker from "./FilePicker.vue";
 import MassMoveMediaDlg from "./MassMoveMediaDlg.vue";
-import { FolderTitle } from "../../vms/FolderTitle";
+import MassEditMediaDlg from "./MassEditMediaDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabKey: MediaEditorDlgTab}>(MediaEditorDlg);
-const massMoveDlg = create<{folderKey: string, media: MediaThumbnail[]}>(MassMoveMediaDlg); 
+const massMoveDlg = create<{folderKey: string, media: MediaThumbnail[]}>(MassMoveMediaDlg);
+const massEditDlg = create<{media: MediaThumbnail[]}>(MassEditMediaDlg);
 
 @Component({
     components: { FilePicker }
@@ -183,8 +184,11 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         this.massSelect('None');
     }
     
-    massEdit() {
-        
+    async massEdit() {
+        const result = await massEditDlg({ media: this.mediaWraps.filter(x => x.isSelected).map(x => x.media) });
+        if(result) {
+            this.$toast.success('Media updated');
+        }
     }
     
     async massMove() {
