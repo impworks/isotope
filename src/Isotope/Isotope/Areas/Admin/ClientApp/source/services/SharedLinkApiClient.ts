@@ -14,4 +14,8 @@ export class SharedLinkApiClient extends ApiClientBase {
     async remove(key: string) {
         return this.restDelete(key);
     }
+
+    async update(key: string, data: SharedLinkDetails) {
+        return this.restPut(key, data);
+    }
 }

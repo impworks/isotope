@@ -8,8 +8,10 @@ import { create } from "vue-modal-dialogs";
 
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import { DateHelper } from "../../../../../Common/source/utils/DateHelper";
+import SharedLinkEditorDlg from "./SharedLinkEditorDlg.vue";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
+const editor = create<{link: SharedLinkDetails}>(SharedLinkEditorDlg);
 
 @Component
 export default class SharedLinksPage extends Mixins(HasAsyncState()) {
@@ -25,7 +27,7 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
         await this.showProgress(
             showPreloader ? 'isLoading' : 'isWorking',
             async () => this.links = await this.$api.sharedLinks.getList(),
-            'Failed to load config state!'
+            'Failed to load links list!'
         );
     }
     
@@ -37,6 +39,11 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
         await this.$api.sharedLinks.remove(l.key);
         await this.load();
         this.$toast.success('Shared link removed.');
+    }
+    
+    async edit(l: SharedLinkDetails) {
+        if(await editor({link: l}))
+            await this.load();
     }
     
     formatDate(d: string) {
@@ -71,7 +78,9 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
             </tbody>
             <tbody v-else>
                 <tr v-for="l in links" v-action-row class="hover-actions" @contextmenu.prevent="$refs.menu.open($event, l)">
-                    <td>{{l.caption || '-'}}</td>
+                    <td>
+                        <a href="#" @click.prevent="edit(l)">{{l.caption || '-'}}</a>
+                    </td>
                     <td>{{ formatDate(l.creationDate) }}</td>
                     <td><span :title="l.folder">{{l.folderCaption}}</span></td>
                     <td>{{l.tags ? l.tags.length : '-'}}</td>
@@ -85,6 +94,10 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
         </table>
         <portal to="context-menu">
             <context-menu ref="menu" v-slot="{data}">
+                <a class="dropdown-item clickable" @click.prevent="edit(data)">
+                    <span class="fa fa-fw fa-edit"></span> Edit / copy
+                </a>
+                <div class="dropdown-divider"></div>
                 <a class="dropdown-item clickable" @click.prevent="remove(data)">
                     <span class="fa fa-fw fa-remove"></span> Remove
                 </a>

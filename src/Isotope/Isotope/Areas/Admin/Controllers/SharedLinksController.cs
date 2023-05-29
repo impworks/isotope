@@ -45,5 +45,14 @@ namespace Isotope.Areas.Admin.Controllers
         {
             return _smMgr.RemoveAsync(key);
         }
+        
+        /// <summary>
+        /// Updates an existing shared link.
+        /// </summary>
+        [HttpPut, Route("{key}")]
+        public Task Update(string key, [FromBody] SharedLinkVM vm)
+        {
+            return _smMgr.UpdateAsync(key, vm);
+        }
     }
 }
