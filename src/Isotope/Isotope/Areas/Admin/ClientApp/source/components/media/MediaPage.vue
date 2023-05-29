@@ -14,6 +14,7 @@ import MediaEditorDlg from "./MediaEditorDlg.vue";
 import FilePicker from "./FilePicker.vue";
 import MassMoveMediaDlg from "./MassMoveMediaDlg.vue";
 import MassEditMediaDlg from "./MassEditMediaDlg.vue";
+import { Func } from "../../../../../Common/source/utils/Interfaces";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const mediaEditor = create<{mediaKey: string, otherMedia: MediaThumbnail[], tabKey: MediaEditorDlgTab}>(MediaEditorDlg);
@@ -183,42 +184,48 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
         this.mode = 'View';
         this.massSelect('None');
     }
-    
-    async massEdit() {
-        const result = await massEditDlg({ media: this.mediaWraps.filter(x => x.isSelected).map(x => x.media) });
-        if(result) {
-            this.$toast.success('Media updated');
-        }
-    }
-    
-    async massMove() {
-        const result = await massMoveDlg({
-            folderKey: this.folder.key,
-            media: this.mediaWraps.filter(x => x.isSelected).map(x => x.media)
-        });
-        
-        if(result) {
-            this.$toast.success('Media moved');
-            this.removeSelection();
-            this.cancelMassActions();
-        }
-    }
-    
-    async massRemove() {
-        const hint = `Are you sure you want to remove the selected media (${this.selectedCount})?`;
-        if(!await confirmation({ text: hint }))
-            return;
 
-        await this.showSaving(
-            async () => {
-                await this.$api.media.massRemove({ keys: this.selectedKeys });
-                
-                this.$toast.success('Media removed');
+    async massEdit() {
+        await this.useMassAction(async () => {
+            const result = await massEditDlg({ media: this.mediaWraps.filter(x => x.isSelected).map(x => x.media) });
+            if (result) {
+                this.$toast.success('Media updated');
+            }
+        });
+    }
+
+    async massMove() {
+        await this.useMassAction(async () => {
+            const result = await massMoveDlg({
+                folderKey: this.folder.key,
+                media: this.mediaWraps.filter(x => x.isSelected).map(x => x.media)
+            });
+
+            if(result) {
+                this.$toast.success('Media moved');
                 this.removeSelection();
                 this.cancelMassActions();
-            },
-            'Failed to remove media'
-        );
+            }
+        });
+    }
+
+    async massRemove() {
+        await this.useMassAction(async () => {
+            const hint = `Are you sure you want to remove the selected media (${this.selectedCount})?`;
+            if(!await confirmation({ text: hint }))
+                return;
+
+            await this.showSaving(
+                async () => {
+                    await this.$api.media.massRemove({ keys: this.selectedKeys });
+
+                    this.$toast.success('Media removed');
+                    this.removeSelection();
+                    this.cancelMassActions();
+                },
+                'Failed to remove media'
+            );
+        });
     }
         
     massSelect(mode: SelectionMode): void {
@@ -253,9 +260,18 @@ export default class MediaPage extends Mixins(HasAsyncState()) {
             this.media.splice(idx, 1);
         }
     }
+
+    private async useMassAction(act: Func<Promise<any>>) {
+        try {
+            this.mode = 'MassActionsActive';
+            await act();
+        } finally {
+            this.mode = 'MassActions';
+        }
+    }
 }
 
-type Mode = 'View' | 'Reorder' | 'Upload' | 'MassActions';
+type Mode = 'View' | 'Reorder' | 'Upload' | 'MassActions' | 'MassActionsActive';
 type SelectionMode = 'All' | 'None' | 'Invert';
 
 type MediaWrapper = {
@@ -298,9 +314,9 @@ type MediaWrapper = {
                         <span class="fa fa-times"></span> Cancel
                     </button>
                 </div>
-                <div class="pull-right" v-if="mode === 'MassActions'">
+                <div class="pull-right" v-if="mode === 'MassActions' || mode === 'MassActionsActive'">
                     <div class="btn-toolbar">
-                        <div class="btn-group btn-group-sm mr-3">
+                        <div class="btn-group btn-group-sm mr-3" v-if="mode === 'MassActions'">
                             <button class="btn btn-outline-secondary" type="button" @click.prevent="massEdit()" :disabled="selectedCount === 0">
                                 <span class="fa fa-edit"></span> Edit {{ selectedCount > 0 ? selectedCount : '' }}
                             </button>
@@ -349,7 +365,7 @@ type MediaWrapper = {
                             </div>
                         </Draggable>
                     </template>
-                    <template v-if="mode === 'View' || mode === 'Upload' || mode === 'MassActions'">
+                    <template v-if="mode === 'View' || mode === 'Upload' || mode === 'MassActions' || mode === 'MassActionsActive'">
                         <template v-for="(w, idx) in mediaWraps">
                             <div v-if="w.isUploading" class="media-thumb-ghost mr-2">
                                 <div class="loader">
