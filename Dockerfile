@@ -18,7 +18,7 @@ ADD src/Isotope/Isotope/Isotope.csproj Isotope/
 RUN dotnet restore
 COPY --from=node /build Isotope/
 
-RUN dotnet publish --output ../out/ --configuration Release --runtime linux-musl-x64 --self-contained true -p:PublishTrimmed=true Isotope/Isotope.csproj
+RUN dotnet publish --output ../out/ --configuration Release --runtime linux-musl-x64 --self-contained true Isotope/Isotope.csproj
 
 FROM alpine:latest
 

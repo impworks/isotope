@@ -22,22 +22,13 @@ A lightweight photo gallery.
 
 ## Installation
 
-Pull the container from Docker:
+1. Pull the container from Docker:
 
-```
-docker pull impworks/isotope:latest
-```
+    ```
+    docker pull impworks/isotope:latest
+    ```
 
-## Backups
-
-You need to mount the following folder to the container for backups:
-
-```
-/app/App_Data
-```
-
-It will contain:
-
-* `Isotope.db`: the database file (SQLite)
-* `Isotope.key`: random key for access token encryption
-* `@media`: folder with all uploaded media content and thumbnails
+2. Map container port `5000` to whatever port you want on the outside (e.g. 8080)
+3. Map container path `/app/App_Data` to an external folder where you want to store your photos and database
+4. Open the web UI and log in as `admin@example.com` using password `123456`
+5. Create your own user instead and remove the default one
