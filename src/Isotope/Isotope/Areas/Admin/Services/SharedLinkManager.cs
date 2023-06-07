@@ -78,6 +78,16 @@ namespace Isotope.Areas.Admin.Services
         }
 
         /// <summary>
+        /// Changes the properties of a shared link.
+        /// </summary>
+        public async Task UpdateAsync(string key, SharedLinkVM vm)
+        {
+            var link = await _db.SharedLinks.GetAsync(x => x.Key == key, $"Shared link '{key}' does not exist.");
+            link.Caption = vm.Caption;
+            await _db.SaveChangesAsync();
+        }
+
+        /// <summary>
         /// Ensures that the request is valid.
         /// </summary>
         private async Task ValidateAsync(SharedLinkVM vm)
