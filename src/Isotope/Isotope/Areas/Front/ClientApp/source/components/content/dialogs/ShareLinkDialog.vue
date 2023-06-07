@@ -72,6 +72,11 @@ export default class ShareLinkDialog extends Mixins(DialogBase, HasAsyncState())
             this.state = 'failed';
         }
     }
+    
+    async copyAndClose() {
+        await navigator.clipboard.writeText(this.link);
+        this.close();
+    }
 
     /**
      * Returns the folder name for filter display.
@@ -198,9 +203,9 @@ type LinkCreationState = 'new' | 'succeeded' | 'failed';
                 v-if="state !== 'new'"
                 type="button"
                 class="btn btn-block btn-primary"
-                @click.prevent="close"
+                @click.prevent="copyAndClose"
             >
-                Close
+                Copy and close
             </button>
         </template>
     </modal-window>
