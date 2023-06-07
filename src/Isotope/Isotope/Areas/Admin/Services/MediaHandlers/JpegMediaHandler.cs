@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Impworks.Utils.Linq;
@@ -97,11 +95,17 @@ namespace Isotope.Areas.Admin.Services.MediaHandlers
         private Dictionary<string, string> GetMetadata(ExifProfile profile)
         {
             // todo: only extract a couple of "interesting" tags
-            return profile.Values
-                          .Select(x => new {Tag = x.Tag.ToString(), Value = GetReadableValue(x) })
-                          .Where(x => x.Value?.Length > 0 && x.Value != "0")
-                          .ToDictionary(x => x.Tag, x => x.Value);
+            var result = new Dictionary<string, string>();
+            var entries = profile.Values
+                                 .Select(x => new {Tag = x.Tag.ToString(), Value = GetReadableValue(x)})
+                                 .Where(x => x.Value?.Length > 0 && x.Value != "0");
 
+            foreach (var entry in entries)
+                if (!result.ContainsKey(entry.Tag))
+                    result[entry.Tag] = entry.Value;
+            
+            return result;
+            
             string GetReadableValue(IExifValue entry)
             {
                 var value = entry.GetValue();

@@ -116,7 +116,7 @@ namespace Isotope.Areas.Admin.Services
                 Date = mediaInfo.Date?.ToString("yyyy.MM.dd"),
                 Width = mediaInfo.FullImage.Width,
                 Height = mediaInfo.FullImage.Height,
-                ThumbnailRect = ImageHelper.GetDefaultThumbnailRect(mediaInfo.FullImage.Size()),
+                ThumbnailRect = ImageHelper.GetDefaultThumbnailRect(mediaInfo.FullImage.Size),
                 UploadDate = DateTime.Now,
                 VersionDate = DateTime.Now,
                 Order = maxOrder + 1,

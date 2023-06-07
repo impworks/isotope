@@ -40,7 +40,7 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static Image ResizeToFit(Image source, Size maxSize)
         {
-            return GetPortion(source, new Rectangle(Point.Empty, source.Size()), GetInscribeSize(source.Size(), maxSize));
+            return GetPortion(source, new Rectangle(Point.Empty, source.Size), GetInscribeSize(source.Size, maxSize));
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Isotope.Code.Utils.Helpers
         /// </summary>
         public static Image ResizeToFill(Image source, Size maxSize)
         {
-            return GetPortion(source, GetFillRectangle(source.Size(), maxSize), maxSize);
+            return GetPortion(source, GetFillRectangle(source.Size, maxSize), maxSize);
         }
         
         /// <summary>

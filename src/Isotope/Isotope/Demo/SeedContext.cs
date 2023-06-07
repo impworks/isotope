@@ -92,7 +92,7 @@ namespace Isotope.Demo
                 FolderKey = folder.Key,
                 Order = order,
                 Path = $"/@media/{folder.Key}/{key}.jpg",
-                ThumbnailRect = ImageHelper.GetDefaultThumbnailRect(srcImg.Size()),
+                ThumbnailRect = ImageHelper.GetDefaultThumbnailRect(srcImg.Size),
                 IsReady = true,
                 Width = srcImg.Width,
                 Height = srcImg.Height,
