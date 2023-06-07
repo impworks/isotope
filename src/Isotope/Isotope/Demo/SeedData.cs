@@ -1,13 +1,11 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Impworks.Utils.Linq;
 using Isotope.Areas.Front.Dto;
 using Isotope.Data;
 using Isotope.Data.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace Isotope.Demo
 {
@@ -48,7 +46,7 @@ namespace Isotope.Demo
                 await ctx.AddPhotoAsync($"aby-{i}.jpg", abyFolder);
 
             var catsTag = await ctx.AddTagAsync("Felines");
-            var kittyTag = await ctx.AddTagAsync("Kitty", TagType.Person);
+            var kittyTag = await ctx.AddTagAsync("Kitty", TagType.Pet);
 
             await ctx.TagFolderAsync(catsFolder, catsTag);
 
@@ -76,8 +74,8 @@ namespace Isotope.Demo
             var tp4 = await ctx.AddPhotoAsync("travel-4.jpg", travelFolder, "Trevi Fountain", "2018.04.23");
             var tp5 = await ctx.AddPhotoAsync("travel-5.jpg", travelFolder, "Venice", "2018.04.??");
 
-            var greeceTag = await ctx.AddTagAsync("Greece");
-            var italyTag = await ctx.AddTagAsync("Italy");
+            var greeceTag = await ctx.AddTagAsync("Greece", TagType.Location);
+            var italyTag = await ctx.AddTagAsync("Italy", TagType.Location);
             var sightTag = await ctx.AddTagAsync("Sight-seeing");
 
             await ctx.TagPhotoAsync(tp1, greeceTag);
@@ -93,6 +91,7 @@ namespace Isotope.Demo
 
         /// <summary>
         /// Creates uncommon folders to test various edge cases.
+        /// Only used for debugging purposes.
         /// </summary>
         private static async Task SeedEdgeCaseFoldersAsync(SeedContext ctx)
         {
