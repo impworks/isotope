@@ -49,6 +49,10 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
         if(await editor({tag: t}))
             await this.load();
     }
+    
+    externalLink(t: Tag) {
+        window.open('/?tags=' + t.id, '_blank');
+    }
 }
 </script>
 
@@ -104,6 +108,9 @@ export default class TagsPage extends Mixins(HasAsyncState()) {
             <context-menu ref="menu" v-slot="{data}">
                 <a class="dropdown-item clickable" @click.prevent="edit(data)">
                     <span class="fa fa-fw fa-edit"></span> Edit tag
+                </a>
+                <a class="dropdown-item clickable" @click.prevent="externalLink(data)">
+                    <span class="fa fa-fw fa-share"></span> View
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item clickable" @click.prevent="remove(data)">

@@ -15,6 +15,7 @@ namespace Isotope.Areas.Admin.Dto
         public int Depth { get; set; }
         public string Caption { get; set; }
         public int MediaCount { get; set; }
+        public string Path { get; set; }
         public string ThumbnailPath { get; set; }
         
         public IReadOnlyList<FolderTitleVM> Subfolders { get; set; }
@@ -23,9 +24,10 @@ namespace Isotope.Areas.Admin.Dto
         {
             config.NewConfig<Folder, FolderTitleVM>()
                   .Map(x => x.Key, x => x.Key)
-                  .Map(x => x.Key, x => x.Depth)
+                  .Map(x => x.Depth, x => x.Depth)
                   .Map(x => x.Caption, x => x.Caption)
                   .Map(x => x.MediaCount, x => x.MediaCount)
+                  .Map(x => x.Path, x => x.Path)
                   .Map(x => x.ThumbnailPath, x => x.Thumbnail == null ? null : MediaHelper.GetThumbnailUrl(x.Thumbnail))
                   .Ignore(x => x.Subfolders);
         }

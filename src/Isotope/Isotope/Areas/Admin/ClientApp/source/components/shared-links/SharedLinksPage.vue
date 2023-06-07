@@ -9,6 +9,7 @@ import { create } from "vue-modal-dialogs";
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import { DateHelper } from "../../../../../Common/source/utils/DateHelper";
 import SharedLinkEditorDlg from "./SharedLinkEditorDlg.vue";
+import { Tag } from "../../vms/Tag";
 
 const confirmation = create<{text: string}>(ConfirmationDlg);
 const editor = create<{link: SharedLinkDetails}>(SharedLinkEditorDlg);
@@ -31,23 +32,27 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
         );
     }
     
-    async remove(l: SharedLinkDetails) {
+    async remove(sl: SharedLinkDetails) {
         const hint = 'Are you sure you want to remove this shared link?<br/><br/>This operation cannot be undone.';
         if(!await confirmation({text: hint}))
             return;
         
-        await this.$api.sharedLinks.remove(l.key);
+        await this.$api.sharedLinks.remove(sl.key);
         await this.load();
         this.$toast.success('Shared link removed.');
     }
     
-    async edit(l: SharedLinkDetails) {
-        if(await editor({link: l}))
+    async edit(sl: SharedLinkDetails) {
+        if(await editor({link: sl}))
             await this.load();
     }
     
     formatDate(d: string) {
         return DateHelper.formatFull(d);
+    }
+    
+    externalLink(sl: SharedLinkDetails) {
+        window.open('/?sh=' + sl.key, '_blank');
     }
 }
 </script>
@@ -96,6 +101,9 @@ export default class SharedLinksPage extends Mixins(HasAsyncState()) {
             <context-menu ref="menu" v-slot="{data}">
                 <a class="dropdown-item clickable" @click.prevent="edit(data)">
                     <span class="fa fa-fw fa-edit"></span> Edit / copy
+                </a>
+                <a class="dropdown-item clickable" @click.prevent="externalLink(data)">
+                    <span class="fa fa-fw fa-share"></span> View
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item clickable" @click.prevent="remove(data)">

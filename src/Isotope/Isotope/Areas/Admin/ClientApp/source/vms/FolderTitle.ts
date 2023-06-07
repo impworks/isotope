@@ -4,6 +4,7 @@ export interface FolderTitle {
     caption: string;
     mediaCount: number;
     thumbnailPath: string;
+    path: string;
     
     subfolders: FolderTitle[];
 }

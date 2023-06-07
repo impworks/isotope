@@ -85,6 +85,10 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
     showMenu(e: MouseEvent, f: FolderTitle) {
         this.$refs.menu.open(e, f);
     }
+    
+    externalLink(f: FolderTitle) {
+        window.open(f.path, '_blank');
+    }
 }
 </script>
 
@@ -139,11 +143,15 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
             <context-menu ref="menu" v-slot="{data}">
                 <template v-if="data">
                     <router-link :to="'/folders/' + data.key" class="dropdown-item clickable">
-                        <span class="fa fa-fw fa-list"></span> View media
+                        <span class="fa fa-fw fa-list"></span> Contents
                     </router-link>
                     <router-link :to="{path: '/folders/' + data.key, query: {mode: 'Upload'}}" class="dropdown-item clickable">
                         <span class="fa fa-fw fa-upload"></span> Upload
                     </router-link>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item clickable" @click.prevent="externalLink(data)">
+                        <span class="fa fa-fw fa-share"></span> View
+                    </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item clickable" @click.prevent="edit(data)">
                         <span class="fa fa-fw fa-edit"></span> Edit folder
