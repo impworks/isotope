@@ -11,6 +11,11 @@ namespace Isotope.Areas.Front.Dto
         public string Caption { get; set; }
         
         /// <summary>
+        /// Title to display as the first entry in the breadcrumbs.
+        /// </summary>
+        public string Subcaption { get; set; }
+        
+        /// <summary>
         /// Flag indicating that guests need to authorize to view the contents.
         /// </summary>
         public bool AllowGuests { get; set; }

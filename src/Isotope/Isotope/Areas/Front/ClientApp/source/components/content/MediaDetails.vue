@@ -1,7 +1,5 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { Bind } from 'lodash-decorators';
-import { Debounce } from 'lodash-decorators';
 import { Media } from "../../vms/Media";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { FilterStateService } from "../../services/FilterStateService";
@@ -54,8 +52,7 @@ export default class MediaDetails extends Vue {
         if (this.isMobile) {
             return;
         }
-
-        const wrapper = this.$refs.wrapper;
+        
         const content = this.$refs.content;
 
         if (value) {

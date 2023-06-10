@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Impworks.Utils.Strings;
 using Isotope.Areas.Front.Dto;
 using Isotope.Code.Services.Config;
 
@@ -31,6 +32,7 @@ namespace Isotope.Areas.Front.Services
             return new GalleryInfoVM
             {
                 Caption = cfg.Title,
+                Subcaption = StringHelper.Coalesce(ctx.Link?.Caption, cfg.Title),
                 AllowGuests = cfg.AllowGuests,
                 IsAuthorized = ctx.User != null || linkValid == true,
                 IsAdmin = ctx.User?.IsAdmin,

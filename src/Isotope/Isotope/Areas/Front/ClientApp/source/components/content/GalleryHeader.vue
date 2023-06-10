@@ -38,13 +38,13 @@ export default class GalleryHeader extends Mixins(HasLifetime) {
     update(path: string) {
         if(path === '/' || !path) {
             this.crumbs = [];
-            this.currentFolder = this.info.caption;
+            this.currentFolder = this.info.subcaption;
             return;
         }
         
         path = path.replace(/\/$/, '');
         const parts = path.split('/');
-        const crumbs: Crumb[] = [{ caption: this.info.caption, path: '/' }];
+        const crumbs: Crumb[] = [{ caption: this.info.subcaption, path: '/' }];
         let scope = this.folderTree;
         let tmpPath = '';
         for(let i = 1; i < parts.length - 1; i++) {

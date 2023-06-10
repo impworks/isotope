@@ -70,7 +70,7 @@ namespace Isotope.Data.Utils
                     Id = 1,
                     Value = JsonConvert.SerializeObject(new DynamicConfig
                     {
-                        Title = "Isotope",
+                        Title = "isotope",
                         AllowGuests = false
                     })
                 });

@@ -1,11 +1,13 @@
 <script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
-import { FilterStateService, IFilterStateChangedEvent } from "../../services/FilterStateService";
+import { FilterStateService } from "../../services/FilterStateService";
 import { HasLifetime } from "../mixins/HasLifetime";
 import { Bind } from 'lodash-decorators';
 import { Debounce } from 'lodash-decorators';
 import { BreakpointHelper, Breakpoints } from "../../utils/BreakpointHelper";
+import { ApiService } from "../../services/ApiService";
+
 import UserDropdown from "./UserDropdown.vue";
 import ModalWindow from "../utils/ModalWindow.vue";
 import Filters from "./Filters.vue";
@@ -15,16 +17,24 @@ import Filters from "./Filters.vue";
 })
 export default class MainHeader extends Mixins(HasLifetime) {
     @Dep('$filter') $filter: FilterStateService;
+    @Dep('$api') $api: ApiService;
     
     isMobileFiltersVisible: boolean = false;
     isFilterActive : boolean = false;
+    caption: string = 'isotope';
     
     get isFilterShown() {
         return !this.$filter.shareId;
     }
 
-    mounted() {
+    async mounted() {
         window.addEventListener("resize", this.resizeHandler);
+        
+        try {
+            const info = await this.$api.getInfo();
+            this.caption = info.caption;
+        } catch {
+        }
     }
 
     goToRoot() {
@@ -55,7 +65,7 @@ export default class MainHeader extends Mixins(HasLifetime) {
             class="logotype clickable"
             @click.prevent="goToRoot()"
         >
-            isotope
+            {{ caption }}
         </a>
         <div class="main-header__actions">
             <user-dropdown></user-dropdown>

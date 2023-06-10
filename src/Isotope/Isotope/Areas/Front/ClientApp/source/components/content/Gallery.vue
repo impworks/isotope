@@ -12,6 +12,7 @@ import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { IObservable } from "../../../../../Common/source/utils/Interfaces";
 import { Observable } from "../../../../../Common/source/utils/Observable";
+
 import GalleryHeader from './GalleryHeader.vue';
 import MediaViewer from "./MediaViewer.vue";
 

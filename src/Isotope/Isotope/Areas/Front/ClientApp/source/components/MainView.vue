@@ -5,6 +5,7 @@ import { Dep } from "../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../services/ApiService";
 import { FilterStateService } from "../services/FilterStateService";
 import { Folder } from "../vms/Folder";
+
 import Gallery from './content/Gallery.vue';
 import MainHeader from './content/MainHeader.vue';
 import Sidebar from './sidebar/Sidebar.vue';
