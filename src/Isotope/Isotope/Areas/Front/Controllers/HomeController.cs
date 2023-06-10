@@ -48,7 +48,7 @@ namespace Isotope.Areas.Front.Controllers
             var filePath = Path.Combine(_env.WebRootPath, "@assets", "front.html");
             var fileContents = await System.IO.File.ReadAllTextAsync(filePath);
             var og = await _ogp.GetOpenGraphDataAsync(HttpContext);
-            var processedFile = fileContents.Replace("<!-- *OG PLACEHOLDER* -->", og);
+            var processedFile = fileContents.Replace("<title>isotope</title>", og);
             return Content(processedFile, "text/html");
         }
     }

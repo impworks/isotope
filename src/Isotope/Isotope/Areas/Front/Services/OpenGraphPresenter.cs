@@ -34,10 +34,13 @@ public class OpenGraphPresenter
             var req = new FolderContentsRequestVM {Folder = ctx.Request.Path.Value};
             var contents = await _folderPresenter.GetFolderContentsAsync(req, userContext);
 
-            var image = contents.Media.FirstOrDefault()?.ThumbnailPath;
-            if(!string.IsNullOrEmpty(image))
-                tags.Add($@"<meta property=""og:image"" content=""{image}"" />");
-            
+            var image =  contents.Media.FirstOrDefault()?.ThumbnailPath;
+            if (!string.IsNullOrEmpty(image))
+            {
+                var largeImage = image.Replace(".sm.jpg", ".lg.jpg");
+                tags.Add($@"<meta property=""og:image"" content=""{largeImage}"" />");
+            }
+
             var caption = System.Web.HttpUtility.HtmlEncode(StringHelper.Coalesce(userContext.Link?.Caption, contents.Caption));
             if(!string.IsNullOrEmpty(caption))
                 tags.Add($@"<meta name=""description"" content=""{caption}"" />");
