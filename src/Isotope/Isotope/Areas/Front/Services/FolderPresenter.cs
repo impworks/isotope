@@ -45,10 +45,10 @@ namespace Isotope.Areas.Front.Services
 
             Folder baseFolder = null;
             
-            if (ctx.Link is SharedLink link)
+            if (ctx.Link is { } link)
             {
                 if(link.Scope == SearchScope.CurrentFolder)
-                    return new FolderVM[0];
+                    return Array.Empty<FolderVM>();
 
                 baseFolder = link.Folder;
                 query = query.Where(x => x.Path.StartsWith(baseFolder.Path) && x.Depth > baseFolder.Depth); // current folder is root, only include nested ones
@@ -61,10 +61,10 @@ namespace Isotope.Areas.Front.Services
         /// <summary>
         /// Combines the folders into a tree.
         /// </summary>
-        private FolderVM[] BuildFolderTree(List<Folder> source, Folder baseFolder)
+        private FolderVM[] BuildFolderTree(IList<Folder> source, Folder baseFolder)
         {
             if(source.Count == 0)
-                return new FolderVM[0];
+                return Array.Empty<FolderVM>();
             
             var rootDepth = source.Min(x => x.Depth);
             return source.Where(x => x.Depth == rootDepth).ToList().Select(ProcessFolder).ToArray();
@@ -143,9 +143,9 @@ namespace Isotope.Areas.Front.Services
                            .Where(x => x.Path.StartsWith(folder.Path) && x.Depth == folder.Depth + 1)
                            .OrderBy(x => x.Caption)
                            .ToArrayAsync()
-                : new Folder[0];
+                : Array.Empty<Folder>();
 
-            if (ctx.Link?.Folder is Folder root)
+            if (ctx.Link?.Folder is { } root)
                 foreach (var sf in subfolders)
                     sf.Path = sf.Path.Replace(root.Path, "");
 
@@ -157,6 +157,7 @@ namespace Isotope.Areas.Front.Services
 
             return new FolderContentsVM
             {
+                Caption = folder.Caption,
                 Tags = ctx.Link == null ? _mapper.Map<TagBindingVM[]>(folder.Tags) : null,
                 Subfolders = _mapper.Map<FolderVM[]>(subfolders),
                 Media = _mapper.Map<MediaThumbnailVM[]>(media)
@@ -192,6 +193,7 @@ namespace Isotope.Areas.Front.Services
             
             return new FolderContentsVM
             {
+                Caption = folder.Caption,
                 Media = _mapper.Map<MediaThumbnailVM[]>(datedMedia)
             };
         }
@@ -220,7 +222,7 @@ namespace Isotope.Areas.Front.Services
             FuzzyDate? TryParse(string value)
             {
                 var date = value?.TryParse<DateTime?>();
-                return date == null ? (FuzzyDate?) null : new FuzzyDate(date.Value);
+                return date == null ? null : new FuzzyDate(date.Value);
             }
         }
 

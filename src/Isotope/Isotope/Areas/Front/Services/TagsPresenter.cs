@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Isotope.Areas.Front.Dto;
@@ -28,7 +29,7 @@ namespace Isotope.Areas.Front.Services
         public async Task<TagVM[]> GetTagsAsync(UserContext ctx)
         {
             if(ctx.Link != null)
-                return new TagVM[0];
+                return Array.Empty<TagVM>();
             
             return await _db.Tags
                             .OrderBy(x => x.Caption)

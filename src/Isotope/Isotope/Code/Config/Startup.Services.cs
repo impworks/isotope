@@ -25,6 +25,7 @@ namespace Isotope.Code.Config
             services.AddScoped<MediaPresenter>();
             services.AddScoped<UserContextManager>();
             services.AddScoped<GalleryInfoPresenter>();
+            services.AddScoped<OpenGraphPresenter>();
             
             services.AddScoped<IMediaHandler, JpegMediaHandler>();
             services.AddScoped<IMediaHandler, PngMediaHandler>();

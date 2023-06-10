@@ -6,6 +6,11 @@ namespace Isotope.Areas.Front.Dto
     public class FolderContentsVM
     {
         /// <summary>
+        /// Readable name of the folder.
+        /// </summary>
+        public string Caption { get; set; }
+        
+        /// <summary>
         /// Related tags.
         /// </summary>
         public TagBindingVM[] Tags { get; set; }

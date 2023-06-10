@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
-using Isotope.Areas.Front.Dto;
 using Isotope.Code.Services.Config;
-using Isotope.Code.Utils;
 using Isotope.Code.Utils.Exceptions;
 using Isotope.Data;
 using Isotope.Data.Models;
