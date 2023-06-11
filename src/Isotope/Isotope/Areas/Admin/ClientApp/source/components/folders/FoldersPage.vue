@@ -181,13 +181,13 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
             <tbody v-else>
                 <tr v-for="f in flatFolders" v-if="!f.hidden" :key="f.key + '/' + f.depth" v-action-row class="hover-actions" @contextmenu.prevent="showMenu($event, f)">
                     <td :style="{'padding-left': (f.depth + 1) + 'rem'}">
+                        <div v-if="f.thumbnailPath" class="folder-thumb" :style="{'background-image': 'url(' + f.thumbnailPath + ')'}"></div>
+                        <span v-else class="fa fa-fw fa-folder-o"></span>
+                        <router-link :to="'/folders/' + f.key">{{ f.caption }}</router-link>
                         <span v-if="f.subfolders && f.subfolders.length" @click="toggleCollapsedState(f)" class="clickable">
                             <span v-if="f.collapsed" class="fa fa-chevron-up" :title="'Show ' + f.subfolders.length + ' subfolder(s)'"></span>
                             <span v-else class="fa fa-chevron-down" title="Collapse subfolders"></span>
                         </span>
-                        <div v-if="f.thumbnailPath" class="folder-thumb" :style="{'background-image': 'url(' + f.thumbnailPath + ')'}"></div>
-                        <span v-else class="fa fa-fw fa-folder-o"></span>
-                        <router-link :to="'/folders/' + f.key">{{ f.caption }}</router-link>
                         <code class="hover-element ml-2"> {{ f.slug }} </code>
                     </td>
                     <td>
