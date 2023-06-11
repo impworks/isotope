@@ -2,7 +2,7 @@ import { DirectiveOptions } from "vue/types/options";
 
 export function createActionRowDirective(): DirectiveOptions {
     function toggle(this: HTMLElement, state: boolean) {
-        this.querySelectorAll('.hover-action').forEach(e => e.classList.toggle('hidden', !state))
+        this.querySelectorAll('.hover-action, .hover-element').forEach(e => e.classList.toggle('hidden', !state))
     }
     function show(this: HTMLElement) {
         toggle.apply(this, [true]);

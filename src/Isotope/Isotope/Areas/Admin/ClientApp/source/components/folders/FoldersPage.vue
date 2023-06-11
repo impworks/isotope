@@ -6,6 +6,7 @@ import { ApiService } from "../../services/ApiService";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { HasAsyncState } from "../mixins";
 import { FolderTitle } from "../../vms/FolderTitle";
+import { Action, Func, ILookup } from "../../../../../Common/source/utils/Interfaces";
 
 import ConfirmationDlg from "../utils/ConfirmationDlg.vue";
 import FolderEditorDlg from "./FolderEditorDlg.vue";
@@ -46,7 +47,7 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
     async load(showPreloader: boolean = false) {
         await this.showProgress(
             showPreloader ? 'isLoading' : 'isWorking',
-            async () => this.folders = await this.$api.folders.getTree(),
+            async () => this.folders = this.loadCollapsedState( await this.$api.folders.getTree()),
             'Failed to load folders tree!'
         );
     }
@@ -89,6 +90,65 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
     externalLink(f: FolderTitle) {
         window.open(f.path, '_blank');
     }
+    
+    toggleCollapsedState(f: FolderTitle) {
+        if(!f.subfolders?.length)
+            return;
+        
+        f.collapsed = !f.collapsed;
+        apply(f, f.collapsed);
+        
+        this.withLocalState(state => {
+            if(f.collapsed)
+                state[f.key] = true;
+            else
+                delete state[f.key];
+        });
+        
+        function apply(f: FolderTitle, hidden: boolean) {
+            for (let sub of f.subfolders || []) {
+                sub.hidden = hidden;
+                apply(sub, hidden || sub.collapsed);
+            }
+        }
+    }
+    
+    loadCollapsedState(fs: FolderTitle[]): FolderTitle[] {
+        this.withLocalState(state => {
+            for(let f of fs)
+                apply(f, state, false);
+        });
+        
+        return fs;
+        
+        function apply(f: FolderTitle, state: ILookup<boolean>, collapsed: boolean) {
+            f.collapsed = f.key in state;
+            f.hidden = collapsed;
+            
+            for(let sub of f.subfolders || [])
+                apply(sub, state, collapsed || f.collapsed);
+        }
+    }
+    
+    private withLocalState(fx: Action<ILookup<boolean>>) {
+        try {
+            const ls = window.localStorage;
+            const key = 'isotope-folder-collapse'
+            const state = tryDo(() => JSON.parse(ls.getItem(key)) as ILookup<boolean>, null) || {};
+            fx(state);
+            ls.setItem(key, JSON.stringify(state));
+        } catch(ex) {
+            console.error('Local storage operation failed!', ex)
+        }
+        
+        function tryDo<T>(fx: Func<T>, fallback: T): T {
+            try {
+                return fx();
+            } catch {
+                return fallback;
+            }
+        }
+    }
 }
 </script>
 
@@ -119,13 +179,16 @@ export default class FoldersPage extends Mixins(HasAsyncState()) {
             </tr>
             </tbody>
             <tbody v-else>
-                <tr v-for="f in flatFolders" :key="f.key + '/' + f.depth" v-action-row class="hover-actions" @contextmenu.prevent="showMenu($event, f)">
+                <tr v-for="f in flatFolders" v-if="!f.hidden" :key="f.key + '/' + f.depth" v-action-row class="hover-actions" @contextmenu.prevent="showMenu($event, f)">
                     <td :style="{'padding-left': (f.depth + 1) + 'rem'}">
+                        <span v-if="f.subfolders && f.subfolders.length" @click="toggleCollapsedState(f)" class="clickable">
+                            <span v-if="f.collapsed" class="fa fa-chevron-up" :title="'Show ' + f.subfolders.length + ' subfolder(s)'"></span>
+                            <span v-else class="fa fa-chevron-down" title="Collapse subfolders"></span>
+                        </span>
                         <div v-if="f.thumbnailPath" class="folder-thumb" :style="{'background-image': 'url(' + f.thumbnailPath + ')'}"></div>
                         <span v-else class="fa fa-fw fa-folder-o"></span>
-                        <router-link :to="'/folders/' + f.key">
-                            {{ f.caption }}
-                        </router-link>
+                        <router-link :to="'/folders/' + f.key">{{ f.caption }}</router-link>
+                        <code class="hover-element ml-2"> {{ f.slug }} </code>
                     </td>
                     <td>
                         <span v-if="f.mediaCount > 0">{{ f.mediaCount }}</span>
