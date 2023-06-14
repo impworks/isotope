@@ -18,10 +18,7 @@ namespace Isotope.Code.Services.Jobs
 
         public void Dispose()
         {
-            if (Scope == null)
-                return;
-            
-            Scope.Dispose();
+            Scope?.Dispose();
             Scope = null;
         }
 

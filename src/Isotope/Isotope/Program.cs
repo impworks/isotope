@@ -24,22 +24,22 @@ namespace Isotope
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
+                       .UseSerilog((_, config) =>
+                       {
+                           var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Logs/isotope-.txt");
+                           config
+                               .Enrich.FromLogContext()
+                               .MinimumLevel.Information()
+                               .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                               .WriteTo.Console()
+                               .WriteTo.Debug()
+                               .WriteTo.File(path, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7);
+                       })
                        .ConfigureWebHostDefaults(webBuilder =>
                        {
                            webBuilder.UseKestrel(x => x.ListenAnyIP(5000))
                                      .UseContentRoot(Directory.GetCurrentDirectory())
                                      .UseIIS()
-                                     .UseSerilog((context, config) =>
-                                     {
-                                         var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Logs/isotope-.txt");
-                                         config
-                                             .Enrich.FromLogContext()
-                                             .MinimumLevel.Information()
-                                             .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
-                                             .WriteTo.Console()
-                                             .WriteTo.Debug()
-                                             .WriteTo.File(path, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7);
-                                     })
                                      .UseStartup<Startup>();
                        })
                        .ConfigureServices(services =>

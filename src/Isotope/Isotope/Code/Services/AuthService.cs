@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Isotope.Areas.Admin.Utils;
 using Isotope.Areas.Front.Dto;
 using Isotope.Areas.Front.Services;
-using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
 using Isotope.Data.Models;
@@ -115,7 +114,7 @@ namespace Isotope.Code.Services
         {
             var handler = new JwtSecurityTokenHandler();
             var claims = roles.Select(x => new Claim(ClaimTypes.Role, x)).ToList();
-            claims.Add(new Claim(ClaimTypes.Name, user.UserName));
+            claims.Add(new Claim(ClaimTypes.Name, user.UserName!));
 
             var token = handler.CreateToken(
                 new SecurityTokenDescriptor

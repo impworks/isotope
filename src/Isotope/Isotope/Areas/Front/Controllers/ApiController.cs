@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Isotope.Areas.Front.Dto;
 using Isotope.Areas.Front.Services;
-using Isotope.Code.Utils;
 using Isotope.Code.Utils.Filters;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +26,6 @@ namespace Isotope.Areas.Front.Controllers
         private readonly FolderPresenter _folders;
         private readonly TagsPresenter _tags;
         private readonly MediaPresenter _media;
-        private readonly UserContextManager _ucm;
 
         /// <summary>
         /// Returns basic info about the gallery.

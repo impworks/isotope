@@ -24,7 +24,7 @@ namespace Isotope.Code.Utils
         /// </summary>
         public async Task WaitAsync(T id, CancellationToken token)
         {
-            await _locks.GetOrAdd(id, x => new SemaphoreSlim(1, 1))
+            await _locks.GetOrAdd(id, _ => new SemaphoreSlim(1, 1))
                         .WaitAsync(token);
         }
 

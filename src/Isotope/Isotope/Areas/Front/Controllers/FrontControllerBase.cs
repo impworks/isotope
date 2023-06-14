@@ -14,8 +14,8 @@ namespace Isotope.Areas.Front.Controllers
         {
             _ucm = ucm;
         }
-        
-        protected readonly UserContextManager _ucm;
+
+        private readonly UserContextManager _ucm;
         
         /// <summary>
         /// Returns the current user context.

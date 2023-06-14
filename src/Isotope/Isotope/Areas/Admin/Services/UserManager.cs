@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isotope.Areas.Admin.Dto;
 using Isotope.Areas.Admin.Utils;
+using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
 using Isotope.Data.Models;
 using Mapster;
@@ -129,8 +130,7 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         private async Task<AppUser> FindAsync(string id)
         {
-            return await _db.Users.FirstOrDefaultAsync(x => x.Id == id)
-                ?? throw new OperationException($"User '{id}' does not exist.");
+            return await _db.Users.GetAsync(x => x.Id == id, $"User '{id}' does not exist.");
         }
     }
 }

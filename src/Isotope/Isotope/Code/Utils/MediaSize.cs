@@ -13,7 +13,7 @@ namespace Isotope.Code.Utils
         Large,
 
         /// <summary>
-        /// Photo for media tumbnail.
+        /// Photo for media thumbnail.
         /// </summary>
         Small,
     }

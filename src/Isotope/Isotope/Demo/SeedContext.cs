@@ -101,9 +101,7 @@ namespace Isotope.Demo
             };
 
             folder.MediaCount++;
-
-            if (folder.Thumbnail == null)
-                folder.Thumbnail = media;
+            folder.Thumbnail ??= media;
 
             _db.Media.Add(media);
             await _db.SaveChangesAsync();

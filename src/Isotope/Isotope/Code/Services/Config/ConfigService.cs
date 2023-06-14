@@ -18,16 +18,14 @@ namespace Isotope.Code.Services.Config
         public ConfigService(AppDbContext context, StaticConfig cfg)
         {
             _context = context;
-
-            if(cfg.DemoMode == null)
-                cfg.DemoMode = new DemoModeConfig();
-
             _cfg = cfg;
+
+            _cfg.DemoMode ??= new DemoModeConfig();
         }
 
         private readonly AppDbContext _context;
         private readonly StaticConfig _cfg;
-        private static ConcurrentDictionary<string, DynamicConfig> _config;
+        private static readonly ConcurrentDictionary<string, DynamicConfig> _config;
 
         /// <summary>
         /// Returns the configuration instance.

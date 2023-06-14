@@ -19,12 +19,8 @@ namespace Isotope.Code.Utils.Helpers
         public static async Task<T> GetAsync<T>(this IQueryable<T> source, Expression<Func<T, bool>> predicate, string error)
             where T: class
         {
-            var result = await source.FirstOrDefaultAsync(predicate);
-
-            if(result == null)
-                throw new NotFoundException(error);
-
-            return result;
+            return await source.FirstOrDefaultAsync(predicate)
+                ?? throw new NotFoundException(error);
         }
 
         /// <summary>
@@ -48,19 +44,6 @@ namespace Isotope.Code.Utils.Helpers
 
             await foreach (var elem in source.AsAsyncEnumerable())
                 hash.Add(elem);
-
-            return hash;
-        }
-
-        /// <summary>
-        /// Saves the query to a hashset.
-        /// </summary>
-        public static async Task<HashSet<TResult>> ToHashSetAsync<TSource, TResult>(this IQueryable<TSource> source, Func<TSource, TResult> map)
-        {
-            var hash = new HashSet<TResult>();
-
-            await foreach (var elem in source.AsAsyncEnumerable())
-                hash.Add(map(elem));
 
             return hash;
         }

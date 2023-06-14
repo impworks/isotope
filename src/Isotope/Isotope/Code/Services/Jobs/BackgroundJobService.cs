@@ -32,7 +32,7 @@ namespace Isotope.Code.Services.Jobs
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger _logger;
 
-        private ConcurrentDictionary<int, JobDescriptor> _jobs;
+        private readonly ConcurrentDictionary<int, JobDescriptor> _jobs;
 
         /// <summary>
         /// Starts the job supervisor service.
@@ -40,7 +40,7 @@ namespace Isotope.Code.Services.Jobs
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             foreach (var def in await LoadPendingJobsAsync())
-                ExecuteJobAsync(def);
+                _ = ExecuteJobAsync(def);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Isotope.Code.Services.Jobs
             {
                 var jscope = _scopeFactory.CreateScope();
                 var jdi = jscope.ServiceProvider;
-                var jobType = Type.GetType(state.Type);
+                var jobType = Type.GetType(state.Type)!;
                 var job = (IJob) jdi.GetRequiredService(jobType);
                 var args = GetArguments(state);
 
@@ -126,7 +126,7 @@ namespace Isotope.Code.Services.Jobs
             object GetArguments(JobState state)
             {
                 return !string.IsNullOrEmpty(state.Arguments)
-                    ? JsonConvert.DeserializeObject(state.Arguments, Type.GetType(state.ArgumentsType))
+                    ? JsonConvert.DeserializeObject(state.Arguments, Type.GetType(state.ArgumentsType)!)
                     : null;
             }
         }
@@ -193,7 +193,7 @@ namespace Isotope.Code.Services.Jobs
             {
                 using var scope = _scopeFactory.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                var state = await db.JobStates.FirstOrDefaultAsync(x => x.Id == def.JobStateId);
+                var state = await db.JobStates.GetAsync(x => x.Id == def.JobStateId, $"Job {def.JobStateId} not found");
                 state.Success = success;
                 state.FinishDate = DateTime.Now;
                 await db.SaveChangesAsync();

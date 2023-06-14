@@ -34,7 +34,7 @@ namespace Isotope.Code.Services
 
         #region Fields
 
-        private CancellationTokenSource _cts;
+        private readonly CancellationTokenSource _cts;
 
         private static readonly Locker<(Type type, string id)> _locks;
         private static readonly ConcurrentDictionary<(Type type, string id), string> _cache;

@@ -23,8 +23,7 @@ namespace Isotope.Code.Utils.Helpers
         {
             if(_key == null)
                 lock(_lock)
-                    if(_key == null)
-                        _key = new SymmetricSecurityKey(GetOrCreateSecret());
+                    _key ??= new SymmetricSecurityKey(GetOrCreateSecret());
 
             return _key;
         }
@@ -46,7 +45,7 @@ namespace Isotope.Code.Utils.Helpers
             if (File.Exists(path))
                 return File.ReadAllBytes(path);
 
-            var bytes = Enumerable.Range(1, 16).Select(x => Guid.NewGuid().ToByteArray()).SelectMany(x => x).ToArray();
+            var bytes = Enumerable.Range(1, 16).Select(_ => Guid.NewGuid().ToByteArray()).SelectMany(x => x).ToArray();
             File.WriteAllBytes(path, bytes);
             return bytes;
         }

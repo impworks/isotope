@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Impworks.Utils.Linq;
@@ -23,7 +22,7 @@ namespace Isotope.Areas.Admin.Services
     /// <summary>
     /// Service for managing the folder tree.
     /// </summary>
-    public class FolderManager
+    public partial class FolderManager
     {
         public FolderManager(AppDbContext db, IMapper mapper, IBackgroundJobService jobSvc)
         {
@@ -144,7 +143,7 @@ namespace Isotope.Areas.Admin.Services
             
             var folder = await _db.Folders
                                   .Include(x => x.Tags)
-                                  .FirstOrDefaultAsync(x => x.Key == key);
+                                  .GetAsync(x => x.Key == key, $"Folder {key} not found");
 
             if (folder.Slug != vm.Slug)
             {
@@ -230,7 +229,7 @@ namespace Isotope.Areas.Admin.Services
             
             if(string.IsNullOrEmpty(vm.Slug))
                 throw new OperationException("Slug is required.");
-            if (!Regex.IsMatch(vm.Slug, "^[a-z0-9-]+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+            if (!ValidIdentifierRegex().IsMatch(vm.Slug))
                 throw new OperationException("Slug contains invalid characters. Only English letters, numbers and a hyphen are allowed.");
                 
             if (!string.IsNullOrEmpty(vm.ThumbnailKey))
@@ -272,22 +271,20 @@ namespace Isotope.Areas.Admin.Services
                                     .Where(x => x.Path.StartsWith(parent.Path) && x.Depth == parent.Depth + 1)
                                     .ToListAsync();
                 }
-                else
-                {
-                    var folder = await _db.Folders
-                                          .AsNoTracking()
-                                          .FirstOrDefaultAsync(x => x.Key == key);
-                    if(folder == null)
-                        throw new OperationException($"Folder '{key}' does not exist.");
 
-                    var parentPath = PathHelper.GetParentPath(folder.Path);
-                    return await _db.Folders
-                                    .AsNoTracking()
-                                    .Where(x => x.Path.StartsWith(parentPath)
-                                        && x.Depth == folder.Depth
-                                        && x.Key != key)
-                                    .ToListAsync();
-                }
+                var folder = await _db.Folders
+                                      .AsNoTracking()
+                                      .FirstOrDefaultAsync(x => x.Key == key);
+                if(folder == null)
+                    throw new OperationException($"Folder '{key}' does not exist.");
+
+                var parentPath = PathHelper.GetParentPath(folder.Path);
+                return await _db.Folders
+                                .AsNoTracking()
+                                .Where(x => x.Path.StartsWith(parentPath)
+                                            && x.Depth == folder.Depth
+                                            && x.Key != key)
+                                .ToListAsync();
             }
         }
 
@@ -306,5 +303,8 @@ namespace Isotope.Areas.Admin.Services
 
             return folder;
         }
+
+        [GeneratedRegex("^[a-z0-9-]+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+        private static partial Regex ValidIdentifierRegex();
     }
 }

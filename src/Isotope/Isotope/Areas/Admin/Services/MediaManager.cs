@@ -18,7 +18,6 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp;
 
 namespace Isotope.Areas.Admin.Services
 {
@@ -45,7 +44,7 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task<IReadOnlyList<MediaThumbnailVM>> GetListAsync(string folderKey)
         {
-            if(! await _db.Folders.AnyAsync(x => x.Key == folderKey))
+            if(!await _db.Folders.AnyAsync(x => x.Key == folderKey))
                 throw new OperationException($"Folder '{folderKey}' does not exist.");
 
             return await _db.Media
@@ -56,41 +55,11 @@ namespace Isotope.Areas.Admin.Services
         }
 
         /// <summary>
-        /// Finds media files by a complex request.
-        /// </summary>
-        public async Task<IReadOnlyList<MediaThumbnailVM>> FindAsync(MediaListRequestVM vm)
-        {
-            const int PAGE_SIZE = 100;
-            
-            var query = _db.Media
-                           .OrderBy(vm.OrderBy.TryGetOneOf(nameof(Media.Order), nameof(Media.UploadDate), nameof(Media.Date)), vm.OrderDesc)
-                           .AsQueryable();
-
-            if (!string.IsNullOrEmpty(vm.Folder))
-            {
-                if(! await _db.Folders.AnyAsync(x => x.Key == vm.Folder))
-                    throw new OperationException($"Folder '{vm.Folder}' does not exist.");
-                
-                query = query.Where(x => x.FolderKey == vm.Folder);
-            }
-
-            return await query.Skip(Math.Max(0, vm.Page) * PAGE_SIZE)
-                              .Take(PAGE_SIZE)
-                              .ProjectToType<MediaThumbnailVM>(_mapper.Config)
-                              .ToListAsync();
-        }
-
-        /// <summary>
         /// Adds a new file from uploaded data.
         /// </summary>
         public async Task<MediaThumbnailVM> UploadAsync(string folderKey, IFormFile file)
         {
-            var folder = await _db.Folders
-                                  .FirstOrDefaultAsync(x => x.Key == folderKey);
-            
-            if(folder == null)
-                throw new OperationException($"Folder '{folderKey}' does not exist.");
-
+            var folder = await _db.Folders.GetAsync(x => x.Key == folderKey, $"Folder '{folderKey}' does not exist.");
             var handler = _mediaHandlers.FirstOrDefault(x => x.SupportedMimeTypes.Contains(file.ContentType));
             if(handler == null)
                 throw new OperationException($"Media type '{file.ContentType}' is not supported!");
@@ -126,9 +95,7 @@ namespace Isotope.Areas.Admin.Services
             _db.Media.Add(media);
             await _db.SaveChangesAsync();
 
-            if (folder.ThumbnailKey == null)
-                folder.ThumbnailKey = media.Key;
-
+            folder.ThumbnailKey ??= media.Key;
             folder.MediaCount = await _db.Media.CountAsync(x => x.FolderKey == folderKey);
             await _db.SaveChangesAsync();
 
@@ -148,10 +115,7 @@ namespace Isotope.Areas.Admin.Services
             var media = await _db.Media
                                  .Include(x => x.Tags)
                                  .AsNoTracking()
-                                 .FirstOrDefaultAsync(x => x.Key == key);
-            
-            if(media == null)
-                throw new OperationException($"Media '{key}' does not exist.");
+                                 .GetAsync(x => x.Key == key, $"Media '{key}' does not exist.");
 
             return _mapper.Map<MediaVM>(media);
         }
@@ -165,11 +129,8 @@ namespace Isotope.Areas.Admin.Services
             
             var media = await _db.Media
                                  .Include(x => x.Tags)
-                                 .FirstOrDefaultAsync(x => x.Key == key);
+                                 .GetAsync(x => x.Key == key, $"Media '{key}' does not exist.");
             
-            if(media == null)
-                throw new OperationException($"Media '{key}' does not exist.");
-
             _mapper.Map(vm, media);
 
             var newTagIds = (vm.OverlayTags?.Select(x => x.TagId) ?? Array.Empty<int>())
@@ -209,10 +170,7 @@ namespace Isotope.Areas.Admin.Services
         {
             var media = await _db.Media
                                  .Include(x => x.Tags)
-                                 .FirstOrDefaultAsync(x => x.Key == key);
-            
-            if(media == null)
-                throw new OperationException($"Media '{key}' does not exist.");
+                                 .GetAsync(x => x.Key == key, $"Media '{key}' does not exist.");
 
             return _mapper.Map<RectVM>(media.ThumbnailRect);
         }
@@ -226,10 +184,7 @@ namespace Isotope.Areas.Admin.Services
             
             var media = await _db.Media
                                  .Include(x => x.Tags)
-                                 .FirstOrDefaultAsync(x => x.Key == key);
-            
-            if(media == null)
-                throw new OperationException($"Media '{key}' does not exist.");
+                                 .GetAsync(x => x.Key == key, $"Media '{key}' does not exist.");
 
             var rect = _mapper.Map<Rect>(vm);
             if (media.ThumbnailRect.Equals(rect))
@@ -246,9 +201,7 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task ReorderAsync(string folderKey, IReadOnlyList<string> mediaKeys)
         {
-            var folder = await _db.Folders.FirstOrDefaultAsync(x => x.Key == folderKey);
-            if(folder == null)
-                throw new OperationException($"Folder '{folderKey}' does not exist.");
+            var folder = await _db.Folders.GetAsync(x => x.Key == folderKey, $"Folder '{folderKey}' does not exist.");
 
             var extraCount = mediaKeys.Count;
             var orderLookup = new Dictionary<string, int>();
@@ -403,7 +356,7 @@ namespace Isotope.Areas.Admin.Services
             var path = $"/@media/{folder.Key}/{fileName}";
             var localPath = MediaHelper.GetFullMediaPath(path);
             
-            Directory.CreateDirectory(Path.GetDirectoryName(localPath));
+            Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
             
             await using var fs = new FileStream(localPath, FileMode.Create, FileAccess.Write);
             await file.CopyToAsync(fs);
@@ -460,11 +413,12 @@ namespace Isotope.Areas.Admin.Services
 
             double Clamp(double value)
             {
-                if (value < 0)
-                    return 0;
-                if (value > 1)
-                    return 1;
-                return value;
+                return value switch
+                {
+                    < 0 => 0,
+                    > 1 => 1,
+                    _ => value
+                };
             }
         }
         

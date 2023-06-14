@@ -34,7 +34,7 @@ namespace Isotope.Areas.Admin.Services.Jobs
 
             await _db.MediaTags.RemoveWhereAsync(x => x.Type == TagBindingType.Inherited);
             _db.MediaTags.AddRange(tags);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(CancellationToken.None);
 
             void ProcessFolder(Folder folder, ImmutableHashSet<int> tagIds)
             {

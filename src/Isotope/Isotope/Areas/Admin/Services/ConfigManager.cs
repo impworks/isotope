@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Isotope.Areas.Admin.Dto;
 using Isotope.Code.Services.Config;
@@ -29,8 +30,8 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task<ConfigVM> GetAsync()
         {
-            var wrapper = await _db.DynamicConfig.FirstOrDefaultAsync();
-            var config = JsonConvert.DeserializeObject<DynamicConfig>(wrapper.Value);
+            var wrapper = await _db.DynamicConfig.FirstOrDefaultAsync() ?? throw new Exception("DynamicConfig not found.");
+            var config = JsonConvert.DeserializeObject<DynamicConfig>(wrapper.Value)!;
             return _mapper.Map<ConfigVM>(config);
         }
 
@@ -39,7 +40,7 @@ namespace Isotope.Areas.Admin.Services
         /// </summary>
         public async Task SetAsync(ConfigVM config)
         {
-            var wrapper = await _db.DynamicConfig.FirstOrDefaultAsync();
+            var wrapper = await _db.DynamicConfig.FirstOrDefaultAsync() ?? throw new Exception("DynamicConfig not found.");
             wrapper.Value = JsonConvert.SerializeObject(_mapper.Map<DynamicConfig>(config));
             await _db.SaveChangesAsync();
             

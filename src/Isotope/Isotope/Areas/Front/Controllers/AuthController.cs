@@ -37,7 +37,6 @@ namespace Isotope.Areas.Front.Controllers
         /// <summary>
         /// Changes the password for a user.
         /// </summary>
-        /// <param name="request"></param>
         [HttpPost, Route("change-password")]
         [JwtAuthorize]
         public async Task ChangePassword([FromBody] ChangePasswordRequestVM request)

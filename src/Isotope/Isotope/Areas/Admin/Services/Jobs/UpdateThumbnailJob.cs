@@ -5,7 +5,6 @@ using Isotope.Code.Services.Jobs;
 using Isotope.Code.Utils;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
-using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 
 namespace Isotope.Areas.Admin.Services.Jobs
@@ -24,22 +23,19 @@ namespace Isotope.Areas.Admin.Services.Jobs
         
         protected override async Task ExecuteAsync(string key, CancellationToken token)
         {
-            var media = await _db.Media.FirstOrDefaultAsync(x => x.Key == key);
-            if(media == null)
-                throw new Exception($"Failed to regenerate thumbnail for media '{key}': it does not exist.");
-
+            var media = await _db.Media.GetAsync(x => x.Key == key, $"Failed to regenerate thumbnail for media '{key}': it does not exist.");
             var path = MediaHelper.GetFullMediaPath(media.Path);
             var largePath = MediaHelper.GetSizedMediaPath(path, MediaSize.Large);
             var thumbPath = MediaHelper.GetSizedMediaPath(path, MediaSize.Small);
 
             var preset = ImageHelper.ImagePresets[MediaSize.Small];
-            using var src = await Image.LoadAsync(largePath);
+            using var src = await Image.LoadAsync(largePath, token);
             using var dst = ImageHelper.GetPortion(src, media.ThumbnailRect, preset.Size);
             
-            await dst.SaveAsync(thumbPath, preset.Codec);
+            await dst.SaveAsync(thumbPath, preset.Codec, token);
             
             media.VersionDate = DateTime.Now;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(CancellationToken.None);
         }
     }
 }
