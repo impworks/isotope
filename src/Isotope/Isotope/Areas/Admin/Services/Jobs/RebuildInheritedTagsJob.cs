@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -61,7 +62,7 @@ namespace Isotope.Areas.Admin.Services.Jobs
             }
         }
 
-        private async Task<Dictionary<int, List<Folder>>> GetFolderLookupAsync(CancellationToken token)
+        private async Task<FrozenDictionary<int, List<Folder>>> GetFolderLookupAsync(CancellationToken token)
         {
             var folders = await _db.Folders
                                    .AsNoTracking()
@@ -69,21 +70,21 @@ namespace Isotope.Areas.Admin.Services.Jobs
                                    .ToListAsync(token);
 
             return folders.GroupBy(x => x.Depth)
-                          .ToDictionary(x => x.Key, x => x.ToList());
+                          .ToFrozenDictionary(x => x.Key, x => x.ToList());
         }
         
 
         /// <summary>
         /// Returns the lookup for finding media files in a particular folder.
         /// </summary>
-        private async Task<Dictionary<string, List<string>>> GetMediaLookupAsync(CancellationToken token)
+        private async Task<FrozenDictionary<string, List<string>>> GetMediaLookupAsync(CancellationToken token)
         {
             var media = await _db.Media
                                  .Select(x => new { x.Key, x.FolderKey })
                                  .ToListAsync(token);
 
             return media.GroupBy(x => x.FolderKey, x => x.Key)
-                        .ToDictionary(x => x.Key, x => x.ToList());
+                        .ToFrozenDictionary(x => x.Key, x => x.ToList());
         }
     }
 }
