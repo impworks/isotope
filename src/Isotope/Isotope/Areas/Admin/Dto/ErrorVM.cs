@@ -1,13 +1,12 @@
-namespace Isotope.Areas.Admin.Dto
+namespace Isotope.Areas.Admin.Dto;
+
+/// <summary>
+/// Error details.
+/// </summary>
+public class ErrorVM
 {
     /// <summary>
-    /// Error details.
+    /// Details of the occured error.
     /// </summary>
-    public class ErrorVM
-    {
-        /// <summary>
-        /// Details of the occured error.
-        /// </summary>
-        public string Error { get; set; }
-    }
+    public string Error { get; set; }
 }

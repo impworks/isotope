@@ -1,8 +1,7 @@
-namespace Isotope.Areas.Admin.Dto
+namespace Isotope.Areas.Admin.Dto;
+
+public class UserPasswordVM
 {
-    public class UserPasswordVM
-    {
-        public string Password { get; set; }
-        public string PasswordConfirmation { get; set; }
-    }
+    public string Password { get; set; }
+    public string PasswordConfirmation { get; set; }
 }

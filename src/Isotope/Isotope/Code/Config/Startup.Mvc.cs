@@ -11,68 +11,67 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace Isotope.Code.Config
+namespace Isotope.Code.Config;
+
+public partial class Startup
 {
-    public partial class Startup
+    /// <summary>
+    /// Configures and registers MVC-related services.
+    /// </summary>
+    private void ConfigureMvcServices(IServiceCollection services)
     {
-        /// <summary>
-        /// Configures and registers MVC-related services.
-        /// </summary>
-        private void ConfigureMvcServices(IServiceCollection services)
+        services.AddSingleton(_ => Configuration);
+        services.AddSingleton(_ => Log.Logger);
+        services.AddScoped<JwtAuthorizeFilter>();
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+
+        services.ConfigureApplicationCookie(x =>
         {
-            services.AddSingleton(p => Configuration);
-            services.AddSingleton(p => Log.Logger);
-            services.AddScoped<JwtAuthorizeFilter>();
-            
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
-
-            services.ConfigureApplicationCookie(x =>
+            x.LoginPath = new PathString("/");
+            x.Events = new CookieAuthenticationEvents
             {
-                x.LoginPath = new PathString("/");
-                x.Events = new CookieAuthenticationEvents
+                OnRedirectToLogin = ctx =>
                 {
-                    OnRedirectToLogin = ctx =>
-                    {
-                        ctx.Response.Clear();
-                        ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                    ctx.Response.Clear();
+                    ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                    return Task.CompletedTask;
+                }
+            };
+        });
 
-            services.AddMvc()
-                    .AddNewtonsoftJson(opts =>
-                    {
-                        var convs = new List<JsonConverter>
-                        {
-                            new FuzzyDate.FuzzyDateJsonConverter()
-                        };
-
-                        convs.ForEach(x => opts.SerializerSettings.Converters.Add(x));
-
-                        JsonConvert.DefaultSettings = () =>
-                        {
-                            var settings = new JsonSerializerSettings();
-                            convs.ForEach(settings.Converters.Add);
-                            return settings;
-                        };
-                    });
-
-            services.AddRouting(opts =>
-            {
-                opts.AppendTrailingSlash = false;
-                opts.LowercaseUrls = false;
-            });
-
-            if (Environment.IsDevelopment())
-            {
-                services.AddCors(opts => opts.AddDefaultPolicy(x =>
+        services.AddMvc()
+                .AddNewtonsoftJson(opts =>
                 {
-                    x.AllowAnyHeader()
-                     .AllowAnyMethod()
-                     .AllowAnyOrigin();
-                }));
-            }
+                    var convs = new List<JsonConverter>
+                    {
+                        new FuzzyDate.FuzzyDateJsonConverter()
+                    };
+
+                    convs.ForEach(x => opts.SerializerSettings.Converters.Add(x));
+
+                    JsonConvert.DefaultSettings = () =>
+                    {
+                        var settings = new JsonSerializerSettings();
+                        convs.ForEach(settings.Converters.Add);
+                        return settings;
+                    };
+                });
+
+        services.AddRouting(opts =>
+        {
+            opts.AppendTrailingSlash = false;
+            opts.LowercaseUrls = false;
+        });
+
+        if (Environment.IsDevelopment())
+        {
+            services.AddCors(opts => opts.AddDefaultPolicy(x =>
+            {
+                x.AllowAnyHeader()
+                 .AllowAnyMethod()
+                 .AllowAnyOrigin();
+            }));
         }
     }
 }

@@ -1,8 +1,7 @@
-namespace Isotope.Areas.Admin.Dto
+namespace Isotope.Areas.Admin.Dto;
+
+public class MoveFolderVM
 {
-    public class MoveFolderVM
-    {
-        public string SourceKey { get; set; }
-        public string TargetKey { get; set; }
-    }
+    public string SourceKey { get; set; }
+    public string TargetKey { get; set; }
 }

@@ -9,30 +9,19 @@ using Microsoft.AspNetCore.Http;
 
 namespace Isotope.Areas.Front.Services;
 
-public class OpenGraphPresenter
+public class OpenGraphPresenter(UserContextManager userMgr, FolderPresenter folderPresenter, ConfigService config)
 {
-    private readonly UserContextManager _userMgr;
-    private readonly FolderPresenter _folderPresenter;
-    private readonly ConfigService _config;
-
-    public OpenGraphPresenter(UserContextManager userMgr, FolderPresenter folderPresenter, ConfigService config)
-    {
-        _userMgr = userMgr;
-        _folderPresenter = folderPresenter;
-        _config = config;
-    }
-
     public async Task<string> GetOpenGraphDataAsync(HttpContext ctx)
     {
         var tags = new List<string>();
         
-        tags.Add($"<title>{_config.GetDynamicConfig().Title}</title>");
+        tags.Add($"<title>{config.GetDynamicConfig().Title}</title>");
         
         try
         {
-            var userContext = await _userMgr.GetUserContextAsync(ctx, true);
+            var userContext = await userMgr.GetUserContextAsync(ctx, true);
             var req = new FolderContentsRequestVM {Folder = ctx.Request.Path.Value};
-            var contents = await _folderPresenter.GetFolderContentsAsync(req, userContext);
+            var contents = await folderPresenter.GetFolderContentsAsync(req, userContext);
 
             var image =  contents.Media.FirstOrDefault()?.ThumbnailPath;
             if (!string.IsNullOrEmpty(image))

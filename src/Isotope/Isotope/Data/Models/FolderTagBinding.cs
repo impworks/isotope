@@ -1,13 +1,12 @@
-﻿namespace Isotope.Data.Models
+﻿namespace Isotope.Data.Models;
+
+/// <summary>
+/// Binding of a tag to a folder.
+/// </summary>
+public class FolderTagBinding: TagBinding
 {
     /// <summary>
-    /// Binding of a tag to a folder.
+    /// Related folder.
     /// </summary>
-    public class FolderTagBinding: TagBinding
-    {
-        /// <summary>
-        /// Related folder.
-        /// </summary>
-        public Folder Folder { get; set; }
-    }
+    public Folder Folder { get; set; }
 }

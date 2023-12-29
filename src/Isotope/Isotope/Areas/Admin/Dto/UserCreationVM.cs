@@ -1,8 +1,7 @@
-namespace Isotope.Areas.Admin.Dto
+namespace Isotope.Areas.Admin.Dto;
+
+public class UserCreationVM
 {
-    public class UserCreationVM
-    {
-        public UserVM UserInfo { get; set; }
-        public UserPasswordVM PasswordInfo { get; set; }
-    }
+    public UserVM UserInfo { get; set; }
+    public UserPasswordVM PasswordInfo { get; set; }
 }

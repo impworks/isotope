@@ -7,34 +7,24 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
-namespace Isotope.Areas.Front.Services
+namespace Isotope.Areas.Front.Services;
+
+/// <summary>
+/// Helper class for retrieving the list of tags.
+/// </summary>
+public class TagsPresenter(AppDbContext db, IMapper mapper)
 {
     /// <summary>
-    /// Helper class for retrieving the list of tags.
+    /// Returns the list of all tags in alphabetic order.
     /// </summary>
-    public class TagsPresenter
+    public async Task<TagVM[]> GetTagsAsync(UserContext ctx)
     {
-        public TagsPresenter(AppDbContext db, IMapper mapper)
-        {
-            _db = db;
-            _mapper = mapper;
-        }
+        if (ctx.Link != null)
+            return Array.Empty<TagVM>();
 
-        private readonly AppDbContext _db;
-        private readonly IMapper _mapper;
-
-        /// <summary>
-        /// Returns the list of all tags in alphabetic order.
-        /// </summary>
-        public async Task<TagVM[]> GetTagsAsync(UserContext ctx)
-        {
-            if(ctx.Link != null)
-                return Array.Empty<TagVM>();
-            
-            return await _db.Tags
-                            .OrderBy(x => x.Caption)
-                            .ProjectToType<TagVM>(_mapper.Config)
-                            .ToArrayAsync();
-        }
+        return await db.Tags
+                       .OrderBy(x => x.Caption)
+                       .ProjectToType<TagVM>(mapper.Config)
+                       .ToArrayAsync();
     }
 }

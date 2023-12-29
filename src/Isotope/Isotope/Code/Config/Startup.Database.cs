@@ -12,69 +12,68 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Directory = System.IO.Directory;
 
-namespace Isotope.Code.Config
+namespace Isotope.Code.Config;
+
+public partial class Startup
 {
-    public partial class Startup
+    /// <summary>
+    /// Registers database-related services.
+    /// </summary>
+    private void ConfigureDatabaseServices(IServiceCollection services)
     {
-        /// <summary>
-        /// Registers database-related services.
-        /// </summary>
-        private void ConfigureDatabaseServices(IServiceCollection services)
-        {
-            services.AddDbContext<AppDbContext>(opts => opts.UseSqlite(Configuration.Database.ConnectionString));
-            
-            services.AddIdentity<AppUser, IdentityRole>(opts =>
-                    {
-                        opts.Password.RequiredLength = 6;
-                        opts.Password.RequireDigit = false;
-                        opts.Password.RequireLowercase = false;
-                        opts.Password.RequireUppercase = false;
-                        opts.Password.RequireNonAlphanumeric = false;
-                        opts.Password.RequiredUniqueChars = 1;
-                    })
-                    .AddEntityFrameworkStores<AppDbContext>()
-                    .AddDefaultTokenProviders();
-        }
+        services.AddDbContext<AppDbContext>(opts => opts.UseSqlite(Configuration.Database.ConnectionString));
 
-        /// <summary>
-        /// Creates the database and applies migrations if necessary.
-        /// </summary>
-        private void InitDatabase(IApplicationBuilder app)
-        {
-            CreateStorageFolder();
+        services.AddIdentity<AppUser, IdentityRole>(opts =>
+                {
+                    opts.Password.RequiredLength = 6;
+                    opts.Password.RequireDigit = false;
+                    opts.Password.RequireLowercase = false;
+                    opts.Password.RequireUppercase = false;
+                    opts.Password.RequireNonAlphanumeric = false;
+                    opts.Password.RequiredUniqueChars = 1;
+                })
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+    }
 
-            var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            var sp = scope.ServiceProvider;
-            InitDatabaseAsync(sp).GetAwaiter().GetResult();
-        }
+    /// <summary>
+    /// Creates the database and applies migrations if necessary.
+    /// </summary>
+    private void InitDatabase(IApplicationBuilder app)
+    {
+        CreateStorageFolder();
 
-        /// <summary>
-        /// Performs database seeding.
-        /// </summary>
-        private async Task InitDatabaseAsync(IServiceProvider sp)
-        {
-            var demoCfg = Configuration.DemoMode ?? new DemoModeConfig(); // all false
-            
-            if (demoCfg.Enabled && demoCfg.ClearOnStartup)
-                await SeedData.ClearPreviousDataAsync();
+        var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+        var sp = scope.ServiceProvider;
+        InitDatabaseAsync(sp).GetAwaiter().GetResult();
+    }
 
-            var db = sp.GetService<AppDbContext>();
-            var userMgr = sp.GetService<UserManager<AppUser>>(); 
-            
-            await db.EnsureDatabaseCreatedAsync();
-            await db.EnsureSystemItemsCreatedAsync(userMgr);
+    /// <summary>
+    /// Performs database seeding.
+    /// </summary>
+    private async Task InitDatabaseAsync(IServiceProvider sp)
+    {
+        var demoCfg = Configuration.DemoMode ?? new DemoModeConfig(); // all false
 
-            if (demoCfg.Enabled && demoCfg.SeedSampleData)
-                await SeedData.SeedSampleDataAsync(db);
-        }
+        if (demoCfg.Enabled && demoCfg.ClearOnStartup)
+            await SeedData.ClearPreviousDataAsync();
 
-        /// <summary>
-        /// Creates the folder for database & keys.
-        /// </summary>
-        private void CreateStorageFolder()
-        {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "@media");
-            Directory.CreateDirectory(path);
-        }
+        var db = sp.GetService<AppDbContext>();
+        var userMgr = sp.GetService<UserManager<AppUser>>();
+
+        await db.EnsureDatabaseCreatedAsync();
+        await db.EnsureSystemItemsCreatedAsync(userMgr);
+
+        if (demoCfg.Enabled && demoCfg.SeedSampleData)
+            await SeedData.SeedSampleDataAsync(db);
+    }
+
+    /// <summary>
+    /// Creates the folder for database & keys.
+    /// </summary>
+    private void CreateStorageFolder()
+    {
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "@media");
+        Directory.CreateDirectory(path);
     }
 }

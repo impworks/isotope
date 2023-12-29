@@ -7,44 +7,32 @@ using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace Isotope.Areas.Admin.Services
+namespace Isotope.Areas.Admin.Services;
+
+/// <summary>
+/// Service for managing configuration properties.
+/// </summary>
+public class ConfigManager(AppDbContext db, ConfigService cfg, IMapper mapper)
 {
     /// <summary>
-    /// Service for managing configuration properties.
+    /// Returns the editable config properties.
     /// </summary>
-    public class ConfigManager
+    public async Task<ConfigVM> GetAsync()
     {
-        public ConfigManager(AppDbContext db, ConfigService cfg, IMapper mapper)
-        {
-            _db = db;
-            _cfg = cfg;
-            _mapper = mapper;
-        }
-        
-        private readonly AppDbContext _db;
-        private readonly ConfigService _cfg;
-        private readonly IMapper _mapper;
+        var wrapper = await db.DynamicConfig.FirstOrDefaultAsync() ?? throw new Exception("DynamicConfig not found.");
+        var config = JsonConvert.DeserializeObject<DynamicConfig>(wrapper.Value)!;
+        return mapper.Map<ConfigVM>(config);
+    }
 
-        /// <summary>
-        /// Returns the editable config properties.
-        /// </summary>
-        public async Task<ConfigVM> GetAsync()
-        {
-            var wrapper = await _db.DynamicConfig.FirstOrDefaultAsync() ?? throw new Exception("DynamicConfig not found.");
-            var config = JsonConvert.DeserializeObject<DynamicConfig>(wrapper.Value)!;
-            return _mapper.Map<ConfigVM>(config);
-        }
-
-        /// <summary>
-        /// Updates the current config.
-        /// </summary>
-        public async Task SetAsync(ConfigVM config)
-        {
-            var wrapper = await _db.DynamicConfig.FirstOrDefaultAsync() ?? throw new Exception("DynamicConfig not found.");
-            wrapper.Value = JsonConvert.SerializeObject(_mapper.Map<DynamicConfig>(config));
-            await _db.SaveChangesAsync();
+    /// <summary>
+    /// Updates the current config.
+    /// </summary>
+    public async Task SetAsync(ConfigVM config)
+    {
+        var wrapper = await db.DynamicConfig.FirstOrDefaultAsync() ?? throw new Exception("DynamicConfig not found.");
+        wrapper.Value = JsonConvert.SerializeObject(mapper.Map<DynamicConfig>(config));
+        await db.SaveChangesAsync();
             
-            _cfg.ResetCache();
-        }
+        cfg.ResetCache();
     }
 }

@@ -1,11 +1,10 @@
-﻿namespace Isotope.Data.Models
+﻿namespace Isotope.Data.Models;
+
+/// <summary>
+/// Types of media.
+/// </summary>
+public enum MediaType
 {
-    /// <summary>
-    /// Types of media.
-    /// </summary>
-    public enum MediaType
-    {
-        Photo = 1,
-        Video = 2
-    }
+    Photo = 1,
+    Video = 2
 }

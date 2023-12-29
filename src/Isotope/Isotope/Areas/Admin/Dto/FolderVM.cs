@@ -4,30 +4,29 @@ using Isotope.Code.Utils;
 using Isotope.Data.Models;
 using Mapster;
 
-namespace Isotope.Areas.Admin.Dto
+namespace Isotope.Areas.Admin.Dto;
+
+public class FolderVM: IMapped
 {
-    public class FolderVM: IMapped
+    public string Key { get; set; }
+    public string Caption { get; set; }
+    public string Slug { get; set; }
+    public string ThumbnailKey { get; set; }
+    public int[] Tags { get; set; }
+
+    public void Configure(TypeAdapterConfig config)
     {
-        public string Key { get; set; }
-        public string Caption { get; set; }
-        public string Slug { get; set; }
-        public string ThumbnailKey { get; set; }
-        public int[] Tags { get; set; }
+        config.NewConfig<Folder, FolderVM>()
+              .Map(x => x.Key, x => x.Key)
+              .Map(x => x.Caption, x => x.Caption)
+              .Map(x => x.Slug, x => x.Slug)
+              .Map(x => x.ThumbnailKey, x => x.ThumbnailKey)
+              .Map(x => x.Tags, x => x.Tags.Select(y => y.TagId));
 
-        public void Configure(TypeAdapterConfig config)
-        {
-            config.NewConfig<Folder, FolderVM>()
-                  .Map(x => x.Key, x => x.Key)
-                  .Map(x => x.Caption, x => x.Caption)
-                  .Map(x => x.Slug, x => x.Slug)
-                  .Map(x => x.ThumbnailKey, x => x.ThumbnailKey)
-                  .Map(x => x.Tags, x => x.Tags.Select(y => y.TagId));
-
-            config.NewConfig<FolderVM, Folder>()
-                  .Map(x => x.Caption, x => x.Caption)
-                  .Map(x => x.Slug, x => x.Slug)
-                  .Map(x => x.ThumbnailKey, x => StringHelper.Coalesce(x.ThumbnailKey, null))
-                  .Ignore(x => x.Tags);
-        }
+        config.NewConfig<FolderVM, Folder>()
+              .Map(x => x.Caption, x => x.Caption)
+              .Map(x => x.Slug, x => x.Slug)
+              .Map(x => x.ThumbnailKey, x => StringHelper.Coalesce(x.ThumbnailKey, null))
+              .Ignore(x => x.Tags);
     }
 }

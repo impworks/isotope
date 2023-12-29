@@ -11,83 +11,73 @@ using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using TagVM = Isotope.Areas.Admin.Dto.TagVM;
 
-namespace Isotope.Areas.Admin.Services
+namespace Isotope.Areas.Admin.Services;
+
+/// <summary>
+/// Service for managing the global list of tags.
+/// </summary>
+public class TagManager(AppDbContext db, IMapper mapper)
 {
     /// <summary>
-    /// Service for managing the global list of tags.
+    /// Returns the list of all tags.
     /// </summary>
-    public class TagManager  
+    public async Task<IReadOnlyList<TagVM>> GetListAsync()
     {
-        public TagManager(AppDbContext db, IMapper mapper)
-        {
-            _db = db;
-            _mapper = mapper;
-        }
-        
-        private readonly AppDbContext _db;
-        private readonly IMapper _mapper;
+        return await db.Tags
+                        .OrderBy(x => x.Caption)
+                        .ProjectToType<TagVM>(mapper.Config)
+                        .ToListAsync();
+    }
 
-        /// <summary>
-        /// Returns the list of all tags.
-        /// </summary>
-        public async Task<IReadOnlyList<TagVM>> GetListAsync()
-        {
-            return await _db.Tags
-                            .OrderBy(x => x.Caption)
-                            .ProjectToType<TagVM>(_mapper.Config)
-                            .ToListAsync();
-        }
+    /// <summary>
+    /// Creates a new tag.
+    /// </summary>
+    public async Task<TagVM> CreateAsync(TagVM vm)
+    {
+        await ValidateAsync(vm, null);
 
-        /// <summary>
-        /// Creates a new tag.
-        /// </summary>
-        public async Task<TagVM> CreateAsync(TagVM vm)
-        {
-            await ValidateAsync(vm, null);
+        var tag = mapper.Map<Tag>(vm);
+        db.Tags.Add(tag);
+        await db.SaveChangesAsync();
 
-            var tag = _mapper.Map<Tag>(vm);
-            _db.Tags.Add(tag);
-            await _db.SaveChangesAsync();
+        return mapper.Map<TagVM>(tag);
+    }
 
-            return _mapper.Map<TagVM>(tag);
-        }
-
-        /// <summary>
-        /// Updates the existing tag.
-        /// </summary>
-        public async Task UpdateAsync(int id, TagVM vm)
-        {
-            await ValidateAsync(vm, id);
+    /// <summary>
+    /// Updates the existing tag.
+    /// </summary>
+    public async Task UpdateAsync(int id, TagVM vm)
+    {
+        await ValidateAsync(vm, id);
             
-            var tag = await _db.Tags.GetAsync(x => x.Id == id, $"Tag #{id} does not exist.");
-            _mapper.Map(vm, tag);
-            await _db.SaveChangesAsync();
-        }
+        var tag = await db.Tags.GetAsync(x => x.Id == id, $"Tag #{id} does not exist.");
+        mapper.Map(vm, tag);
+        await db.SaveChangesAsync();
+    }
 
-        /// <summary>
-        /// Removes the existing tag, clears all bindings.
-        /// </summary>
-        public async Task RemoveAsync(int id)
-        {
-            // todo: configure cascade delete
-            var tag = await _db.Tags.GetAsync(x => x.Id == id, $"Tag #{id} does not exist.");
-            _db.Tags.Remove(tag);
-            await _db.SaveChangesAsync();
-        }
+    /// <summary>
+    /// Removes the existing tag, clears all bindings.
+    /// </summary>
+    public async Task RemoveAsync(int id)
+    {
+        // todo: configure cascade delete
+        var tag = await db.Tags.GetAsync(x => x.Id == id, $"Tag #{id} does not exist.");
+        db.Tags.Remove(tag);
+        await db.SaveChangesAsync();
+    }
 
-        /// <summary>
-        /// Ensures that the request is correct.
-        /// </summary>
-        private async Task ValidateAsync(TagVM vm, int? id)
-        {
-            if(string.IsNullOrEmpty(vm.Caption))
-                throw new OperationException($"Required field {nameof(vm.Caption)} is not set.");
+    /// <summary>
+    /// Ensures that the request is correct.
+    /// </summary>
+    private async Task ValidateAsync(TagVM vm, int? id)
+    {
+        if(string.IsNullOrEmpty(vm.Caption))
+            throw new OperationException($"Required field {nameof(vm.Caption)} is not set.");
             
-            if(!Enum.IsDefined(typeof(TagType), vm.Type))
-                throw new OperationException($"Tag type '{vm.Type}' is unknown.");
+        if(!Enum.IsDefined(typeof(TagType), vm.Type))
+            throw new OperationException($"Tag type '{vm.Type}' is unknown.");
             
-            if(await _db.Tags.AnyAsync(x => x.Caption.ToLower() == vm.Caption.ToLower() && x.Id != id))
-                throw new OperationException($"Tag '{vm.Caption}' already exists.");
-        }
+        if(await db.Tags.AnyAsync(x => x.Caption.ToLower() == vm.Caption.ToLower() && x.Id != id))
+            throw new OperationException($"Tag '{vm.Caption}' already exists.");
     }
 }

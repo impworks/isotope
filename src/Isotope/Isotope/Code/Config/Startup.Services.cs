@@ -5,38 +5,37 @@ using Isotope.Code.Services;
 using Isotope.Code.Services.Config;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Isotope.Code.Config
+namespace Isotope.Code.Config;
+
+public partial class Startup
 {
-    public partial class Startup
+    /// <summary>
+    /// Registers application logic services.
+    /// </summary>
+    private void ConfigureAppServices(IServiceCollection services)
     {
-        /// <summary>
-        /// Registers application logic services.
-        /// </summary>
-        private void ConfigureAppServices(IServiceCollection services)
-        {
-            // global
-            services.AddSingleton<CacheService>();
+        // global
+        services.AddSingleton<CacheService>();
 
-            // frontend
-            services.AddScoped<AuthService>();
-            services.AddScoped<ConfigService>();
-            services.AddScoped<FolderPresenter>();
-            services.AddScoped<TagsPresenter>();
-            services.AddScoped<MediaPresenter>();
-            services.AddScoped<UserContextManager>();
-            services.AddScoped<GalleryInfoPresenter>();
-            services.AddScoped<OpenGraphPresenter>();
-            
-            services.AddScoped<IMediaHandler, JpegMediaHandler>();
-            services.AddScoped<IMediaHandler, PngMediaHandler>();
+        // frontend
+        services.AddScoped<AuthService>();
+        services.AddScoped<ConfigService>();
+        services.AddScoped<FolderPresenter>();
+        services.AddScoped<TagsPresenter>();
+        services.AddScoped<MediaPresenter>();
+        services.AddScoped<UserContextManager>();
+        services.AddScoped<GalleryInfoPresenter>();
+        services.AddScoped<OpenGraphPresenter>();
 
-            // admin
-            services.AddScoped<TagManager>();
-            services.AddScoped<SharedLinkManager>();
-            services.AddScoped<UserManager>();
-            services.AddScoped<ConfigManager>();
-            services.AddScoped<FolderManager>();
-            services.AddScoped<MediaManager>();
-        }
+        services.AddScoped<IMediaHandler, JpegMediaHandler>();
+        services.AddScoped<IMediaHandler, PngMediaHandler>();
+
+        // admin
+        services.AddScoped<TagManager>();
+        services.AddScoped<SharedLinkManager>();
+        services.AddScoped<UserManager>();
+        services.AddScoped<ConfigManager>();
+        services.AddScoped<FolderManager>();
+        services.AddScoped<MediaManager>();
     }
 }

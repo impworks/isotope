@@ -1,28 +1,27 @@
-﻿namespace Isotope.Data.Models
+﻿namespace Isotope.Data.Models;
+
+/// <summary>
+/// Types of tags.
+/// </summary>
+public enum TagType
 {
     /// <summary>
-    /// Types of tags.
+    /// Person, either depicted or taking the photo.
     /// </summary>
-    public enum TagType
-    {
-        /// <summary>
-        /// Person, either depicted or taking the photo.
-        /// </summary>
-        Person = 1,
+    Person = 1,
 
-        /// <summary>
-        /// Place where the media was created.
-        /// </summary>
-        Location = 2,
+    /// <summary>
+    /// Place where the media was created.
+    /// </summary>
+    Location = 2,
 
-        /// <summary>
-        /// Animal on a photo.
-        /// </summary>
-        Pet = 3,
+    /// <summary>
+    /// Animal on a photo.
+    /// </summary>
+    Pet = 3,
 
-        /// <summary>
-        /// Other attributes (category, etc).
-        /// </summary>
-        Custom = 4
-    }
+    /// <summary>
+    /// Other attributes (category, etc).
+    /// </summary>
+    Custom = 4
 }

@@ -4,73 +4,47 @@ using Isotope.Areas.Admin.Dto;
 using Isotope.Areas.Admin.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Isotope.Areas.Admin.Controllers
+namespace Isotope.Areas.Admin.Controllers;
+
+/// <summary>
+/// Controller for working with folders.
+/// </summary>
+[Route("~/@api/admin/folders")]
+public class FoldersController(FolderManager folderMgr) : AdminControllerBase
 {
     /// <summary>
-    /// Controller for working with folders.
+    /// Returns the tree of all folders in the system.
     /// </summary>
-    [Route("~/@api/admin/folders")]
-    public class FoldersController: AdminControllerBase
-    {
-        public FoldersController(FolderManager folderMgr)
-        {
-            _folderMgr = folderMgr;
-        }
-        
-        private readonly FolderManager _folderMgr;
+    [HttpGet, Route("")]
+    public Task<IReadOnlyList<FolderTitleVM>> GetTree() => folderMgr.GetTreeAsync();
 
-        /// <summary>
-        /// Returns the tree of all folders in the system.
-        /// </summary>
-        [HttpGet, Route("")]
-        public Task<IReadOnlyList<FolderTitleVM>> GetTree()
-        {
-            return _folderMgr.GetTreeAsync();
-        }
+    /// <summary>
+    /// Creates a new folder.
+    /// </summary>
+    [HttpPost, Route("{key?}")]
+    public Task<FolderTitleVM> Create(string key, [FromBody] FolderVM vm) => folderMgr.CreateAsync(key, vm);
 
-        /// <summary>
-        /// Creates a new folder.
-        /// </summary>
-        [HttpPost, Route("{key?}")]
-        public Task<FolderTitleVM> Create(string key, [FromBody] FolderVM vm)
-        {
-            return _folderMgr.CreateAsync(key, vm);
-        }
+    /// <summary>
+    /// Returns the folder info for editing.
+    /// </summary>
+    [HttpGet, Route("{key}")]
+    public Task<FolderVM> GetDetails(string key) => folderMgr.GetAsync(key);
 
-        /// <summary>
-        /// Returns the folder info for editing.
-        /// </summary>
-        [HttpGet, Route("{key}")]
-        public Task<FolderVM> GetDetails(string key)
-        {
-            return _folderMgr.GetAsync(key);
-        }
+    /// <summary>
+    /// Updates an existing folder.
+    /// </summary>
+    [HttpPut, Route("{key}")]
+    public Task Update(string key, [FromBody] FolderVM vm) => folderMgr.UpdateAsync(key, vm);
 
-        /// <summary>
-        /// Updates an existing folder.
-        /// </summary>
-        [HttpPut, Route("{key}")]
-        public Task Update(string key, [FromBody] FolderVM vm)
-        {
-            return _folderMgr.UpdateAsync(key, vm);
-        }
+    /// <summary>
+    /// Removes an existing folder with all its contents.
+    /// </summary>
+    [HttpDelete, Route("{key}")]
+    public Task Delete(string key) => folderMgr.RemoveAsync(key);
 
-        /// <summary>
-        /// Removes an existing folder with all its contents.
-        /// </summary>
-        [HttpDelete, Route("{key}")]
-        public Task Delete(string key)
-        {
-            return _folderMgr.RemoveAsync(key);
-        }
-        
-        /// <summary>
-        /// Moves a folder to another location.
-        /// </summary>
-        [HttpPost, Route("move")]
-        public Task Move([FromBody] MoveFolderVM vm)
-        {
-            return _folderMgr.MoveAsync(vm.SourceKey, vm.TargetKey);
-        }
-    }
+    /// <summary>
+    /// Moves a folder to another location.
+    /// </summary>
+    [HttpPost, Route("move")]
+    public Task Move([FromBody] MoveFolderVM vm) => folderMgr.MoveAsync(vm.SourceKey, vm.TargetKey);
 }
