@@ -93,7 +93,7 @@ namespace Isotope.Code.Services
             if (request.NewPassword != request.NewPasswordRepeat)
                 throw new OperationException("Passwords do not match!");
             
-            if(request.NewPassword?.Length < 6)
+            if(!(request.NewPassword?.Length >= 6))
                 throw new OperationException("Password must contain at least 6 characters!");
 
             var oldCheck = await _userMgr.CheckPasswordAsync(userCtx.User, request.OldPassword);
