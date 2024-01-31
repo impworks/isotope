@@ -32,6 +32,7 @@
     "@types/vue2-hammer": "2.1.1",
     "axios": "0.18.0",
     "bootstrap": "4.6.2",
+    "deasync": "^0.1.29",
     "font-awesome": "4.7.0",
     "jquery": "3.4.0",
     "lodash": "4.17.20",

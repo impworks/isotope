@@ -13,11 +13,11 @@ namespace Isotope.Areas.Admin.Controllers;
 public class FoldersController(FolderManager folderMgr) : AdminControllerBase
 {
     /// <summary>
-    /// Returns the tree of all folders in the system.
+    /// Returns the tree of folders starting from the given key or root.
     /// </summary>
     [HttpGet, Route("")]
-    public Task<IReadOnlyList<FolderTitleVM>> GetTree() => folderMgr.GetTreeAsync();
-
+    public Task<IReadOnlyList<FolderTitleVM>> GetTree([FromQuery] string rootKey = null) => folderMgr.GetTreeAsync(rootKey);
+    
     /// <summary>
     /// Creates a new folder.
     /// </summary>

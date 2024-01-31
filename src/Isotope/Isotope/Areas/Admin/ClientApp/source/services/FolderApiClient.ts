@@ -8,8 +8,8 @@ export class FolderApiClient extends ApiClientBase {
         super($host, $auth, 'folders');
     }
     
-    async getTree() {
-        return this.restGet<FolderTitle[]>();
+    async getTree(rootKey: string = null) {
+        return this.restGet<FolderTitle[]>(null, { rootKey });
     }
     
     async create(key: string, data: Folder) {

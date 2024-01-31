@@ -27,16 +27,31 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
     /// <summary>
     /// Returns the entire folder tree for display.
     /// </summary>
-    public async Task<IReadOnlyList<FolderTitleVM>> GetTreeAsync()
+    public async Task<IReadOnlyList<FolderTitleVM>> GetTreeAsync(string rootKey = null)
     {
-        var folders = await db.Folders
-                               .AsNoTracking()
-                               .Include(x => x.Thumbnail)
-                               .Where(x => x.Depth > 0)
-                               .OrderBy(x => x.Caption)
-                               .ToListAsync();
+        var foldersQuery = db.Folders
+                             .AsNoTracking()
+                             .Include(x => x.Thumbnail)
+                             .AsQueryable();
 
-        return folders.Where(x => x.Depth == 1).ToList().Select(ProcessFolder).ToList();
+        if (string.IsNullOrEmpty(rootKey))
+        {
+            foldersQuery = foldersQuery.Where(x => x.Depth > 0);
+        }
+        else
+        {
+            var root = await db.Folders
+                               .AsNoTracking()
+                               .GetAsync(x => x.Key == rootKey, $"Folder '{rootKey}' does not exist.");
+
+            foldersQuery = foldersQuery.Where(x => x.Path.StartsWith(root.Path) && x.Depth > root.Depth);
+        }
+
+        var folders = await foldersQuery.OrderBy(x => x.Caption)
+                                        .ToListAsync();
+
+        var minDepth = folders.Min(x => x.Depth);
+        return folders.Where(x => x.Depth == minDepth).ToList().Select(ProcessFolder).ToList();
             
         FolderTitleVM ProcessFolder(Folder folder)
         {
@@ -97,14 +112,11 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
     {
         var folder = await db.Folders
                               .AsNoTracking()
-                              .FirstOrDefaultAsync(x => x.Key == key);
-            
-        if(folder == null)
-            throw new OperationException($"Folder '{key}' does not exist.");
+                              .GetAsync(x => x.Key == key, $"Folder '{key}' does not exist.");
 
         var folders = await db.Folders
-                               .Where(x => x.Path == folder.Path || x.Path.StartsWith(folder.Path + "/"))
-                               .ToListAsync();
+                              .Where(x => x.Path == folder.Path || x.Path.StartsWith(folder.Path + "/"))
+                              .ToListAsync();
 
         await db.SharedLinks.RemoveWhereAsync(x => x.Folder.Path == folder.Path || x.Folder.Path.StartsWith(folder.Path + "/"));
         await db.SaveChangesAsync();

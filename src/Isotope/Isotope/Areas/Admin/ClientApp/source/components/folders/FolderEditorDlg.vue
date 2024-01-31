@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from "vue-property-decorator";
-import { HasAsyncState, DialogBase } from "../mixins";
+import { DialogBase, HasAsyncState } from "../mixins";
 import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { Folder } from "../../vms/Folder";
@@ -93,7 +93,22 @@ export default class FolderEditorDlg extends Mixins(HasAsyncState({isLoadingThum
         this.isThumbPickerOpen = true;
         await this.showProgress(
             'isLoadingThumbs',
-            async () => this.thumbs = await this.$api.media.getList(this.folder.key),
+            async () => {
+                const thumbs = await this.$api.media.getList(this.folder.key);
+                const subfolders = await this.$api.folders.getTree(this.folder.key);
+                
+                for(let f of subfolders) {
+                    thumbs.push({
+                        key: f.thumbnailKey,
+                        thumbnailPath: f.thumbnailPath,
+                        tags: 0,
+                        type: MediaType.Photo,
+                        uploadDate: ''
+                    });
+                }
+                
+                this.thumbs = thumbs;
+            },
             'Failed to load thumbnails'
         );
     }

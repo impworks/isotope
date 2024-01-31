@@ -4,6 +4,7 @@ export interface FolderTitle {
     caption: string;
     slug: string;
     mediaCount: number;
+    thumbnailKey: string;
     thumbnailPath: string;
     path: string;
     

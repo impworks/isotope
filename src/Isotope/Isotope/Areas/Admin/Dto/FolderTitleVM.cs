@@ -17,6 +17,7 @@ public class FolderTitleVM: IMapped
     public string Slug { get; set; }
     public int MediaCount { get; set; }
     public string Path { get; set; }
+    public string ThumbnailKey { get; set; }
     public string ThumbnailPath { get; set; }
         
     public IReadOnlyList<FolderTitleVM> Subfolders { get; set; }
@@ -30,6 +31,7 @@ public class FolderTitleVM: IMapped
               .Map(x => x.Slug, x => x.Slug)
               .Map(x => x.MediaCount, x => x.MediaCount)
               .Map(x => x.Path, x => x.Path)
+              .Map(x => x.ThumbnailKey, x => x.ThumbnailKey)
               .Map(x => x.ThumbnailPath, x => x.Thumbnail == null ? null : MediaHelper.GetThumbnailUrl(x.Thumbnail))
               .Ignore(x => x.Subfolders);
     }
