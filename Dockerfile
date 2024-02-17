@@ -32,4 +32,6 @@ RUN chmod +x /app/Isotope
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 
+EXPOSE 5000
+
 ENTRYPOINT ["/app/Isotope"]
