@@ -154,6 +154,7 @@ public class BackgroundJobService : IHostedService, IBackgroundJobService
         return new JobDescriptor
         {
             Job = job,
+            Scope = scope,
             Arguments = jb.Args,
             ResourceKey = job.GetResourceKey(jb.Args),
             Cancellation = new CancellationTokenSource(),
