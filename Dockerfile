@@ -1,4 +1,4 @@
-FROM node:14-alpine as node
+FROM node:20-alpine as node
 RUN apk add --no-cache util-linux
 WORKDIR /build/
 
