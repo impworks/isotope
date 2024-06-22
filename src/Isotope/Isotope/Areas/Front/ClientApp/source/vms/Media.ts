@@ -1,5 +1,6 @@
 import { TagBindingWithLocation, TagBindingWithType } from "./TagBinding";
 import { MediaType } from "../../../../Common/source/vms/MediaType";
+import { Folder } from "../../../../Admin/ClientApp/source/vms/Folder";
 
 export interface Media {
     key: string;
@@ -12,4 +13,5 @@ export interface Media {
     height?: number;
     overlayTags: TagBindingWithLocation[];
     extraTags: TagBindingWithType[];
+    folder?: Folder;
 }

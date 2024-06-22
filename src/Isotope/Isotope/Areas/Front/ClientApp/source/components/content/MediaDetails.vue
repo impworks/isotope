@@ -6,6 +6,7 @@ import { FilterStateService } from "../../services/FilterStateService";
 import { TagBinding } from "../../vms/TagBinding";
 import { GalleryInfo } from "../../vms/GalleryInfo";
 import { SearchScope } from "../../../../../Common/source/vms/SearchScope";
+import { Folder } from "../../vms/Folder";
 
 @Component
 export default class MediaDetails extends Vue {
@@ -45,6 +46,10 @@ export default class MediaDetails extends Vue {
                 scope: SearchScope.CurrentFolderAndSubfolders
             }
         );
+    }
+
+    openFolder(f: Folder) {
+        this.$filter.update('details', { folder: f.path, mediaKey: '', tags: [], from: null, to: null, scope: SearchScope.CurrentFolder });
     }
 
     @Watch('isOpen')
@@ -114,37 +119,33 @@ export default class MediaDetails extends Vue {
             @transitionend.self="isTransitioning = false"
             :class="{ 'media-details__wrapper_animated': isAnimated }"
         >   
-            <div 
-                ref="content" 
-                class="media-details__content"
-            >
+            <div ref="content"
+                 class="media-details__content">
                 <div v-if="media.date">{{media.date}}</div>
                 <div v-if="media.description">{{media.description}}</div>
-                <div 
-                    class="media-details__tags"
-                    v-if="media.extraTags.length"
-                >
+                <div class="media-details__tags"
+                     v-if="media.extraTags.length">
                     <template v-for="t in media.extraTags">
-                        <a 
-                            class="media-details__tags__item clickable" 
-                            v-if="canFilter" 
-                            :key="t.tag.id"
-                            @click.prevent="filterByTag(t)"
-                        >
+                        <a class="media-details__tags__item clickable"
+                           v-if="canFilter"
+                           :key="t.tag.id"
+                           @click.prevent="filterByTag(t)">
                             {{t.tag.caption}}
                         </a>
                         <span v-else
-                            class="media-details__tags__item"
-                            :key="t.tag.id">
+                              class="media-details__tags__item"
+                              :key="t.tag.id">
                             {{t.tag.caption}}
                         </span>
                     </template>
                 </div>
+                <div class="media-details__folder" v-if="media.folder">
+                    <span class="fa fa-fw fa-folder"></span>
+                    <a class="media-details__folder__button" href="#" @click.prevent="openFolder(media.folder)">{{media.folder.caption}}</a>
+                </div>
                 <div class="media-details__original">
-                    <a class="media-details__original__button"
-                    :href="media.originalPath" target="_blank">
-                    <span class="fa fa-fw fa-download"></span> View original
-                    </a>
+                    <span class="fa fa-fw fa-download"></span>
+                    <a class="media-details__original__button" :href="media.originalPath" target="_blank">View original</a>
                 </div>
             </div>
         </div>
@@ -293,11 +294,19 @@ export default class MediaDetails extends Vue {
             }
         }
         
-        &__original {
+        &__original, &__folder {
             font-size: 0;
             
             &:not(:first-child) {
                 margin-top: 0.5rem;
+            }
+            
+            .fa {
+                font-size: 1rem;
+                padding-right: 1rem;
+                display: inline-block;
+                position: relative;
+                bottom: -1px;
             }
             
             &__button {

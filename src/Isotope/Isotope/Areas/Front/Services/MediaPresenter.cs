@@ -33,11 +33,11 @@ public class MediaPresenter(AppDbContext db, IMapper mapper)
         if (ctx.Link != null)
         {
             // subfolders disallowed: only media immediately inside current folder are available
-            if(ctx.Link.Scope == SearchScope.CurrentFolder && media.FolderKey != ctx.Link.Folder.Key)
+            if (ctx.Link.Scope == SearchScope.CurrentFolder && media.FolderKey != ctx.Link.Folder.Key)
                 throw new NotFoundException(errorKey);
-                
+            
             // inside subfolder
-            if(!media.Folder.Path.StartsWith(ctx.Link.Folder.Path))
+            if (!media.Folder.Path.StartsWith(ctx.Link.Folder.Path))
                 throw new NotFoundException(errorKey);
 
             // must have tags
@@ -54,6 +54,18 @@ public class MediaPresenter(AppDbContext db, IMapper mapper)
                 
             if((dateFrom != null && !(mediaDate >= dateFrom)) || (dateTo != null && !(mediaDate <= dateTo)))
                 throw new NotFoundException(errorKey);
+
+            if (ctx.Link.Scope == SearchScope.CurrentFolder)
+            {
+                media.Folder = null;
+            }
+            else if (ctx.Link.Scope == SearchScope.CurrentFolderAndSubfolders)
+            {
+                if (media.FolderKey == ctx.Link.Folder.Key)
+                    media.Folder = null;
+                else
+                    media.Folder.Path = media.Folder.Path.Substring(ctx.Link.Folder.Path.Length);
+            }
         }
 
         return mapper.Map<MediaVM>(media);

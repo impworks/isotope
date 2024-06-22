@@ -4,6 +4,7 @@ import "./config/Plugins";
 import "./config/Injector";
 import Router from './config/Router';
 
+import '../../../../node_modules/font-awesome/scss/font-awesome.scss';
 import '../../../Common/styles/logotype.scss';
 import '../styles/main.scss';
 

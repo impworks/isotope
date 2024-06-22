@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using Impworks.Utils.Strings;
 using Isotope.Code.Utils;
-using Isotope.Code.Utils.Date;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data.Models;
 using Mapster;
@@ -65,6 +64,11 @@ public class MediaVM: IMapped
     /// </summary>
     public TagBindingVM[] ExtraTags { get; set; }
 
+    /// <summary>
+    /// Details of the folder where this media is contained.
+    /// </summary>
+    public FolderVM Folder { get; set; }
+
     public void Configure(TypeAdapterConfig config)
     {
         config.NewConfig<Media, MediaVM>()
@@ -77,7 +81,8 @@ public class MediaVM: IMapped
               .Map(x => x.Width, x => x.Width)
               .Map(x => x.Height, x => x.Height)
               .Map(x => x.OverlayTags, x => x.Tags.Where(y => y.Location != null))
-              .Map(x => x.ExtraTags, x => x.Tags.Where(y => y.Location == null && y.Type != TagBindingType.Inherited));
+              .Map(x => x.ExtraTags, x => x.Tags.Where(y => y.Location == null && y.Type != TagBindingType.Inherited))
+              .Map(x => x.Folder, x => x.Folder);
     }
         
     /// <summary>
