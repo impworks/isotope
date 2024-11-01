@@ -50,7 +50,7 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
         var folders = await foldersQuery.OrderBy(x => x.Caption)
                                         .ToListAsync();
 
-        var minDepth = folders.Min(x => x.Depth);
+        var minDepth = folders.Min(x => (int?) x.Depth) ?? 0;
         return folders.Where(x => x.Depth == minDepth).ToList().Select(ProcessFolder).ToList();
             
         FolderTitleVM ProcessFolder(Folder folder)
