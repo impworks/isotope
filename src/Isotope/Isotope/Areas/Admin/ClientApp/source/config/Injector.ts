@@ -7,8 +7,8 @@ import { ToastService } from "../services/ToastService";
 Vue.use(injector);
 
 injector.constant('$host', process.env.API_HOST || '');
-injector.service('$toast', ToastService);
-injector.service('$auth', AuthService);
+injector.service('$toast', [], ToastService);
+injector.service('$auth', [], AuthService);
 injector.service('$api', ['$host', '$auth'], ApiService);
 
 Vue.mixin({

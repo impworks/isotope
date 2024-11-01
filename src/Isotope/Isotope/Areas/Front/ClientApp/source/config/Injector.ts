@@ -9,7 +9,7 @@ Vue.use(injector);
 
 injector.constant('$host', process.env.API_HOST || '');
 
-injector.service('$auth', AuthService);
-injector.service('$filter', FilterStateService);
-injector.service('$eventBus', EventBusService);
+injector.service('$auth', [], AuthService);
+injector.service('$filter', [], FilterStateService);
+injector.service('$eventBus', [], EventBusService);
 injector.service('$api', ['$host', '$auth', '$filter'], ApiService);
