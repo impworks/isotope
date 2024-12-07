@@ -1,0 +1,12 @@
+﻿.cache/
+.config/
+.dist-tmp/
+.idea/
+.vs/
+.vscode/
+.git/
+node_modules/
+**/App_Data/
+**/Storage/
+**/@assets/
+**/@media/

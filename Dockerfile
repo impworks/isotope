@@ -10,7 +10,7 @@ ADD src/Isotope/Isotope/ .
 RUN find .
 RUN npm run build
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 as net-builder
+FROM mcr.microsoft.com/dotnet/sdk:9.0 as net-builder
 WORKDIR /build
 ADD src/Isotope/Isotope.sln .
 ADD src/Isotope/Isotope/Isotope.csproj Isotope/
