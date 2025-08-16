@@ -8,8 +8,12 @@ import '../../../../node_modules/font-awesome/scss/font-awesome.scss';
 import '../../../Common/styles/logotype.scss';
 import '../styles/main.scss';
 
+import { createHead } from "@unhead/vue";
+const head = createHead();
+
 import Root from './components/Root.vue';
 new Vue({
     router: Router,
-    render: h => h(Root)
+    render: h => h(Root),
+    unhead: head
 }).$mount('#root');

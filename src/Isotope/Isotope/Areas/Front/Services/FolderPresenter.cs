@@ -121,20 +121,21 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
     private async Task<FolderContentsVM> GetFolderSimpleContentsAsync(FolderContentsRequestVM request, UserContext ctx)
     {
         var folder = await db.Folders
-                              .AsNoTracking()
-                              .Include(x => x.Tags)
-                              .ThenInclude(x => x.Tag)
-                              .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
+                             .AsNoTracking()
+                             .Include(x => x.Thumbnail)
+                             .Include(x => x.Tags)
+                             .ThenInclude(x => x.Tag)
+                             .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
 
         var canShowSubfolders = ctx.Link == null || ctx.Link.Scope == SearchScope.CurrentFolderAndSubfolders;
         var subfolders = canShowSubfolders
             ? await db.Folders
-                       .AsNoTracking()
-                       .Include(x => x.Thumbnail)
-                       .Where(x => x.Path.StartsWith(folder.Path) && x.Depth == folder.Depth + 1)
-                       .OrderBy(x => x.Caption)
-                       .ToArrayAsync()
-            : Array.Empty<Folder>();
+                      .AsNoTracking()
+                      .Include(x => x.Thumbnail)
+                      .Where(x => x.Path.StartsWith(folder.Path) && x.Depth == folder.Depth + 1)
+                      .OrderBy(x => x.Caption)
+                      .ToArrayAsync()
+            : [];
 
         if (ctx.Link?.Folder is { } root)
             foreach (var sf in subfolders)
@@ -149,6 +150,7 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
         return new FolderContentsVM
         {
             Caption = folder.Caption,
+            ThumbnailUrl = MediaHelper.GetThumbnailUrl(folder.Thumbnail),
             Tags = ctx.Link == null ? mapper.Map<TagBindingVM[]>(folder.Tags) : null,
             Subfolders = mapper.Map<FolderVM[]>(subfolders),
             Media = mapper.Map<MediaThumbnailVM[]>(media)
@@ -181,10 +183,12 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
                                .ToListAsync();
 
         var datedMedia = TryFilterMediaByDate(request, media);
+        var thumbUrl = datedMedia.FirstOrDefault() is { } first ? MediaHelper.GetThumbnailUrl(first) : null;
             
         return new FolderContentsVM
         {
             Caption = folder.Caption,
+            ThumbnailUrl = thumbUrl,
             Media = mapper.Map<MediaThumbnailVM[]>(datedMedia)
         };
     }

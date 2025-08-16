@@ -9,6 +9,11 @@ public class FolderContentsVM
     /// Readable name of the folder.
     /// </summary>
     public string Caption { get; set; }
+    
+    /// <summary>
+    /// URL to the thumbnail selected for this folder.
+    /// </summary>
+    public string ThumbnailUrl { get; set; }
         
     /// <summary>
     /// Related tags.

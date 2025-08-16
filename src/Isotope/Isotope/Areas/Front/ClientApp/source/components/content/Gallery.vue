@@ -1,5 +1,6 @@
 <script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
+import { useHead } from "@unhead/vue";
 import { HasLifetime } from "../mixins/HasLifetime";
 import { HasAsyncState } from "../mixins/HasAsyncState";
 import { FilterStateService, IFilterStateChangedEvent } from "../../services/FilterStateService";
@@ -66,6 +67,12 @@ export default class Gallery extends Mixins(HasAsyncState(), HasLifetime) {
                     tags: state.tags ? state.tags.join(',') : null
                 });
             });
+            
+            if(this.contents.thumbnailUrl) {
+                useHead({
+                    meta: [ { name: "og:image", content: this.contents.thumbnailUrl }]
+                });
+            }
             
             if(state.mediaKey) {
                 const idx = this.contents.media.findIndex(x => x.key == state.mediaKey);

@@ -28,6 +28,7 @@
     "@types/luxon": "1.25.0",
     "@types/toastr": "2.1.38",
     "@types/vue2-hammer": "2.1.1",
+    "@unhead/vue": "^1.11.20",
     "axios": "0.18.0",
     "bootstrap": "4.6.2",
     "font-awesome": "4.7.0",

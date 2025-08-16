@@ -34,6 +34,9 @@ Vue.component('datepicker', {
 import { VueHammer } from 'vue2-hammer'
 Vue.use(VueHammer);
 
+import { UnheadPlugin } from '@unhead/vue/vue2'
+Vue.use(UnheadPlugin);
+
 // -----------------------------------
 // Custom components
 // -----------------------------------
