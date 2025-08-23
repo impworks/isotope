@@ -150,7 +150,7 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
         return new FolderContentsVM
         {
             Caption = folder.Caption,
-            ThumbnailUrl = MediaHelper.GetThumbnailUrl(folder.Thumbnail),
+            ThumbnailUrl = MediaHelper.GetThumbnailUrl(folder.Thumbnail ?? media.FirstOrDefault()),
             Tags = ctx.Link == null ? mapper.Map<TagBindingVM[]>(folder.Tags) : null,
             Subfolders = mapper.Map<FolderVM[]>(subfolders),
             Media = mapper.Map<MediaThumbnailVM[]>(media)
@@ -163,9 +163,10 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
     private async Task<FolderContentsVM> GetFolderFilteredContentsAsync(FolderContentsRequestVM request)
     {
         var folder = await db.Folders
-                              .AsNoTracking()
-                              .Include(x => x.Tags)
-                              .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
+                             .AsNoTracking()
+                             .Include(x => x.Tags)
+                             .Include(x => x.Thumbnail)
+                             .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
             
         var query = db.Media.AsNoTracking();
 
@@ -183,7 +184,8 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
                                .ToListAsync();
 
         var datedMedia = TryFilterMediaByDate(request, media);
-        var thumbUrl = MediaHelper.GetThumbnailUrl(datedMedia.FirstOrDefault());
+        var thumbMedia = (request.Scope is SearchScope.Everywhere ? null : folder.Thumbnail) ?? datedMedia.FirstOrDefault();
+        var thumbUrl = MediaHelper.GetThumbnailUrl(thumbMedia);
             
         return new FolderContentsVM
         {
