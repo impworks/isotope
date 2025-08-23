@@ -142,10 +142,10 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
                 sf.Path = sf.Path.Replace(root.Path, "");
 
         var media = await db.Media
-                             .AsNoTracking()
-                             .Where(x => x.FolderKey == folder.Key)
-                             .OrderBy(x => x.Order)
-                             .ToListAsync();
+                            .AsNoTracking()
+                            .Where(x => x.FolderKey == folder.Key)
+                            .OrderBy(x => x.Order)
+                            .ToListAsync();
 
         return new FolderContentsVM
         {
@@ -183,7 +183,7 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
                                .ToListAsync();
 
         var datedMedia = TryFilterMediaByDate(request, media);
-        var thumbUrl = datedMedia.FirstOrDefault() is { } first ? MediaHelper.GetThumbnailUrl(first) : null;
+        var thumbUrl = MediaHelper.GetThumbnailUrl(datedMedia.FirstOrDefault());
             
         return new FolderContentsVM
         {

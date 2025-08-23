@@ -42,7 +42,7 @@ public class FolderVM: IMapped
         config.NewConfig<Folder, FolderVM>()
               .Map(x => x.Caption, x => x.Caption)
               .Map(x => x.Path, x => x.Path)
-              .Map(x => x.ThumbnailPath, x => x.Thumbnail == null ? null : MediaHelper.GetThumbnailUrl(x.Thumbnail))
+              .Map(x => x.ThumbnailPath, x => MediaHelper.GetThumbnailUrl(x.Thumbnail))
               .Map(x => x.MediaCount, x => x.MediaCount)
               .Ignore(x => x.Subfolders);
     }

@@ -35,6 +35,9 @@ public static class MediaHelper
     /// </summary>
     public static string GetThumbnailUrl(Media media)
     {
+        if (media == null)
+            return null;
+        
         var sizedPath = GetSizedMediaPath(media.Path, MediaSize.Small);
         var nonce = new DateTimeOffset(media.VersionDate.ToUniversalTime(), TimeSpan.Zero).ToUnixTimeSeconds();
         return sizedPath + "?nonce=" + nonce;

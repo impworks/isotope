@@ -32,7 +32,7 @@ public class FolderTitleVM: IMapped
               .Map(x => x.MediaCount, x => x.MediaCount)
               .Map(x => x.Path, x => x.Path)
               .Map(x => x.ThumbnailKey, x => x.ThumbnailKey)
-              .Map(x => x.ThumbnailPath, x => x.Thumbnail == null ? null : MediaHelper.GetThumbnailUrl(x.Thumbnail))
+              .Map(x => x.ThumbnailPath, x => MediaHelper.GetThumbnailUrl(x.Thumbnail))
               .Ignore(x => x.Subfolders);
     }
 }
