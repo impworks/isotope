@@ -1,0 +1,64 @@
+.v-select {
+
+    .vs__actions {
+        color: $gray-500;
+        padding: 0 1rem 0 0;
+    }
+
+    &.vs--open .vs__dropdown-toggle {
+        border-color: $primary;
+    }
+
+    .vs__dropdown-toggle {
+        padding: 0;
+    }
+
+    .vs__dropdown-option {
+        line-height: 1.5;
+        padding: 0.4rem 1rem;
+
+        &--highlight {
+            background-color: $primary;
+            color: $white;
+        }
+    }
+
+    .vs__dropdown-menu {
+        padding: 0;
+        top: 100%;
+    }
+
+    .vs__selected-options  {
+        padding: 0.2rem 0.3rem;
+        margin: 0;
+
+        .vs__selected {
+            flex: 0 1 auto;
+            border: 0;
+            background-color: $primary;
+            color: $white;
+            padding: 0 0 0 0.5rem;
+            margin: 0.2rem 0 0.2rem 0.3rem;
+
+            .vs__deselect {
+                padding: 0.3rem;
+                margin: 0;
+                text-shadow: none;
+
+                svg {
+                    transform: scale(0.8);
+
+                    path {
+                        fill: $white;
+                    }
+                }
+            }
+        }
+
+        .vs__search {
+            padding: 0.2rem 0.5rem;
+            margin: 0;
+            border: 0;
+        }
+    }
+}

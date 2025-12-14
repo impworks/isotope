@@ -1,0 +1,66 @@
+@import "../../../Common/styles/variables";
+@import "./node_modules/bootstrap/scss/bootstrap";
+@import "vue-select";
+@import "../../../Common/styles/datepicker";
+@import "mixins";
+@import "fonts";
+@import "icons";
+@import "radio";
+@import "buttons";
+
+html, body {
+    height: 100%;
+    color: $gray-800;
+    font-family: "Rubik", sans-serif;
+    background: $gray-200;
+
+    @include media-breakpoint-down(md) {
+        background: $gray-100;
+    }
+}
+
+#root {
+    height: 100%;
+}
+
+html {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+	tap-highlight-color: rgba(0,0,0,0);
+}
+
+.simplebar-content-wrapper::-webkit-scrollbar { 
+    display: none; 
+}
+
+.simplebar-scrollbar:before {
+  background: $dark;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.preload-image {
+    width: 1px;
+    height: 1px;
+    opacity: 0.01;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.hide-mobile {
+    @include media-breakpoint-down(md) {
+        display: none !important;
+    }
+}
+
+.hide-desktop {
+    @include media-breakpoint-up(lg) {
+        display: none !important;
+    }
+}
+
+input[type="date"] {
+    -webkit-appearance: none;
+}

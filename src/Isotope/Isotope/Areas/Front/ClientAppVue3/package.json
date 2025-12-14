@@ -1,0 +1,35 @@
+{
+  "name": "isotope-front-vue3",
+  "version": "1.0.0",
+  "description": "Isotope photo gallery - Frontend (Vue3)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --config vite.config.ts -w --sourcemap true",
+    "build": "vite build --config vite.config.ts"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "@unhead/vue": "^1.11.20",
+    "@vuepic/vue-datepicker": "^12.1.0",
+    "@vueuse/core": "^11.3.0",
+    "axios": "^1.7.9",
+    "bootstrap": "4.6.2",
+    "font-awesome": "4.7.0",
+    "lodash": "4.17.20",
+    "luxon": "1.25.0",
+    "mitt": "^3.0.1",
+    "toastr": "2.1.4",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "vue-select": "^4.0.0-beta.6"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.0",
+    "@types/luxon": "1.25.0",
+    "@types/node": "^20.11.19",
+    "@types/toastr": "2.1.38",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "^5.7.2",
+    "vite": "^5.1.3"
+  }
+}
