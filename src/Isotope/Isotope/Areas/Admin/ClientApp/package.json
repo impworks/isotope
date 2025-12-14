@@ -1,0 +1,48 @@
+{
+  "name": "isotope-admin-vue2",
+  "version": "1.0.0",
+  "description": "Isotope photo gallery - Admin (Vue2)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --config vite.config.ts -w --sourcemap true",
+    "build": "vite build --config vite.config.ts"
+  },
+  "dependencies": {
+    "@sum.cumo/vue-datepicker": "2.1.2",
+    "@types/lodash.clonedeep": "4.5.6",
+    "@types/luxon": "1.25.0",
+    "@types/toastr": "2.1.38",
+    "@unhead/vue": "^1.11.20",
+    "axios": "0.18.0",
+    "bootstrap": "4.6.2",
+    "font-awesome": "4.7.0",
+    "jquery": "3.4.0",
+    "lodash": "4.17.20",
+    "lodash-decorators": "6.0.1",
+    "lodash.clonedeep": "4.5.0",
+    "luxon": "1.25.0",
+    "popper.js": "1.16.1",
+    "portal-vue": "2.1.7",
+    "simplebar": "5.3.0",
+    "simplebar-vue": "1.6.0",
+    "toastr": "2.1.4",
+    "vue": "2.7.8",
+    "vue-class-component": "7.2.6",
+    "vue-draggable-resizable": "2.2.0",
+    "vue-fragment": "1.5.1",
+    "vue-global-events": "1.2.1",
+    "vue-hot-reload-api": "2.3.1",
+    "vue-inject": "2.1.1",
+    "vue-modal-dialogs": "3.0.0",
+    "vue-property-decorator": "9.1.2",
+    "vue-router": "3.5.4",
+    "vue-select": "3.20.0",
+    "vuedraggable": "2.24.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "@vitejs/plugin-vue2": "^2.3.1",
+    "typescript": "^5.7.2",
+    "vite": "^5.1.3"
+  }
+}
