@@ -3,7 +3,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { DialogsWrapper } from "vue-modal-dialogs";
 
 import MainMenu from "./utils/MainMenu.vue";
-import { Dep } from "../../../../Common/source/utils/VueInjectDecorator";
+import { Dep } from "../common/utils/VueInjectDecorator";
 import { AuthService } from "../../../../Common/source/services/AuthService";
 
 @Component({

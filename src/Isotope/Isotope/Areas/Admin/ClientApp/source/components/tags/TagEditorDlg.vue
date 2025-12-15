@@ -3,7 +3,7 @@ import { Component, Mixins, Prop } from "vue-property-decorator";
 import { HasAsyncState, DialogBase } from "../mixins";
 import { Tag } from "../../vms/Tag";
 import { TagType } from "../../../../../Common/source/vms/TagType";
-import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
+import { Dep } from "../../common/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 
 @Component

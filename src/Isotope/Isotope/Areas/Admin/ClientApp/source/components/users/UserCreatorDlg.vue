@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Component, Mixins } from "vue-property-decorator";
 import { HasAsyncState, DialogBase } from "../mixins";
-import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
+import { Dep } from "../../common/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { User } from "../../vms/User";
 import { UserCreation } from "../../vms/UserCreation";
