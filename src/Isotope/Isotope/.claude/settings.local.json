@@ -12,7 +12,11 @@
       "Bash(npm view:*)",
       "Bash(npm install:*)",
       "WebFetch(domain:vue3datepicker.com)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(tree:*)",
+      "Bash(npx shadcn-vue@latest init -y)",
+      "Bash(npx shadcn-vue@latest add:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []
