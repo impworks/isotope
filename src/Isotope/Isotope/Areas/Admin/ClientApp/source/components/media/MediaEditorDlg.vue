@@ -2,7 +2,7 @@
 import { Component, Mixins, Prop } from "vue-property-decorator";
 import { create } from "vue-modal-dialogs";
 import { DialogBase, HasAsyncState } from "../mixins";
-import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
+import { Dep } from "../../common/utils/VueInjectDecorator";
 import { ApiService } from "../../services/ApiService";
 import { MediaThumbnail } from "../../vms/MediaThumbnail";
 import { Media } from "../../vms/Media";

@@ -44,10 +44,10 @@ Vue.component('Draggable', draggable);
 // Custom components
 // -----------------------------------
 
-import Loading from "../../../../Common/source/components/Loading.vue";
+import Loading from "../common/components/Loading.vue";
 Vue.component("loading", Loading);
 
-import Autofocus from "../../../../Common/source/components/Autofocus";
+import Autofocus from "../common/components/Autofocus";
 Vue.directive('autofocus', Autofocus);
 
 import { createActionRowDirective } from "../directives/ActionRow";

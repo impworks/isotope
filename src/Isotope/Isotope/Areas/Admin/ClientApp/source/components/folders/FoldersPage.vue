@@ -3,7 +3,7 @@ import { Component, Mixins } from "vue-property-decorator";
 import { create } from "vue-modal-dialogs";
 
 import { ApiService } from "../../services/ApiService";
-import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
+import { Dep } from "../../common/utils/VueInjectDecorator";
 import { HasAsyncState } from "../mixins";
 import { FolderTitle } from "../../vms/FolderTitle";
 import { Action, Func, ILookup } from "../../../../../Common/source/utils/Interfaces";

@@ -1,6 +1,6 @@
 import Vue, { ComponentOptions } from "vue";
 import { createDecorator } from "vue-class-component";
-import { ILookup } from "./Interfaces";
+import { ILookup } from "../../../../../Common/source/utils/Interfaces";
 
 export function Dep(alias: string = null) {
     
