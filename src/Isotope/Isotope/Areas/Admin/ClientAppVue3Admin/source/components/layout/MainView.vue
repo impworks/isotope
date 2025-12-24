@@ -20,7 +20,7 @@ function logout() {
       <div class="flex flex-col h-full">
         <!-- Logo/Brand -->
         <div class="h-16 flex items-center px-6 border-b">
-          <h1 class="text-xl font-bold">Isotope Admin</h1>
+          <a href="/" class="text-xl font-bold hover:text-primary transition-colors">Isotope Admin</a>
         </div>
 
         <!-- Navigation -->

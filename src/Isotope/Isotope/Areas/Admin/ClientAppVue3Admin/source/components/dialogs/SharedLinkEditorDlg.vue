@@ -98,7 +98,7 @@ function cancel() {
                 id="link"
                 :model-value="url"
                 readonly
-                class="flex-1"
+                class="flex-1 bg-muted"
               />
               <Button type="button" variant="outline" @click="copy" title="Copy link to clipboard">
                 <Check v-if="copied" class="h-4 w-4" />
