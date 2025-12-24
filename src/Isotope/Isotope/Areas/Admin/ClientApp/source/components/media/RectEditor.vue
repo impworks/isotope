@@ -1,139 +1,289 @@
-<script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { Rect } from "../../../../../Common/source/vms/Rect";
-import { TagBinding } from "../../vms/TagBinding";
-import { Tag } from "../../vms/Tag";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
+import VueDraggableResizable from 'vue-draggable-resizable';
+import 'vue-draggable-resizable/style.css';
+import type { OverlayTagBinding } from '@/vms/OverlayTagBinding';
+import type { Tag } from '@/vms/Tag';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ui/select';
+import { Button } from '@ui/button';
+import { Trash2 } from 'lucide-vue-next';
 
-@Component
-export default class RectEditor extends Vue {
-    @Prop({ required: true }) rect: Rect;
-    @Prop({ required: false }) tagBinding: TagBinding;
-    @Prop({ required: false }) tagsLookup: Tag[];
-    @Prop({ required: false, default: false }) lockRatio: boolean;
-    
-    private _container: HTMLElement = null;
-    active: boolean = false;
-    
-    origin: IPoint = { x: 0, y: 0 };
-    size: IPoint = { x: 1, y: 1 };    
-    
-    get container(): HTMLElement {
-        if(this._container)
-            return this._container;
-        
-        let elem = this.$el as HTMLElement;
-        while (elem && !elem.classList.contains('media-wrapper'))
-            elem = elem.parentElement;
-        
-        return this._container = elem;
-    }
-    
-    get popoverStyle() {
-        return {
-            left: Math.round((this.size.x - 280) / 2) + 'px'
-        };
-    }
-    
-    get isIncorrect() {
-        return this.tagBinding && !this.tagBinding.tagId;
-    }
-    
-    mounted() {
-        const w = this.container.offsetWidth;
-        const h = this.container.offsetHeight;
-        const r = this.rect;
-        this.origin = { x: Math.round(w * r.x), y: Math.round(h * r.y) };
-        this.size = { x: Math.round(w * r.width), y: Math.round(h * r.height) };
-    }
-    
-    @Watch('origin', { deep: true })
-    @Watch('size', { deep: true })
-    onPointsChanged() {
-        const w = this.container.offsetWidth;
-        const h = this.container.offsetHeight;
-        this.rect.x = this.origin.x / w;
-        this.rect.y = this.origin.y / h;
-        this.rect.width = this.size.x / w;
-        this.rect.height = this.size.y / h;
-    }
-    
-    onDrag(x: number, y: number) {
-        this.origin = { x, y };
-    }
-    
-    onResize(x: number, y: number, w: number, h: number) {
-        this.origin = { x, y };
-        this.size = { x: w, y: h };
-    }
-    
-    onRemoveRequested() {
-        this.$emit('removed');
-    }
-    
-    @Watch('active')
-    onActiveChanged(value: boolean) {
-        if(!value) return;
-        if(!this.tagBinding || this.tagBinding.tagId) return;
-        
-        // opens the dropdown if the rect must have a tag, but currently has none.
-        const activateDropdown = () => {
-            const ctrl = this.$refs['select'].$el as HTMLElement;
-            const input = ctrl.querySelector('input');
-            input.focus();
-        };
-
-        setTimeout(activateDropdown, 10);
-    }
+interface Props {
+  binding: OverlayTagBinding;
+  tags: Tag[];
+  containerRef: HTMLElement | null;
 }
 
-interface IPoint {
-    x: number;
-    y: number;
+const props = defineProps<Props>();
+
+const emit = defineEmits<{
+  change: [];
+  remove: [];
+}>();
+
+// Pixel coordinates for the draggable
+const originX = ref(0);
+const originY = ref(0);
+const sizeW = ref(100);
+const sizeH = ref(100);
+
+// Track if we have valid dimensions
+const isInitialized = ref(false);
+
+// Use v-model:active for two-way binding with vue-draggable-resizable
+const isActive = ref(false);
+const selectOpen = ref(false);
+
+const isInvalid = computed(() => !props.binding.tagId);
+
+const popoverStyle = computed(() => ({
+  left: Math.round((sizeW.value - 280) / 2) + 'px'
+}));
+
+// When binding location changes externally, update pixel coords
+watch(() => props.binding.location, () => {
+  updateFromRelative();
+}, { deep: true });
+
+// Watch containerRef - it may not be ready at mount time or may resize when image loads
+watch(() => props.containerRef, (newRef, oldRef) => {
+  // Clean up observer on old ref
+  if (resizeObserver && oldRef) {
+    resizeObserver.unobserve(oldRef);
+  }
+
+  if (newRef) {
+    updateFromRelative();
+    // Observe for dimension changes (e.g., when image loads)
+    if (resizeObserver) {
+      resizeObserver.observe(newRef);
+    }
+  }
+});
+
+// ResizeObserver to handle container dimension changes (e.g., image load)
+let resizeObserver: ResizeObserver | null = null;
+
+// Handle Delete key to remove tag when active (but not when typing in dropdown)
+function onKeyDown(e: KeyboardEvent) {
+  if (e.key === 'Delete' && isActive.value && !selectOpen.value) {
+    e.preventDefault();
+    onRemove();
+  }
 }
+
+onMounted(() => {
+  // Initialize from relative coordinates
+  updateFromRelative();
+
+  // Set up ResizeObserver to recalculate when container dimensions change
+  resizeObserver = new ResizeObserver(() => {
+    updateFromRelative();
+  });
+
+  if (props.containerRef) {
+    resizeObserver.observe(props.containerRef);
+  }
+
+  // Listen for Delete key
+  document.addEventListener('keydown', onKeyDown);
+});
+
+onUnmounted(() => {
+  if (resizeObserver) {
+    resizeObserver.disconnect();
+    resizeObserver = null;
+  }
+  document.removeEventListener('keydown', onKeyDown);
+});
+
+function updateFromRelative() {
+  if (!props.containerRef) return;
+
+  const w = props.containerRef.offsetWidth;
+  const h = props.containerRef.offsetHeight;
+
+  // Skip if container has no valid dimensions yet (image not loaded)
+  if (w === 0 || h === 0) return;
+
+  const r = props.binding.location;
+
+  originX.value = Math.round(w * r.x);
+  originY.value = Math.round(h * r.y);
+  sizeW.value = Math.round(w * r.width);
+  sizeH.value = Math.round(h * r.height);
+
+  isInitialized.value = true;
+}
+
+function updateRelative() {
+  if (!props.containerRef) return;
+
+  const w = props.containerRef.offsetWidth;
+  const h = props.containerRef.offsetHeight;
+
+  props.binding.location.x = originX.value / w;
+  props.binding.location.y = originY.value / h;
+  props.binding.location.width = sizeW.value / w;
+  props.binding.location.height = sizeH.value / h;
+
+  emit('change');
+}
+
+function onDragging(left: number, top: number) {
+  originX.value = left;
+  originY.value = top;
+  updateRelative();
+}
+
+function onResizing(left: number, top: number, width: number, height: number) {
+  originX.value = left;
+  originY.value = top;
+  sizeW.value = width;
+  sizeH.value = height;
+  updateRelative();
+}
+
+// Watch active state to auto-open dropdown when no tag selected
+watch(isActive, (value) => {
+  if (!value) {
+    selectOpen.value = false;
+    return;
+  }
+
+  // Auto-open dropdown if no tag selected
+  if (!props.binding.tagId) {
+    nextTick(() => {
+      selectOpen.value = true;
+    });
+  }
+});
+
+function onTagChange(value: string) {
+  props.binding.tagId = value ? parseInt(value, 10) : null;
+  selectOpen.value = false;
+  emit('change');
+}
+
+function onRemove() {
+  emit('remove');
+}
+
+// Expose activate method for external triggering
+function activate() {
+  isActive.value = true;
+}
+
+defineExpose({ activate });
 </script>
 
 <template>
-    <vue-drag-resize :x="origin.x" :y="origin.y" :w="size.x" :h="size.y" :min-width="50" :min-height="50"
-                     :active.sync="active" :parent="true" :lock-aspect-ratio="lockRatio"
-                     :class="{'unset': isIncorrect }"
-                     :title="isIncorrect ? 'Please select a tag' : null"
-                     @dragging="onDrag" @resizing="onResize">
-        <div v-if="tagBinding && active" class="popover bs-popover-bottom show tag-popover" :style="popoverStyle">
-            <div class="arrow" style="left: 124px"></div>
-            <div class="popover-body">
-                <div class="form-inline">
-                    <v-select :options="tagsLookup" v-model="tagBinding.tagId" label="caption" :reduce="x => x.id"
-                              class="tag-popover-select"
-                              ref="select">
-                        <template slot="no-options">No tags created yet.</template>
-                    </v-select>
-                    <button type="button" class="btn btn-sm btn-outline-danger ml-2" @click.prevent="onRemoveRequested" title="Remove tag">
-                        <span class="fa fa-remove"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </vue-drag-resize>
+  <VueDraggableResizable
+    v-if="isInitialized"
+    v-model:active="isActive"
+    :x="originX"
+    :y="originY"
+    :w="sizeW"
+    :h="sizeH"
+    :min-width="50"
+    :min-height="50"
+    :parent="true"
+    class="rect-editor"
+    :class="{ 'rect-invalid': isInvalid }"
+    :title="isInvalid ? 'Please select a tag' : undefined"
+    @dragging="onDragging"
+    @resizing="onResizing"
+  >
+    <div
+      v-if="isActive"
+      class="tag-popover"
+      :style="popoverStyle"
+      @mousedown.stop
+      @touchstart.stop
+    >
+      <div class="tag-popover-content">
+        <Select
+          :model-value="binding.tagId?.toString() ?? ''"
+          :open="selectOpen"
+          @update:model-value="onTagChange"
+          @update:open="selectOpen = $event"
+        >
+          <SelectTrigger class="w-[200px] h-8">
+            <SelectValue placeholder="Select tag..." />
+          </SelectTrigger>
+          <SelectContent :portal-disabled="true">
+            <SelectItem
+              v-for="tag in tags"
+              :key="tag.id"
+              :value="tag.id.toString()"
+            >
+              {{ tag.caption }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          variant="outline"
+          size="icon-sm"
+          class="ml-2 text-destructive hover:text-destructive"
+          @click="onRemove"
+          title="Remove tag"
+        >
+          <Trash2 class="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  </VueDraggableResizable>
 </template>
 
-<style lang="scss">
-.v-select.tag-popover-select {
-    width: 213px;
+<style>
+.rect-editor.vdr {
+  border: 2px solid hsl(var(--primary));
+  background: hsl(var(--primary) / 0.2);
+  z-index: 1;
 }
 
-.vdr.unset {
-    border-color: rgba(255, 0, 0, 0.5);
-    
-    &.active {
-        border-color: rgba(255, 0, 0, 1);    
-    }
+.rect-editor.vdr.active {
+  z-index: 10;
 }
 
-.popover.tag-popover {
-    position: absolute;
-    bottom: -68px;
-    top: unset;
-    width: 300px;
-    height: 50px;
+.rect-editor.vdr.rect-invalid {
+  border-color: hsl(var(--destructive) / 0.5);
+  background: hsl(var(--destructive) / 0.1);
+}
+
+.rect-editor.vdr.rect-invalid.active {
+  border-color: hsl(var(--destructive));
+}
+
+.rect-editor .vdr-stick {
+  background: hsl(var(--primary));
+  border: 1px solid hsl(var(--background));
+}
+
+.rect-editor.rect-invalid .vdr-stick {
+  background: hsl(var(--destructive));
+}
+
+.tag-popover {
+  position: absolute;
+  bottom: -68px;
+  z-index: 1000;
+}
+
+.tag-popover-content {
+  position: relative;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Ensure dropdown content appears above dialog footer */
+.tag-popover :deep([data-radix-popper-content-wrapper]) {
+  z-index: 1001 !important;
 }
 </style>

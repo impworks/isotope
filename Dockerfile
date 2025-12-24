@@ -1,16 +1,19 @@
-FROM node:20-alpine as node
+FROM node:20-alpine AS node
 RUN apk add --no-cache util-linux
 WORKDIR /build/
 
-ADD src/Isotope/Isotope/package.json .
-ADD src/Isotope/Isotope/package-lock.json .
-RUN npm ci
-
+# Copy source files
 ADD src/Isotope/Isotope/ .
-RUN find .
-RUN npm run build
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 as net-builder
+# Install dependencies for both apps
+RUN cd Areas/Admin/ClientApp && npm ci
+RUN cd Areas/Front/ClientApp && npm ci
+
+# Build both frontends
+RUN cd Areas/Admin/ClientApp && npm run build
+RUN cd Areas/Front/ClientApp && npm run build
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS net-builder
 WORKDIR /build
 ADD src/Isotope/Isotope.sln .
 ADD src/Isotope/Isotope/Isotope.csproj Isotope/

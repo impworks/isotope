@@ -4,12 +4,12 @@
   "description": "A simple photo gallery",
   "type": "module",
   "scripts": {
-    "install-all": "cd Areas/Admin/ClientApp && npm install && cd ../../Front/ClientAppVue3 && npm install",
+    "install-all": "cd Areas/Admin/ClientApp && npm install && cd ../../Front/ClientApp && npm install",
     "build-admin": "cd Areas/Admin/ClientApp && npm run build",
-    "build-front-vue3": "cd Areas/Front/ClientAppVue3 && npm run build",
+    "build-front": "cd Areas/Front/ClientApp && npm run build",
     "dev-admin": "cd Areas/Admin/ClientApp && npm run dev",
-    "dev-front-vue3": "cd Areas/Front/ClientAppVue3 && npm run dev",
-    "build": "npm run build-admin && npm run build-front-vue3",
+    "dev-front": "cd Areas/Front/ClientApp && npm run dev",
+    "build": "npm run build-admin && npm run build-front",
     "clean": "rmdir \"wwwroot/@assets\" /s /q"
   },
   "keywords": [
@@ -25,7 +25,7 @@
   "-vs-binding": {
     "ProjectOpened": [
       "dev-admin",
-      "dev-front-vue3"
+      "dev-front"
     ]
   }
 }

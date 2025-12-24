@@ -16,7 +16,9 @@
       "Bash(tree:*)",
       "Bash(npx shadcn-vue@latest init -y)",
       "Bash(npx shadcn-vue@latest add:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

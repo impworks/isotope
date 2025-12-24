@@ -1,16 +1,28 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
+import { createHead } from '@unhead/vue';
+import router from './config/Router';
+import { setupInjector } from './config/Injector';
+import Root from './components/layout/Root.vue';
+import { vAutofocus } from './directives/vAutofocus';
 
-import "./config/Plugins";
-import "./config/Injector";
-import Router from './config/Router';
+// Import styles
+import '../styles/main.css';
 
-import '../../../../node_modules/toastr/toastr.scss';
-import '../../../../node_modules/font-awesome/scss/font-awesome.scss';
-import '../../../Common/styles/logotype.scss';
-import '../styles/main.scss';
+// Create Vue app
+const app = createApp(Root);
 
-import Root from './components/Root.vue';
-new Vue({
-    router: Router,
-    render: h => h(Root)
-}).$mount('#root');
+// Setup head management
+const head = createHead();
+app.use(head);
+
+// Setup router
+app.use(router);
+
+// Setup dependency injection
+setupInjector(app);
+
+// Register directives
+app.directive('autofocus', vAutofocus);
+
+// Mount app
+app.mount('#root');
