@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
-import { computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { Folder, Tags, Share2, Users, Settings, type LucideIcon } from 'lucide-vue-next';
 
 const route = useRoute();
 
-const menuItems = [
-  { to: '/folders', icon: 'fa-folder', label: 'Folders' },
-  { to: '/tags', icon: 'fa-tags', label: 'Tags' },
-  { to: '/shared-links', icon: 'fa-share-alt', label: 'Shared Links' },
-  { to: '/users', icon: 'fa-users', label: 'Users' },
-  { to: '/config', icon: 'fa-cog', label: 'Configuration' }
+const menuItems: { to: string; icon: LucideIcon; label: string }[] = [
+  { to: '/folders', icon: Folder, label: 'Folders' },
+  { to: '/tags', icon: Tags, label: 'Tags' },
+  { to: '/shared-links', icon: Share2, label: 'Shared Links' },
+  { to: '/users', icon: Users, label: 'Users' },
+  { to: '/config', icon: Settings, label: 'Configuration' }
 ];
 
 function isActive(path: string): boolean {
@@ -31,7 +31,7 @@ function isActive(path: string): boolean {
           : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
       ]"
     >
-      <span class="fa" :class="item.icon"></span>
+      <component :is="item.icon" class="size-4" />
       <span>{{ item.label }}</span>
     </RouterLink>
   </div>

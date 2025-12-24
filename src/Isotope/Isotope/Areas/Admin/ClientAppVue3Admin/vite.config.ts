@@ -19,11 +19,18 @@ export default defineConfig({
     rollupOptions: {
       input: {
         admin: resolve(__dirname, 'admin.html')
+      },
+      output: {
+        // Consolidate all JS into a single file
+        manualChunks: undefined,
+        inlineDynamicImports: true
       }
     },
     outDir: resolve(__dirname, '../../../wwwroot/@assets'),
     assetsDir: '.',
     emptyOutDir: false,
-    chunkSizeWarningLimit: 1024
+    chunkSizeWarningLimit: 1024,
+    // Put all CSS in one file
+    cssCodeSplit: false
   }
 });
