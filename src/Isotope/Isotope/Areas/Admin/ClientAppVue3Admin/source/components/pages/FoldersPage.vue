@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@ui/dropdown-menu';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@ui/context-menu';
+import { Plus, Folder, ChevronRight, ChevronDown, MoreVertical, Pencil, Move, ExternalLink, Trash2, List, Upload } from 'lucide-vue-next';
 
 const router = useRouter();
 const api = useApi();
@@ -180,7 +181,7 @@ function withLocalState(fx: (state: Record<string, boolean>) => void) {
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-3xl font-bold">Folders</h1>
       <Button @click="create(null)" size="sm">
-        <span class="fa fa-plus"></span>
+        <Plus class="h-4 w-4" />
         <span>Create top-level folder</span>
       </Button>
     </div>
@@ -217,7 +218,7 @@ function withLocalState(fx: (state: Record<string, boolean>) => void) {
                         class="w-8 h-8 object-cover rounded"
                         :alt="folder.caption"
                       />
-                      <span v-else class="fa fa-folder-o w-8 text-center text-muted-foreground"></span>
+                      <Folder v-else class="w-8 h-5 text-muted-foreground" />
 
                       <a
                         href="#"
@@ -233,8 +234,8 @@ function withLocalState(fx: (state: Record<string, boolean>) => void) {
                         class="text-muted-foreground hover:text-foreground"
                         :title="folder.collapsed ? `Show ${folder.subfolders.length} subfolder(s)` : 'Collapse subfolders'"
                       >
-                        <span v-if="folder.collapsed" class="fa fa-chevron-right"></span>
-                        <span v-else class="fa fa-chevron-down"></span>
+                        <ChevronRight v-if="folder.collapsed" class="h-4 w-4" />
+                        <ChevronDown v-else class="h-4 w-4" />
                       </button>
                     </div>
                   </TableCell>
@@ -249,30 +250,40 @@ function withLocalState(fx: (state: Record<string, boolean>) => void) {
                     <DropdownMenu v-model:open="dropdownMenuOpen[folder.key]">
                       <DropdownMenuTrigger as-child>
                         <Button variant="ghost" size="icon-sm" @click.stop>
-                          <span class="fa fa-ellipsis-v"></span>
+                          <MoreVertical class="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem @click="create(folder)">
-                          <span class="fa fa-fw fa-plus mr-2"></span>
-                          Create subfolder
+                        <DropdownMenuItem @click="router.push(`/folders/${folder.key}`)">
+                          <List class="h-4 w-4 mr-2" />
+                          Contents
                         </DropdownMenuItem>
-                        <DropdownMenuItem @click="edit(folder)">
-                          <span class="fa fa-fw fa-edit mr-2"></span>
-                          Edit
+                        <DropdownMenuItem @click="router.push({ path: `/folders/${folder.key}`, query: { mode: 'Upload' } })">
+                          <Upload class="h-4 w-4 mr-2" />
+                          Upload
                         </DropdownMenuItem>
-                        <DropdownMenuItem @click="move(folder)">
-                          <span class="fa fa-fw fa-arrows mr-2"></span>
-                          Move
-                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem @click="externalLink(folder)">
-                          <span class="fa fa-fw fa-share mr-2"></span>
+                          <ExternalLink class="h-4 w-4 mr-2" />
                           View
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
+                        <DropdownMenuItem @click="edit(folder)">
+                          <Pencil class="h-4 w-4 mr-2" />
+                          Edit folder
+                        </DropdownMenuItem>
+                        <DropdownMenuItem @click="move(folder)">
+                          <Move class="h-4 w-4 mr-2" />
+                          Move folder
+                        </DropdownMenuItem>
                         <DropdownMenuItem @click="remove(folder)" class="text-destructive">
-                          <span class="fa fa-fw fa-remove mr-2"></span>
+                          <Trash2 class="h-4 w-4 mr-2" />
                           Remove
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem @click="create(folder)">
+                          <Plus class="h-4 w-4 mr-2" />
+                          Create subfolder
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -280,26 +291,36 @@ function withLocalState(fx: (state: Record<string, boolean>) => void) {
                 </TableRow>
               </ContextMenuTrigger>
               <ContextMenuContent>
-                <ContextMenuItem @click="create(folder)">
-                  <span class="fa fa-fw fa-plus mr-2"></span>
-                  Create subfolder
+                <ContextMenuItem @click="router.push(`/folders/${folder.key}`)">
+                  <List class="h-4 w-4 mr-2" />
+                  Contents
                 </ContextMenuItem>
-                <ContextMenuItem @click="edit(folder)">
-                  <span class="fa fa-fw fa-edit mr-2"></span>
-                  Edit
+                <ContextMenuItem @click="router.push({ path: `/folders/${folder.key}`, query: { mode: 'Upload' } })">
+                  <Upload class="h-4 w-4 mr-2" />
+                  Upload
                 </ContextMenuItem>
-                <ContextMenuItem @click="move(folder)">
-                  <span class="fa fa-fw fa-arrows mr-2"></span>
-                  Move
-                </ContextMenuItem>
+                <ContextMenuSeparator />
                 <ContextMenuItem @click="externalLink(folder)">
-                  <span class="fa fa-fw fa-share mr-2"></span>
+                  <ExternalLink class="h-4 w-4 mr-2" />
                   View
                 </ContextMenuItem>
                 <ContextMenuSeparator />
+                <ContextMenuItem @click="edit(folder)">
+                  <Pencil class="h-4 w-4 mr-2" />
+                  Edit folder
+                </ContextMenuItem>
+                <ContextMenuItem @click="move(folder)">
+                  <Move class="h-4 w-4 mr-2" />
+                  Move folder
+                </ContextMenuItem>
                 <ContextMenuItem @click="remove(folder)" class="text-destructive">
-                  <span class="fa fa-fw fa-remove mr-2"></span>
+                  <Trash2 class="h-4 w-4 mr-2" />
                   Remove
+                </ContextMenuItem>
+                <ContextMenuSeparator />
+                <ContextMenuItem @click="create(folder)">
+                  <Plus class="h-4 w-4 mr-2" />
+                  Create subfolder
                 </ContextMenuItem>
               </ContextMenuContent>
               </ContextMenu>

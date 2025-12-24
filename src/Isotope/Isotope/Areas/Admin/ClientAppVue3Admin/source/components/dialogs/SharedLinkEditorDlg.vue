@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@ui/input';
 import { Label } from '@ui/label';
 import { Button } from '@ui/button';
+import { Check, Copy } from 'lucide-vue-next';
 
 interface Props {
   link?: SharedLinkDetails | null;
@@ -100,8 +101,8 @@ function cancel() {
                 class="flex-1"
               />
               <Button type="button" variant="outline" @click="copy" title="Copy link to clipboard">
-                <span v-if="copied" class="fa fa-check"></span>
-                <span v-else class="fa fa-copy"></span>
+                <Check v-if="copied" class="h-4 w-4" />
+                <Copy v-else class="h-4 w-4" />
               </Button>
             </div>
           </div>

@@ -4,8 +4,8 @@ import { useApi } from '@/composables/useApi';
 import { useAsyncState } from '@/composables/useAsyncState';
 import { useToast } from '@/composables/useToast';
 import type { FolderTitle } from '@/vms/FolderTitle';
+import type { MediaThumbnail } from '@/vms/MediaThumbnail';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@ui/dialog';
-import { Input } from '@ui/input';
 import { Label } from '@ui/label';
 import { RadioGroup, RadioGroupItem } from '@ui/radio-group';
 import { Button } from '@ui/button';
@@ -15,7 +15,8 @@ import Loading from '@/components/utils/Loading.vue';
 import { ChevronDown, Check } from 'lucide-vue-next';
 
 interface Props {
-  folder?: FolderTitle | null;
+  folderKey: string;
+  media: MediaThumbnail[];
 }
 
 interface FlatFolder {
@@ -43,7 +44,7 @@ const comboboxOpen = ref(false);
 const searchQuery = ref('');
 
 watch(() => isOpen.value, async (newVal) => {
-  if (newVal && props.folder) {
+  if (newVal) {
     await loadData();
   }
 });
@@ -57,7 +58,7 @@ const canSave = computed(() => {
 const selectedTargetLabel = computed(() => {
   const target = targets.value.find(t => t.key === targetKey.value);
   if (!target) return 'Select folder...';
-  return target.prefix ? `${target.prefix} / ${target.caption}` : target.caption;
+  return target.prefix ? `${target.prefix}${target.caption}` : target.caption;
 });
 
 const filteredTargets = computed(() => {
@@ -65,82 +66,59 @@ const filteredTargets = computed(() => {
   return targets.value.filter(t => {
     if (!t.selectable) return false;
     if (!query) return true;
-    const fullPath = t.prefix ? `${t.prefix} / ${t.caption}` : t.caption;
+    const fullPath = t.prefix ? `${t.prefix}${t.caption}` : t.caption;
     return fullPath.toLowerCase().includes(query);
   });
 });
 
 async function loadData() {
-  if (!props.folder) return;
+  targetKey.value = null;
+  targetMode.value = 'folder';
+  searchQuery.value = '';
 
   await showLoading(
     async () => {
-      const allFolders = await api.folders.getTree();
-      targets.value = flattenFolders(allFolders, props.folder!.key);
+      const tree = await api.folders.getTree();
+      targets.value = flattenFolders(tree, props.folderKey);
 
-      // Check if folder can be moved to root (i.e., it's not already at root level)
-      const currentFolder = findFolder(targets.value, props.folder!.key);
+      // Check if current folder is not at root level
+      const currentFolder = targets.value.find(x => x.key === props.folderKey);
       canMoveToRoot.value = currentFolder ? currentFolder.prefix !== '' : false;
-
-      // Reset selection
-      targetMode.value = 'folder';
-      targetKey.value = targets.value.find(x => x.selectable)?.key || null;
     },
-    'Failed to load data'
+    'Failed to load folders'
   );
 }
 
-function flattenFolders(folders: FolderTitle[], excludeKey: string, prefix: string = ''): FlatFolder[] {
+function flattenFolders(folders: FolderTitle[], currentFolderKey: string, prefix: string = ''): FlatFolder[] {
   const result: FlatFolder[] = [];
-
   for (const folder of folders) {
-    const isExcluded = folder.key === excludeKey || isDescendantOf(folder, excludeKey);
-    const currentPrefix = prefix;
-    const newPrefix = prefix + (prefix ? ' / ' : '');
-
+    const isCurrentFolder = folder.key === currentFolderKey;
     result.push({
       key: folder.key,
       caption: folder.caption,
-      prefix: currentPrefix,
-      selectable: !isExcluded
+      prefix: prefix,
+      selectable: !isCurrentFolder
     });
-
     if (folder.subfolders && folder.subfolders.length > 0) {
-      result.push(...flattenFolders(folder.subfolders, excludeKey, newPrefix + folder.caption));
+      result.push(...flattenFolders(folder.subfolders, currentFolderKey, prefix + folder.caption + ' / '));
     }
   }
-
   return result;
 }
 
-function isDescendantOf(folder: FolderTitle, ancestorKey: string): boolean {
-  if (!folder.subfolders) return false;
-
-  for (const sub of folder.subfolders) {
-    if (sub.key === ancestorKey || isDescendantOf(sub, ancestorKey)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function findFolder(folders: FlatFolder[], key: string): FlatFolder | null {
-  return folders.find(f => f.key === key) || null;
-}
-
 async function save() {
-  if (!canSave.value || !props.folder) return;
+  if (!canSave.value) return;
 
   await showSaving(
     async () => {
-      const target = targetMode.value === 'root' ? null : targetKey.value;
-      await api.folders.move(props.folder!.key, target);
-      toast.success('Folder moved');
+      await api.media.massMove({
+        keys: props.media.map(x => x.key),
+        folderKey: targetMode.value === 'root' ? null : targetKey.value!
+      });
       emit('saved', true);
       isOpen.value = false;
     },
-    'Failed to move folder'
+    'Failed to move media'
   );
 }
 
@@ -154,27 +132,22 @@ function cancel() {
   <Dialog v-model:open="isOpen">
     <DialogContent class="sm:max-w-[500px]">
       <Loading :is-loading="asyncState.isLoading" :is-full-page="true">
-        <form @submit.prevent="save" v-if="folder">
+        <form @submit.prevent="save">
           <DialogHeader>
-            <DialogTitle>Move folder</DialogTitle>
+            <DialogTitle>Move {{ media.length }} media file(s)</DialogTitle>
           </DialogHeader>
 
           <div class="space-y-4 py-4">
             <div class="space-y-2">
-              <Label>Folder</Label>
-              <Input :model-value="props.folder?.caption" readonly class="bg-muted" />
-            </div>
-
-            <div class="space-y-2">
               <Label>Move to</Label>
 
               <RadioGroup v-if="canMoveToRoot" v-model="targetMode" class="space-y-1">
-                <div class="flex items-center gap-2">
-                  <RadioGroupItem value="root" id="target-root" />
+                <div class="flex items-center space-x-2">
+                  <RadioGroupItem id="target-root" value="root" />
                   <label for="target-root" class="text-sm cursor-pointer">Gallery root</label>
                 </div>
-                <div class="flex items-center gap-2">
-                  <RadioGroupItem value="folder" id="target-folder" />
+                <div class="flex items-center space-x-2">
+                  <RadioGroupItem id="target-folder" value="folder" />
                   <label for="target-folder" class="text-sm cursor-pointer">Other folder</label>
                 </div>
               </RadioGroup>
@@ -209,7 +182,7 @@ function cancel() {
                             class="mr-2 h-4 w-4"
                             :class="targetKey === target.key ? 'opacity-100' : 'opacity-0'"
                           />
-                          <span v-if="target.prefix" class="text-muted-foreground">{{ target.prefix }} / </span>
+                          <span v-if="target.prefix" class="text-muted-foreground">{{ target.prefix }}</span>
                           <span>{{ target.caption }}</span>
                         </CommandItem>
                       </CommandGroup>
@@ -217,14 +190,11 @@ function cancel() {
                   </Command>
                 </PopoverContent>
               </Popover>
-              <p v-if="targets.filter(x => x.selectable).length === 0" class="text-sm text-muted-foreground">
-                There are no other folders.
-              </p>
             </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="secondary" @click="cancel">Cancel</Button>
+            <Button type="button" variant="outline" @click="cancel">Cancel</Button>
             <Button type="submit" :disabled="!canSave">
               <span v-if="asyncState.isSaving">Moving...</span>
               <span v-else>Move</span>

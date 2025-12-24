@@ -15,6 +15,7 @@ import { Checkbox } from '@ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@ui/popover';
 import Loading from '@/components/utils/Loading.vue';
 import TagMultiselect from '@/components/utils/TagMultiselect.vue';
+import { Image, Trash2 } from 'lucide-vue-next';
 
 interface Props {
   folder?: FolderTitle | null;
@@ -35,7 +36,7 @@ const value = ref<Folder | null>(null);
 const tags = ref<Tag[]>([]);
 const createMore = ref(false);
 const result = ref(false);
-const captionInput = ref<HTMLInputElement | null>(null);
+const captionInput = ref<InstanceType<typeof Input> | null>(null);
 const thumbnailPath = ref<string>('');
 const isThumbPickerOpen = ref(false);
 const thumbs = ref<MediaThumbnail[]>([]);
@@ -43,7 +44,10 @@ const isLoadingThumbs = ref(false);
 
 watch(() => isOpen.value, async (newVal) => {
   if (newVal) {
+    result.value = false;
     await loadData();
+  } else {
+    emit('saved', result.value);
   }
 });
 
@@ -72,10 +76,6 @@ async function loadData() {
       } else {
         thumbnailPath.value = '';
       }
-
-      nextTick(() => {
-        captionInput.value?.focus();
-      });
     },
     'Failed to load data'
   );
@@ -84,39 +84,46 @@ async function loadData() {
 async function save() {
   if (!canSave.value || !value.value) return;
 
-  await showSaving(
+  const success = await showSaving(
     async () => {
       if (isNew.value) {
         await api.folders.create(props.parent?.key || null, value.value!);
         toast.success('Folder created');
-
-        if (createMore.value) {
-          value.value = { key: '', caption: '', slug: '', tags: [], thumbnailKey: '' };
-          result.value = true;
-          nextTick(() => captionInput.value?.focus());
-          return;
-        }
       } else {
         await api.folders.update(props.folder!.key, value.value!);
         toast.success('Folder updated');
       }
-
-      emit('saved', true);
-      isOpen.value = false;
     },
     isNew.value ? 'Failed to create folder' : 'Failed to update folder'
   );
-}
 
-function cancel() {
-  emit('saved', result.value);
+  if (!success) return;
+
+  if (isNew.value && createMore.value) {
+    value.value = { key: '', caption: '', slug: '', tags: [], thumbnailKey: '' };
+    result.value = true;
+    nextTick(() => (captionInput.value?.$el as HTMLInputElement)?.focus());
+    return;
+  }
+
+  emit('saved', true);
   isOpen.value = false;
 }
 
-async function openThumbPicker() {
-  if (isThumbPickerOpen.value || !props.folder) return;
+function cancel() {
+  isOpen.value = false;
+}
 
-  isThumbPickerOpen.value = true;
+async function onThumbPickerOpenChange(open: boolean) {
+  isThumbPickerOpen.value = open;
+  if (open && props.folder) {
+    await loadThumbnails();
+  }
+}
+
+async function loadThumbnails() {
+  if (!props.folder) return;
+
   isLoadingThumbs.value = true;
 
   try {
@@ -144,10 +151,6 @@ async function openThumbPicker() {
   } finally {
     isLoadingThumbs.value = false;
   }
-}
-
-function closeThumbPicker() {
-  isThumbPickerOpen.value = false;
 }
 
 function pickThumb(thumb: MediaThumbnail | null) {
@@ -184,7 +187,7 @@ function handleKeydown(e: KeyboardEvent) {
           <div class="space-y-4 py-4">
             <div class="space-y-2" v-if="props.parent">
               <Label>Parent</Label>
-              <Input :value="props.parent.caption" readonly class="bg-muted" />
+              <Input :model-value="props.parent.caption" readonly class="bg-muted" />
             </div>
 
             <div class="flex gap-4">
@@ -196,6 +199,7 @@ function handleKeydown(e: KeyboardEvent) {
                     ref="captionInput"
                     v-model="value.caption"
                     :disabled="asyncState.isSaving"
+                    v-autofocus
                   />
                 </div>
 
@@ -210,22 +214,21 @@ function handleKeydown(e: KeyboardEvent) {
               </div>
 
               <div v-if="!isNew" class="shrink-0">
-                <Popover v-model:open="isThumbPickerOpen">
+                <Popover :open="isThumbPickerOpen" @update:open="onThumbPickerOpenChange">
                   <PopoverTrigger as-child>
                     <button
                       type="button"
-                      @click="openThumbPicker"
-                      class="w-24 h-24 border rounded bg-muted cursor-pointer hover:border-primary transition-colors bg-cover bg-center"
+                      class="w-24 h-24 border rounded bg-muted cursor-pointer hover:border-primary transition-colors bg-cover bg-center flex items-center justify-center"
                       :style="thumbnailPath ? { backgroundImage: `url(${thumbnailPath})` } : {}"
                       title="Pick thumbnail..."
                     >
-                      <span v-if="!thumbnailPath" class="fa fa-image text-muted-foreground text-2xl"></span>
+                      <Image v-if="!thumbnailPath" class="h-8 w-8 text-muted-foreground" />
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent class="w-[420px]" align="start" side="bottom">
+                  <PopoverContent class="w-auto p-2" align="center" side="bottom">
                     <div class="space-y-2">
-                      <div class="flex items-center justify-between">
-                        <h4 class="font-medium">Folder thumbnail</h4>
+                      <div class="flex items-center justify-between gap-4">
+                        <h4 class="font-medium text-sm">Folder thumbnail</h4>
                         <Button
                           v-if="value.thumbnailKey"
                           type="button"
@@ -234,18 +237,18 @@ function handleKeydown(e: KeyboardEvent) {
                           @click="pickThumb(null)"
                           title="Remove thumbnail"
                         >
-                          <span class="fa fa-trash-o"></span>
+                          <Trash2 class="h-4 w-4" />
                         </Button>
                       </div>
                       <Loading :is-loading="isLoadingThumbs">
-                        <div v-if="thumbs.length > 0" class="max-h-[300px] overflow-y-auto pr-2">
-                          <div class="grid grid-cols-4 gap-2">
+                        <div v-if="thumbs.length > 0" class="max-h-[200px] overflow-y-auto">
+                          <div class="grid grid-cols-5 gap-1">
                             <button
                               v-for="thumb in thumbs"
                               :key="thumb.key"
                               type="button"
                               @click="pickThumb(thumb)"
-                              class="w-24 h-24 bg-cover bg-center border rounded hover:border-primary transition-colors cursor-pointer"
+                              class="w-12 h-12 bg-cover bg-center rounded cursor-pointer"
                               :style="{ backgroundImage: `url(${thumb.thumbnailPath})` }"
                             ></button>
                           </div>
@@ -268,7 +271,7 @@ function handleKeydown(e: KeyboardEvent) {
 
           <DialogFooter class="flex items-center sm:justify-between">
             <label v-if="isNew" class="flex items-center gap-2 text-sm cursor-pointer" title="Keep the dialog open to create another folder after saving">
-              <Checkbox v-model:checked="createMore" />
+              <Checkbox v-model="createMore" />
               <span>Create one more</span>
             </label>
             <div class="flex gap-2 sm:ml-auto">

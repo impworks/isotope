@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@ui/dropdown-menu';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@ui/context-menu';
+import { Plus, MoreVertical, Pencil, ExternalLink, Trash2 } from 'lucide-vue-next';
 
 const api = useApi();
 const toast = useToast();
@@ -102,7 +103,7 @@ function getTagTypeColor(type: TagType) {
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-3xl font-bold">Tags</h1>
       <Button @click="create" size="sm">
-        <span class="fa fa-plus"></span>
+        <Plus class="h-4 w-4" />
         <span>Create tag</span>
       </Button>
     </div>
@@ -145,21 +146,21 @@ function getTagTypeColor(type: TagType) {
                     <DropdownMenu v-model:open="dropdownMenuOpen[tag.id]">
                       <DropdownMenuTrigger as-child>
                         <Button variant="ghost" size="icon-sm" @click.stop>
-                          <span class="fa fa-ellipsis-v"></span>
+                          <MoreVertical class="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem @click="edit(tag)">
-                          <span class="fa fa-fw fa-edit mr-2"></span>
+                          <Pencil class="h-4 w-4 mr-2" />
                           Edit tag
                         </DropdownMenuItem>
                         <DropdownMenuItem @click="externalLink(tag)">
-                          <span class="fa fa-fw fa-share mr-2"></span>
+                          <ExternalLink class="h-4 w-4 mr-2" />
                           View
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem @click="remove(tag)" class="text-destructive">
-                          <span class="fa fa-fw fa-remove mr-2"></span>
+                          <Trash2 class="h-4 w-4 mr-2" />
                           Remove
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -169,16 +170,16 @@ function getTagTypeColor(type: TagType) {
               </ContextMenuTrigger>
               <ContextMenuContent>
                 <ContextMenuItem @click="edit(tag)">
-                  <span class="fa fa-fw fa-edit mr-2"></span>
+                  <Pencil class="h-4 w-4 mr-2" />
                   Edit tag
                 </ContextMenuItem>
                 <ContextMenuItem @click="externalLink(tag)">
-                  <span class="fa fa-fw fa-share mr-2"></span>
+                  <ExternalLink class="h-4 w-4 mr-2" />
                   View
                 </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem @click="remove(tag)" class="text-destructive">
-                  <span class="fa fa-fw fa-remove mr-2"></span>
+                  <Trash2 class="h-4 w-4 mr-2" />
                   Remove
                 </ContextMenuItem>
               </ContextMenuContent>
