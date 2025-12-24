@@ -57,6 +57,7 @@ async function save() {
                 <Input
                   id="title"
                   v-model="value.title"
+                  v-autofocus
                   :disabled="asyncState.isSaving"
                   placeholder="Enter gallery title"
                 />
