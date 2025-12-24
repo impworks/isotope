@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@ui/dropdown-menu';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@ui/context-menu';
+import { MoreVertical, Pencil, ExternalLink, Trash2 } from 'lucide-vue-next';
 
 const api = useApi();
 const toast = useToast();
@@ -122,21 +123,21 @@ function formatDate(d: string) {
                     <DropdownMenu v-model:open="dropdownMenuOpen[link.key]">
                       <DropdownMenuTrigger as-child>
                         <Button variant="ghost" size="icon-sm" @click.stop>
-                          <span class="fa fa-ellipsis-v"></span>
+                          <MoreVertical class="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem @click="edit(link)">
-                          <span class="fa fa-fw fa-edit mr-2"></span>
+                          <Pencil class="h-4 w-4 mr-2" />
                           Edit / copy
                         </DropdownMenuItem>
                         <DropdownMenuItem @click="externalLink(link)">
-                          <span class="fa fa-fw fa-share mr-2"></span>
+                          <ExternalLink class="h-4 w-4 mr-2" />
                           View
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem @click="remove(link)" class="text-destructive">
-                          <span class="fa fa-fw fa-remove mr-2"></span>
+                          <Trash2 class="h-4 w-4 mr-2" />
                           Remove
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -146,16 +147,16 @@ function formatDate(d: string) {
               </ContextMenuTrigger>
               <ContextMenuContent>
                 <ContextMenuItem @click="edit(link)">
-                  <span class="fa fa-fw fa-edit mr-2"></span>
+                  <Pencil class="h-4 w-4 mr-2" />
                   Edit / copy
                 </ContextMenuItem>
                 <ContextMenuItem @click="externalLink(link)">
-                  <span class="fa fa-fw fa-share mr-2"></span>
+                  <ExternalLink class="h-4 w-4 mr-2" />
                   View
                 </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem @click="remove(link)" class="text-destructive">
-                  <span class="fa fa-fw fa-remove mr-2"></span>
+                  <Trash2 class="h-4 w-4 mr-2" />
                   Remove
                 </ContextMenuItem>
               </ContextMenuContent>

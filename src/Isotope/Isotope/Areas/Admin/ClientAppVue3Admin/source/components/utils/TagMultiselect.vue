@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { Tag } from '@/vms/Tag';
-import { Badge } from '@ui/badge';
 import { Button } from '@ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@ui/popover';
+import { X, ChevronDown, Check } from 'lucide-vue-next';
 
 interface Props {
   tags: Tag[];
   disabled?: boolean;
+  placeholder?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  disabled: false
+  disabled: false,
+  placeholder: 'Select tags...'
 });
 
 const selectedIds = defineModel<number[]>({ required: true });
@@ -60,28 +62,27 @@ function isSelected(tagId: number) {
           class="w-full justify-between h-auto min-h-8"
           :disabled="disabled"
         >
-          <div class="flex flex-wrap gap-1.5 flex-1 items-center">
+          <div class="flex flex-wrap gap-1.5 flex-1 items-center min-h-[1.625rem]">
             <template v-if="selectedTags.length > 0">
-              <Badge
+              <span
                 v-for="tag in selectedTags"
                 :key="tag.id"
-                variant="secondary"
-                class="gap-1"
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-sm bg-primary/15 border border-primary/30"
               >
                 {{ tag.caption }}
                 <button
                   type="button"
                   @click.stop="removeTag(tag.id)"
-                  class="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  class="text-muted-foreground hover:text-foreground focus:outline-none"
                   :disabled="disabled"
                 >
-                  <span class="fa fa-times text-xs"></span>
+                  <X class="h-3 w-3" :stroke-width="1.5" />
                 </button>
-              </Badge>
+              </span>
             </template>
-            <span v-else class="text-muted-foreground text-sm">Select tags...</span>
+            <span v-else class="text-muted-foreground text-sm">{{ placeholder }}</span>
           </div>
-          <span class="fa fa-chevron-down ml-2 h-4 w-4 shrink-0 opacity-50"></span>
+          <ChevronDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent class="w-[400px] p-0" align="start">
@@ -97,10 +98,10 @@ function isSelected(tagId: number) {
                 @select="toggleTag(tag.id)"
                 class="cursor-pointer"
               >
-                <span
-                  class="fa mr-2 h-4 w-4"
-                  :class="isSelected(tag.id) ? 'fa-check' : ''"
-                ></span>
+                <Check
+                  class="mr-2 h-4 w-4"
+                  :class="isSelected(tag.id) ? 'opacity-100' : 'opacity-0'"
+                />
                 {{ tag.caption }}
               </CommandItem>
             </CommandGroup>

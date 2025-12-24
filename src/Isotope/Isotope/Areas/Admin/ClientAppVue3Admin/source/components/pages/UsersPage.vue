@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from '@ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@ui/dropdown-menu';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@ui/context-menu';
+import { Plus, MoreVertical, Pencil, Lock, Trash2 } from 'lucide-vue-next';
 
 const api = useApi();
 const toast = useToast();
@@ -105,7 +106,7 @@ function onConfirmed(result: boolean) {
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-3xl font-bold">Users</h1>
       <Button @click="create" size="sm">
-        <span class="fa fa-plus"></span>
+        <Plus class="h-4 w-4" />
         <span>Create user</span>
       </Button>
     </div>
@@ -143,21 +144,21 @@ function onConfirmed(result: boolean) {
                     <DropdownMenu v-model:open="dropdownMenuOpen[user.id]">
                       <DropdownMenuTrigger as-child>
                         <Button variant="ghost" size="icon-sm" @click.stop>
-                          <span class="fa fa-ellipsis-v"></span>
+                          <MoreVertical class="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem @click="edit(user)">
-                          <span class="fa fa-fw fa-edit mr-2"></span>
+                          <Pencil class="h-4 w-4 mr-2" />
                           Edit profile
                         </DropdownMenuItem>
                         <DropdownMenuItem @click="setPassword(user)">
-                          <span class="fa fa-fw fa-lock mr-2"></span>
+                          <Lock class="h-4 w-4 mr-2" />
                           Change password
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem @click="remove(user)" class="text-destructive">
-                          <span class="fa fa-fw fa-remove mr-2"></span>
+                          <Trash2 class="h-4 w-4 mr-2" />
                           Remove
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -167,16 +168,16 @@ function onConfirmed(result: boolean) {
               </ContextMenuTrigger>
               <ContextMenuContent>
                 <ContextMenuItem @click="edit(user)">
-                  <span class="fa fa-fw fa-edit mr-2"></span>
+                  <Pencil class="h-4 w-4 mr-2" />
                   Edit profile
                 </ContextMenuItem>
                 <ContextMenuItem @click="setPassword(user)">
-                  <span class="fa fa-fw fa-lock mr-2"></span>
+                  <Lock class="h-4 w-4 mr-2" />
                   Change password
                 </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem @click="remove(user)" class="text-destructive">
-                  <span class="fa fa-fw fa-remove mr-2"></span>
+                  <Trash2 class="h-4 w-4 mr-2" />
                   Remove
                 </ContextMenuItem>
               </ContextMenuContent>

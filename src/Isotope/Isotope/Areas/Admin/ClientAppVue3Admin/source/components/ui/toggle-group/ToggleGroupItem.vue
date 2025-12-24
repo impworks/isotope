@@ -29,7 +29,7 @@ const forwardedProps = useForwardProps(delegatedProps)
     v-bind="forwardedProps" :class="cn(toggleVariants({
       variant: context?.variant || variant,
       size: context?.size || size,
-    }), 'rounded-none first:rounded-l-[0.625rem] last:rounded-r-[0.625rem] hover:bg-accent data-[state=on]:hover:bg-primary', props.class)"
+    }), 'rounded-none first:rounded-l-[0.625rem] last:rounded-r-[0.625rem] hover:bg-foreground/5 data-[state=on]:hover:bg-primary/80', props.class)"
   >
     <slot v-bind="slotProps" />
   </ToggleGroupItem>

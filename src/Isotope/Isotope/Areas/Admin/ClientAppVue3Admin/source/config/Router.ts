@@ -7,12 +7,12 @@ const routes = [
   },
   {
     path: '/folders',
-    name: 'Folders',
+    name: 'folders',
     component: () => import('@/components/pages/FoldersPage.vue')
   },
   {
-    path: '/media',
-    name: 'Media',
+    path: '/folders/:key',
+    name: 'media',
     component: () => import('@/components/pages/MediaPage.vue')
   },
   {

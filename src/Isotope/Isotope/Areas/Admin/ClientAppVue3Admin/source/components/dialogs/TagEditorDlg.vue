@@ -29,7 +29,7 @@ const { asyncState, showSaving } = useAsyncState();
 const value = ref<Tag | null>(null);
 const createMore = ref(false);
 const result = ref(false);
-const captionInput = ref<HTMLInputElement | null>(null);
+const captionInput = ref<InstanceType<typeof Input> | null>(null);
 
 const tagTypes = [
   { type: TagType.Person, caption: 'Person' },
@@ -41,13 +41,12 @@ const tagTypes = [
 // Watch for dialog open state and tag changes
 watch(() => isOpen.value, (newVal) => {
   if (newVal) {
+    result.value = false;
     value.value = props.tag
       ? { ...props.tag }
       : { id: 0, caption: '', type: TagType.Person, count: 0 };
-
-    nextTick(() => {
-      captionInput.value?.focus();
-    });
+  } else {
+    emit('saved', result.value);
   }
 });
 
@@ -65,28 +64,29 @@ async function save() {
       if (isNew.value) {
         await api.tags.create(value.value!);
         toast.success('Tag created');
-
-        if (createMore.value) {
-          const currentType = value.value!.type;
-          value.value = { id: 0, caption: '', type: currentType, count: 0 };
-          result.value = true;
-          nextTick(() => captionInput.value?.focus());
-          return;
-        }
       } else {
         await api.tags.update(value.value!.id, value.value!);
         toast.success('Tag updated');
       }
-
-      emit('saved', true);
-      isOpen.value = false;
     },
     isNew.value ? 'Failed to create tag' : 'Failed to update tag'
   );
+
+  if (!success) return;
+
+  if (isNew.value && createMore.value) {
+    const currentType = value.value!.type;
+    value.value = { id: 0, caption: '', type: currentType, count: 0 };
+    result.value = true;
+    nextTick(() => (captionInput.value?.$el as HTMLInputElement)?.focus());
+    return;
+  }
+
+  emit('saved', true);
+  isOpen.value = false;
 }
 
 function cancel() {
-  emit('saved', result.value);
   isOpen.value = false;
 }
 
@@ -117,6 +117,7 @@ function handleKeydown(e: KeyboardEvent) {
               ref="captionInput"
               v-model="value.caption"
               :disabled="asyncState.isSaving"
+              v-autofocus
             />
           </div>
 
@@ -137,7 +138,7 @@ function handleKeydown(e: KeyboardEvent) {
 
         <DialogFooter class="flex items-center sm:justify-between">
           <label v-if="isNew" class="flex items-center gap-2 text-sm cursor-pointer" title="Keep the dialog open to create another tag after saving">
-            <Checkbox v-model:checked="createMore" />
+            <Checkbox v-model="createMore" />
             <span>Create one more</span>
           </label>
           <div class="flex gap-2 sm:ml-auto">
