@@ -1,5 +1,5 @@
 ﻿import { Func2 } from "./Interfaces";
-import cloneDeep from 'lodash.clonedeep';
+import { cloneDeep } from 'lodash';
 
 export class StaticHelper {
 
