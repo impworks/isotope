@@ -5,7 +5,7 @@
 **/.vs/
 **/.vscode/
 **/.git/
-node_modules/
+**/node_modules/
 **/App_Data/
 **/Storage/
 **/@assets/

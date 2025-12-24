@@ -11,7 +11,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'source'),
-      '@common': resolve(__dirname, '../../../Common')
+      '@common': resolve(__dirname, '../../../Common'),
+      'luxon': resolve(__dirname, 'node_modules/luxon'),
+      'lodash': resolve(__dirname, 'node_modules/lodash')
     }
   },
   build: {
