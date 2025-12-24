@@ -1,8 +1,8 @@
-/* Import Font Awesome first */
-@import 'font-awesome/css/font-awesome.css';
-
-/* Import Inter font (similar to Geist) */
-@import '@fontsource/inter/latin.css';
+/* Import Inter font - only the weights actually used */
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/inter/latin-700.css';
 
 @tailwind base;
 @tailwind components;
@@ -81,12 +81,3 @@
   }
 }
 
-/* FontAwesome icon sizing in buttons */
-@layer components {
-  button .fa {
-    font-size: 1rem;
-    line-height: 1;
-    display: inline-block;
-    vertical-align: middle;
-  }
-}
