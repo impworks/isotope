@@ -1,138 +1,129 @@
-<script lang="ts">
-import { Component, Mixins, Watch } from "vue-property-decorator";
-import { FilterStateService } from "../../services/FilterStateService";
-import { Dep } from "../../../../../Common/source/utils/VueInjectDecorator";
-import { HasLifetime } from "../mixins/HasLifetime";
+<script setup lang="ts">
+import { ref, watch, onMounted, inject } from 'vue';
+import { FilterStateServiceKey } from '@/config/Injector';
+import type { FilterStateService } from '@/services/FilterStateService';
+import { useLifetime } from '@/composables/useLifetime';
+import Filters from '../content/Filters.vue';
 
-import Filters from "../content/Filters.vue";
+const $filter = inject(FilterStateServiceKey)!;
+const { observe } = useLifetime();
 
-@Component({
-    components: { Filters }
-})
-export default class DesktopFiltersWrapper extends Mixins(HasLifetime) {
-    @Dep('$filter') $filter: FilterStateService;
+const isOpen = ref(false);
+const height = ref('0px');
+const overflow = ref<string | null>('hidden');
+const isTransitioning = ref(false);
 
-    $refs: {
-        wrapper: HTMLElement,
-        content: HTMLElement
-    }
-    
-    isOpen: boolean = false;
-    height: string = '0px';
-    overflow: string = 'hidden';
-    isTransitioning: boolean = false;
-    
-    mounted() {
-        this.isOpen = !this.$filter.isEmpty(this.$filter.state);
-        this.observe(this.$filter.onStateChanged, x => {
-            if(!this.$filter.isEmpty(x) && !this.isOpen)
-                this.isOpen = true;
-        });
-    }
+const wrapperRef = ref<HTMLElement>();
+const contentRef = ref<HTMLElement>();
 
-    toggleOpen() {
-        if(this.isOpen)
-            this.$filter.clear('filters');
-        this.isOpen = !this.isOpen;
-    }
-
-    @Watch('isOpen')
-    onOpenChanged(value: boolean) {
-        const wrapper = this.$refs.wrapper;
-        const content = this.$refs.content;
-        this.overflow = 'hidden';
-
-        if (value) {
-            if(content.clientHeight == 0 ) {
-                this.height = 'auto';
-                this.overflow = null;
-            } else {
-                this.height = content.clientHeight + 'px';
-            }
-
-            return;
-        }
-        
-        if (wrapper.style.height == 'auto') {
-            this.height = content.clientHeight + 'px';
-            setTimeout(() => this.height = '0px', 1);
-        } else {
-            this.height = '0px';
-        }
-    }
-
-    @Watch('isTransitioning')
-    onTransitioningChanged(value: boolean) {
-        if (!value && this.isOpen) {
-            this.height = 'auto';
-            this.overflow = null;
-        }
-    }
+function toggleOpen() {
+  if (isOpen.value) {
+    $filter.clear('filters');
+  }
+  isOpen.value = !isOpen.value;
 }
+
+watch(isOpen, (value) => {
+  const wrapper = wrapperRef.value;
+  const content = contentRef.value;
+
+  if (!wrapper || !content) {
+    return;
+  }
+
+  overflow.value = 'hidden';
+
+  if (value) {
+    if (content.clientHeight === 0) {
+      height.value = 'auto';
+      overflow.value = null;
+    } else {
+      height.value = content.clientHeight + 'px';
+    }
+    return;
+  }
+
+  if (wrapper.style.height === 'auto') {
+    height.value = content.clientHeight + 'px';
+    setTimeout(() => (height.value = '0px'), 1);
+  } else {
+    height.value = '0px';
+  }
+});
+
+watch(isTransitioning, (value) => {
+  if (!value && isOpen.value) {
+    height.value = 'auto';
+    overflow.value = null;
+  }
+});
+
+onMounted(() => {
+  isOpen.value = !$filter.isEmpty($filter.state);
+  observe($filter.onStateChanged, (x) => {
+    if (!$filter.isEmpty(x) && !isOpen.value) {
+      isOpen.value = true;
+    }
+  });
+});
 </script>
 
 <template>
-    <div 
-        class="desktop-filters"
-        :class="{ 
-            'desktop-filters_opened': isOpen
-        }"
+  <div
+    class="desktop-filters"
+    :class="{
+      'desktop-filters_opened': isOpen
+    }"
+  >
+    <a class="sidebar-button clickable" :class="{ 'sidebar-button_opened': isOpen }" @click.prevent="toggleOpen()">
+      <div class="sidebar-button__icon">
+        <div class="filter-icon"></div>
+      </div>
+      <div class="sidebar-button__text">Filters</div>
+      <div class="sidebar-button__arrow">
+        <i class="icon icon-arrow"></i>
+      </div>
+    </a>
+    <div
+      ref="wrapperRef"
+      class="desktop-filters__content"
+      :style="{ height: height, overflow: overflow || undefined }"
+      @transitionstart.self="isTransitioning = true"
+      @transitionend.self="isTransitioning = false"
     >
-        <a 
-            class="sidebar-button clickable"
-            :class="{ 'sidebar-button_opened': isOpen }"
-            @click.prevent="toggleOpen()"
-        >
-            <div class="sidebar-button__icon">
-                <div class="filter-icon"></div>
-            </div>
-            <div class="sidebar-button__text">
-                Filters
-            </div>
-            <div class="sidebar-button__arrow">
-                <i class="icon icon-arrow"></i>
-            </div>
-        </a>
-        <div 
-            ref="wrapper"
-            class="desktop-filters__content"
-            :style="{ height: height, overflow: overflow }"
-            @transitionstart.self="isTransitioning = true" 
-            @transitionend.self="isTransitioning = false"
-        >
-            <div ref="content">
-                <filters></filters>
-            </div>
-        </div>
+      <div ref="contentRef">
+        <filters></filters>
+      </div>
     </div>
+  </div>
 </template>
 
 <style lang="scss">
-    @import "../../../../../Common/styles/variables";
+@import "../../../../../Common/styles/variables";
 
-    .desktop-filters {
-        flex: 0 0 auto;
-        position: relative;
-        z-index: 3;
+.desktop-filters {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
 
-        &_opened {
-            border-bottom: 1px solid $gray-300;
-        }
+  &_opened {
+    border-bottom: 1px solid $gray-300;
+  }
 
-        .filter-icon {
-            background-image: url(../../../images/filter.svg);
-        }
+  .filter-icon {
+    background-image: url(../../../images/filter.svg);
+  }
 
-        &__content {
-            transition: height 400ms cubic-bezier(.645,.045,.355,1);
+  &__content {
+    transition: height 400ms cubic-bezier(0.645, 0.045, 0.355, 1);
 
-            .filter {
-                padding: 0 1rem 1rem;
+    .filter {
+      padding: 0 1rem 1rem;
 
-                &:first-child {
-                    padding-top: 1rem;
-                }
-            }
-        }
+      &:first-child {
+        padding-top: 1rem;
+      }
     }
+  }
+}
 </style>

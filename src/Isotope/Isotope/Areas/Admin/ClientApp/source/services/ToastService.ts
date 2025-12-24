@@ -1,29 +1,40 @@
-import * as toastr from "toastr";
-import { isAxiosError } from "../../../../Front/ClientApp/source/utils/AxiosHelpers";
+import { toast } from '@ui/toast';
 
 export class ToastService {
-    /**
-     * Displays a success message (green).
-     * @param msg Message.
-     */
-    success(msg: string) {
-        toastr.success(msg);
-    }
+  success(message: string) {
+    toast({
+      title: message,
+      variant: 'default',
+      class: 'bg-green-50 border-green-200 text-green-900',
+      description: '✓'
+    });
+  }
 
-    /**
-     * Displays an exception.
-     * @param msg Message.
-     * @param e Optional exception.
-     */
-    error(msg: string, e?: any) {
-        if(!this.isSilent(e))
-            toastr.error(msg);
-
-        if(e)
-            console.error(e);
+  error(message: string, error?: any) {
+    if (error) {
+      console.error(message, error);
     }
+    toast({
+      title: message,
+      variant: 'destructive',
+      description: '✕'
+    });
+  }
 
-    private isSilent(e: any) {
-        return isAxiosError(e) && [404, 501].indexOf(e.response.status) != -1;
-    }
+  info(message: string) {
+    toast({
+      title: message,
+      variant: 'default',
+      description: 'ℹ'
+    });
+  }
+
+  warning(message: string) {
+    toast({
+      title: message,
+      variant: 'default',
+      class: 'bg-yellow-50 border-yellow-200 text-yellow-900',
+      description: '⚠'
+    });
+  }
 }

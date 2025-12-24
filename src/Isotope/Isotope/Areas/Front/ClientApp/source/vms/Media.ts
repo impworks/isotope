@@ -1,6 +1,6 @@
 import { TagBindingWithLocation, TagBindingWithType } from "./TagBinding";
 import { MediaType } from "../../../../Common/source/vms/MediaType";
-import { Folder } from "../../../../Admin/ClientApp/source/vms/Folder";
+import { Folder } from "../../../Admin/ClientApp/source/vms/Folder";
 
 export interface Media {
     key: string;

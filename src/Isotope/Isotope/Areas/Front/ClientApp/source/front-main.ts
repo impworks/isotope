@@ -1,19 +1,25 @@
-﻿import Vue from 'vue';
+import { createApp } from 'vue';
 
-import "./config/Plugins";
-import "./config/Injector";
 import Router from './config/Router';
+import { registerPlugins } from './config/Plugins';
+import { setupInjector } from './config/Injector';
 
-import '../../../../node_modules/font-awesome/scss/font-awesome.scss';
+import 'font-awesome/scss/font-awesome.scss';
 import '../../../Common/styles/logotype.scss';
 import '../styles/main.scss';
 
-import { createHead } from "@unhead/vue";
-const head = createHead();
-
 import Root from './components/Root.vue';
-new Vue({
-    router: Router,
-    render: h => h(Root),
-    unhead: head
-}).$mount('#root');
+
+const app = createApp(Root);
+
+// Register router
+app.use(Router);
+
+// Register plugins (includes unhead)
+const { head } = registerPlugins(app);
+
+// Setup dependency injection
+setupInjector(app);
+
+// Mount the app
+app.mount('#root');

@@ -16,6 +16,11 @@
     .vs__dropdown-option {
         line-height: 1.5;
         padding: 0.4rem 1rem;
+
+        &--highlight {
+            background-color: $primary;
+            color: $white;
+        }
     }
 
     .vs__dropdown-menu {

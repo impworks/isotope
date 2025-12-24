@@ -1,15 +1,15 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
 
-import MainView from "../components/MainView.vue";
+import MainView from '../components/MainView.vue';
 
-Vue.use(VueRouter);
+const routes: RouteRecordRaw[] = [
+    { path: '/:pathMatch(.*)*', component: MainView }
+];
 
-export default new VueRouter({
+export default createRouter({
+    history: createWebHistory(),
     linkActiveClass: 'active',
-    linkExactActiveClass: "active",
-    mode: 'history',
-    routes: [
-        { path: '*', component: MainView }
-    ]
-})
+    linkExactActiveClass: 'active',
+    routes
+});

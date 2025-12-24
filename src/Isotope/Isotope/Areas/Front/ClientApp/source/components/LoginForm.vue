@@ -1,98 +1,85 @@
-<script lang="ts">
-import { Component, Mixins } from "vue-property-decorator";
-import { HasAsyncState } from "./mixins/HasAsyncState";
-import { Dep } from "../../../../Common/source/utils/VueInjectDecorator";
-import { ApiService } from "../services/ApiService";
-import { AuthService } from "../../../../Common/source/services/AuthService";
+<script setup lang="ts">
+import { ref, computed, onMounted, inject } from 'vue';
+import { useAsyncState } from '@/composables/useAsyncState';
+import { ApiServiceKey, AuthServiceKey } from '@/config/Injector';
+import type { ApiService } from '@/services/ApiService';
+import type { AuthService } from '../../../../Common/source/services/AuthService';
+import Loading from '@/components/utils/Loading.vue';
 
-@Component
-export default class LoginForm extends Mixins(HasAsyncState()) {
-    @Dep('$api') $api: ApiService;
-    @Dep('$auth') $auth: AuthService;
-    
-    username: string = null;
-    password: string = null;
-    error: string = null;
-    
-    caption: string = 'isotope';
-    
-    async mounted() {
-        this.caption = (await this.$api.getInfo()).caption;
-    }
-    
-    get canSignIn(): boolean {
-        return !!this.username && !!this.password;
-    }
+const $api = inject(ApiServiceKey)!;
+const $auth = inject(AuthServiceKey)!;
+const { asyncState, showLoading } = useAsyncState();
 
-    async signIn() {
-        if(!this.canSignIn)
-            return;
-        
-        this.error = null;
-        try {
-            await this.showLoading(async () => {
-                const result = await this.$api.authorize({ username: this.username, password: this.password});
-                if(result.success) {
-                    this.$auth.user = result.user;
-                } else {
-                    this.error = result.errorMessage;
-                }
-            })
-        } catch (e) {
-            this.error = 'Server connection failed.';
-        }
-    }
+const username = ref<string | null>(null);
+const password = ref<string | null>(null);
+const error = ref<string | null>(null);
+const caption = ref('isotope');
+
+const canSignIn = computed(() => {
+  return !!username.value && !!password.value;
+});
+
+async function signIn() {
+  if (!canSignIn.value) {
+    return;
+  }
+
+  error.value = null;
+  try {
+    await showLoading(async () => {
+      const result = await $api.authorize({ username: username.value!, password: password.value! });
+      if (result.success) {
+        $auth.user = result.user;
+      } else {
+        error.value = result.errorMessage;
+      }
+    });
+  } catch (e) {
+    error.value = 'Server connection failed.';
+  }
 }
+
+onMounted(async () => {
+  caption.value = (await $api.getInfo()).caption;
+});
 </script>
 
 <template>
-    <form @submit.prevent="signIn()">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white py-0">
-                <div class="logotype">{{ caption }}</div>
-            </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        placeholder="Username" 
-                        autocapitalize="off"
-                        v-model="username" 
-                        :disabled="asyncState.isLoading"
-                        v-autofocus
-                    />
-                </div>
-                <div class="form-group mb-0">
-                    <input 
-                        type="password" 
-                        v-model="password" 
-                        placeholder="Password" 
-                        class="form-control" 
-                        :disabled="asyncState.isLoading" 
-                    />
-                </div>
-                <div 
-                    class="alert alert-danger m-0 mt-3" 
-                    v-if="error"
-                >
-                    {{error}}
-                </div>
-            </div>
-            <div class="card-footer bg-white">
-                <button 
-                    type="submit" 
-                    class="btn btn-primary btn-block" 
-                    :disabled="!canSignIn || asyncState.isLoading"
-                >
-                    <loading 
-                        :is-loading="asyncState.isLoading" 
-                        :text="'Working…'"
-                    >
-                        Log in
-                    </loading>
-                </button>
-            </div>
+  <form @submit.prevent="signIn()">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white py-0">
+        <div class="logotype">{{ caption }}</div>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Username"
+            autocapitalize="off"
+            v-model="username"
+            :disabled="asyncState.isLoading"
+            v-autofocus
+          />
         </div>
-    </form>
+        <div class="form-group mb-0">
+          <input
+            type="password"
+            v-model="password"
+            placeholder="Password"
+            class="form-control"
+            :disabled="asyncState.isLoading"
+          />
+        </div>
+        <div class="alert alert-danger m-0 mt-3" v-if="error">
+          {{ error }}
+        </div>
+      </div>
+      <div class="card-footer bg-white">
+        <button type="submit" class="btn btn-primary btn-block" :disabled="!canSignIn || asyncState.isLoading">
+          <loading :is-loading="asyncState.isLoading" :text="'Working…'"> Log in </loading>
+        </button>
+      </div>
+    </div>
+  </form>
 </template>

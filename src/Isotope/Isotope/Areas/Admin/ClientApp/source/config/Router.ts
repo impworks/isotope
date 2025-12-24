@@ -1,25 +1,45 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import SharedLinksPage from "../components/shared-links/SharedLinksPage.vue";
-import ConfigPage from "../components/config/ConfigPage.vue";
-import TagsPage from "../components/tags/TagsPage.vue";
-import UsersPage from "../components/users/UsersPage.vue";
-import FoldersPage from "../components/folders/FoldersPage.vue";
-import MediaPage from "../components/media/MediaPage.vue";
+import { createRouter, createWebHistory } from 'vue-router';
 
-Vue.use(VueRouter);
+const routes = [
+  {
+    path: '/',
+    redirect: '/folders'
+  },
+  {
+    path: '/folders',
+    name: 'folders',
+    component: () => import('@/components/pages/FoldersPage.vue')
+  },
+  {
+    path: '/folders/:key',
+    name: 'media',
+    component: () => import('@/components/pages/MediaPage.vue')
+  },
+  {
+    path: '/tags',
+    name: 'Tags',
+    component: () => import('@/components/pages/TagsPage.vue')
+  },
+  {
+    path: '/users',
+    name: 'Users',
+    component: () => import('@/components/pages/UsersPage.vue')
+  },
+  {
+    path: '/shared-links',
+    name: 'SharedLinks',
+    component: () => import('@/components/pages/SharedLinksPage.vue')
+  },
+  {
+    path: '/config',
+    name: 'Config',
+    component: () => import('@/components/pages/ConfigPage.vue')
+  }
+];
 
-export default new VueRouter({
-    linkActiveClass: 'active',
-    linkExactActiveClass: "active",
-    mode: 'history',
-    routes: [
-        { path: '/', redirect: '/folders' },
-        { path: '/folders', component: FoldersPage },
-        { path: '/folders/:key', component: MediaPage },
-        { path: '/tags', component: TagsPage },
-        { path: '/shared-links', component: SharedLinksPage },
-        { path: '/users', component: UsersPage },
-        { path: '/config', component: ConfigPage }
-    ]
-})
+const router = createRouter({
+  history: createWebHistory('/@admin'),
+  routes
+});
+
+export default router;

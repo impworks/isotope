@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue2';
+import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
   base: '/@assets',
@@ -11,18 +11,26 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'source'),
-      '@common': resolve(__dirname, '../../Common')
+      '@common': resolve(__dirname, '../../Common'),
+      '@ui': resolve(__dirname, 'source/components/ui')
     }
   },
   build: {
     rollupOptions: {
       input: {
         admin: resolve(__dirname, 'admin.html')
+      },
+      output: {
+        // Consolidate all JS into a single file
+        manualChunks: undefined,
+        inlineDynamicImports: true
       }
     },
     outDir: resolve(__dirname, '../../../wwwroot/@assets'),
     assetsDir: '.',
     emptyOutDir: false,
-    chunkSizeWarningLimit: 1024
+    chunkSizeWarningLimit: 1024,
+    // Put all CSS in one file
+    cssCodeSplit: false
   }
 });

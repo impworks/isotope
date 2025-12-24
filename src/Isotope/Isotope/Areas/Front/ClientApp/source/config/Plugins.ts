@@ -1,48 +1,44 @@
-import Vue from 'vue';
+import type { App } from 'vue';
 
 // -----------------------------------
 // External plugins
 // -----------------------------------
 
-import { Plugin } from 'vue-fragment';
-Vue.use(Plugin);
-
-import PortalVue from 'portal-vue';
-Vue.use(PortalVue);
-
-import GlobalEvents from 'vue-global-events';
-Vue.component('GlobalEvents', GlobalEvents);
-
-import simplebar from 'simplebar-vue';
-import 'simplebar/dist/simplebar.min.css';
-Vue.component("simplebar", simplebar);
+// import simplebar from 'simplebar-vue3';
+// import 'simplebar/dist/simplebar.min.css';
 
 import vSelect from 'vue-select';
-Vue.component('v-select', vSelect);
+import 'vue-select/dist/vue-select.css';
 
-import Datepicker from '@sum.cumo/vue-datepicker';
-import '@sum.cumo/vue-datepicker/dist/vuejs-datepicker.css'
-Vue.component('datepicker', {
-    extends: Datepicker,
-    props: {
-        format: {
-            default: 'yyyy.MM.dd'
-        }
-    }
-});
+import { VueDatePicker } from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
-import { VueHammer } from 'vue2-hammer'
-Vue.use(VueHammer);
+// Note: simplebar-vue and vue2-hammer need Vue3 alternatives
+// TODO: Add these packages when correct versions are available
+// For now, we'll handle these in components that need them
 
-import { UnheadPlugin } from '@unhead/vue/vue2'
-Vue.use(UnheadPlugin);
+import { createHead } from '@unhead/vue';
 
 // -----------------------------------
-// Custom components
+// Custom components and directives
 // -----------------------------------
 
-import Loading from "../../../../Common/source/components/Loading.vue";
-Vue.component("loading", Loading);
+import Loading from '../components/utils/Loading.vue';
+import vAutofocus from '../utils/AutofocusDirective';
 
-import Autofocus from "../../../../Common/source/components/Autofocus";
-Vue.directive('autofocus', Autofocus);
+export function registerPlugins(app: App) {
+    // Register components
+    // app.component('simplebar', simplebar);
+    app.component('v-select', vSelect);
+    app.component('datepicker', VueDatePicker);
+    app.component('loading', Loading);
+
+    // Register directives
+    app.directive('autofocus', vAutofocus);
+
+    // Setup unhead for meta tags
+    const head = createHead();
+    app.use(head);
+
+    return { head };
+}

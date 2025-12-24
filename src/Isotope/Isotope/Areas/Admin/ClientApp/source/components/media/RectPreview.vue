@@ -1,29 +1,30 @@
-<script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { Rect } from "../../../../../Common/source/vms/Rect";
+<script setup lang="ts">
+import { computed } from 'vue';
+import type { Rect } from '@common/source/vms/Rect';
 
-@Component
-export default class RectPreview extends Vue {
-    @Prop({ required: true }) rect: Rect;
-    
-    get style() {
-        return {
-            left: this.rect.x + 'px',
-            top: this.rect.y + 'px',
-            width: this.rect.width + 'px',
-            height: this.rect.height + 'px'
-        };
-    }
+interface Props {
+  rect: Rect;
 }
+
+const props = defineProps<Props>();
+
+const style = computed(() => ({
+  left: props.rect.x + 'px',
+  top: props.rect.y + 'px',
+  width: props.rect.width + 'px',
+  height: props.rect.height + 'px'
+}));
 </script>
 
 <template>
-    <div class="rect-preview" :style="style"></div>
+  <div class="rect-preview" :style="style"></div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .rect-preview {
-    position: absolute;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+  position: absolute;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
 }
 </style>

@@ -1,196 +1,294 @@
-<script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { OverlayTagBinding } from "../../../vms/OverlayTagBinding";
-import { Rect } from "../../../../../../Common/source/vms/Rect";
-import { TagBindingType } from "../../../../../../Common/source/vms/TagBindingType";
-import { EventHelper } from "../../../../../../Common/source/utils/EventHelper";
-import { Media } from "../../../vms/Media";
-import { Tag } from "../../../vms/Tag";
+<script setup lang="ts">
+import { ref, computed, nextTick } from 'vue';
+import { RouterLink } from 'vue-router';
+import type { Media } from '@/vms/Media';
+import type { Tag } from '@/vms/Tag';
+import type { OverlayTagBinding } from '@/vms/OverlayTagBinding';
+import type { Rect } from '@common/source/vms/Rect';
+import { TagBindingType } from '@common/source/vms/TagBindingType';
+import { Button } from '@ui/button';
+import TagMultiselect from '@/components/utils/TagMultiselect.vue';
+import RectPreview from '@/components/media/RectPreview.vue';
+import RectEditor from '@/components/media/RectEditor.vue';
+import { Plus, Settings, AlertCircle } from 'lucide-vue-next';
 
-import RectPreview from "../RectPreview.vue";
-import RectEditor from "../RectEditor.vue";
-
-@Component({
-    components: { RectPreview, RectEditor }
-})
-export default class MediaTagsEditor extends Vue {
-
-    // -----------------------------------
-    // Dependencies
-    // -----------------------------------
-    
-    @Prop({ required: true }) media: Media;
-    @Prop({ required: true }) tagsLookup: Tag[];
-
-    // -----------------------------------
-    // Properties
-    // -----------------------------------
-    
-    $refs: {
-        img: HTMLImageElement;
-        rects: Vue[];
-        wrapper: HTMLElement;
-    };
-    
-    extraTags: number[] = [];
-    
-    isCreatingTag: boolean = false;
-    tagOrigin: { x: number, y: number } = null;
-    newTagRect: Rect = null;
-
-    // -----------------------------------
-    // Methods
-    // -----------------------------------
-    
-    toggleCreatingTagMode(state: boolean) {
-        this.isCreatingTag = state;
-        this.newTagRect = null;
-    }
-
-    removeTag(b: OverlayTagBinding) {
-        const list = this.media.overlayTags;
-        const idx = list.indexOf(b);
-        if(idx !== -1)
-            list.splice(idx, 1);
-    }
-
-    createTagStarted(evt: MouseEvent) {
-        if(!this.isCreatingTag || this.newTagRect)
-            return;
-
-        this.tagOrigin = this.getOffset(evt);
-        this.newTagRect = {
-            x: this.tagOrigin.x,
-            y: this.tagOrigin.y,
-            width: 0,
-            height: 0
-        };
-    }
-
-    createTagMoved(evt: MouseEvent) {
-        if(!this.newTagRect)
-            return;
-
-        const { x, y } = this.getOffset(evt);
-        const r = this.newTagRect;
-        const o = this.tagOrigin;
-
-        const w = x - o.x;
-        if(w >= 0) {
-            r.x = o.x;
-            r.width = w;
-        } else {
-            r.x = o.x + w;
-            r.width = Math.abs(w);
-        }
-
-        const h = y - o.y;
-        if(h >= 0) {
-            r.y = o.y;
-            r.height = h;
-        } else {
-            r.y = o.y + h;
-            r.height = Math.abs(h);
-        }
-    }
-
-    createTagCompleted() {
-        if(!this.newTagRect)
-            return;
-
-        const elem = this.$refs.wrapper;
-        const w = elem.offsetWidth;
-        const h = elem.offsetHeight;
-        const r = this.newTagRect;
-
-        const relRect: Rect = {
-            x: r.x / w,
-            y: r.y / h,
-            width: Math.min(r.width / w, 1 - (r.x / w)),
-            height: Math.min(r.height / h, 1 - (r.y / h))
-        };
-        this.media.overlayTags.push({ type: TagBindingType.Depicted, location: relRect, tagId: null});
-
-        this.newTagRect = null;
-        this.isCreatingTag = false;
-
-        // activate the newly created tag
-        setTimeout(() => {
-            const rects = this.$refs['rects'];
-            const lastElem = rects[rects.length - 1].$el as HTMLElement;
-            EventHelper.sendMouseClick(lastElem);
-        }, 50);
-    }
-
-    private getOffset(evt: MouseEvent) {
-        const wp = this.$refs.wrapper.getBoundingClientRect();
-        return {
-            x: evt.clientX - wp.left,
-            y: evt.clientY - wp.top
-        };
-    }
-
-    // -----------------------------------
-    // Watches
-    // -----------------------------------
-    
-    @Watch('extraTags')
-    onExtraTagsChanged() {
-        this.media.extraTags = this.extraTags.map(x => ({ tagId: x, type: TagBindingType.Custom }));
-    }
+interface Props {
+  media: Media;
+  tags: Tag[];
 }
+
+const props = defineProps<Props>();
+
+const selectedTagIds = defineModel<number[]>('selectedTagIds', { required: true });
+
+const emit = defineEmits<{
+  change: [];
+  configureTags: [];
+}>();
+
+// Refs
+const wrapperRef = ref<HTMLElement | null>(null);
+const rectEditorRefs = ref<InstanceType<typeof RectEditor>[]>([]);
+
+// Draw mode state
+const isDrawMode = ref(false);
+const drawOrigin = ref<{ x: number; y: number } | null>(null);
+const newRect = ref<Rect | null>(null);
+
+// Check if there are any tags available
+const hasTags = computed(() => props.tags.length > 0);
+
+// Check if any overlay tag is invalid (missing tagId)
+const hasInvalidTags = computed(() => {
+  return props.media.overlayTags.some(t => !t.tagId);
+});
+
+function toggleDrawMode(state: boolean) {
+  isDrawMode.value = state;
+  newRect.value = null;
+  drawOrigin.value = null;
+}
+
+function getMouseOffset(evt: MouseEvent): { x: number; y: number } {
+  if (!wrapperRef.value) return { x: 0, y: 0 };
+  const rect = wrapperRef.value.getBoundingClientRect();
+  return {
+    x: evt.clientX - rect.left,
+    y: evt.clientY - rect.top
+  };
+}
+
+function onDrawStart(evt: MouseEvent) {
+  if (!isDrawMode.value || newRect.value) return;
+
+  drawOrigin.value = getMouseOffset(evt);
+  newRect.value = {
+    x: drawOrigin.value.x,
+    y: drawOrigin.value.y,
+    width: 0,
+    height: 0
+  };
+}
+
+function onDrawMove(evt: MouseEvent) {
+  if (!newRect.value || !drawOrigin.value) return;
+
+  const { x, y } = getMouseOffset(evt);
+  const o = drawOrigin.value;
+  const r = newRect.value;
+
+  // Handle drawing in any direction
+  const w = x - o.x;
+  if (w >= 0) {
+    r.x = o.x;
+    r.width = w;
+  } else {
+    r.x = o.x + w;
+    r.width = Math.abs(w);
+  }
+
+  const h = y - o.y;
+  if (h >= 0) {
+    r.y = o.y;
+    r.height = h;
+  } else {
+    r.y = o.y + h;
+    r.height = Math.abs(h);
+  }
+}
+
+function onDrawComplete() {
+  if (!newRect.value || !wrapperRef.value) return;
+
+  const elem = wrapperRef.value;
+  const w = elem.offsetWidth;
+  const h = elem.offsetHeight;
+  const r = newRect.value;
+
+  // Only create if the rectangle has some size
+  if (r.width < 20 || r.height < 20) {
+    newRect.value = null;
+    drawOrigin.value = null;
+    return;
+  }
+
+  // Convert to relative coordinates
+  const relRect: Rect = {
+    x: r.x / w,
+    y: r.y / h,
+    width: Math.min(r.width / w, 1 - (r.x / w)),
+    height: Math.min(r.height / h, 1 - (r.y / h))
+  };
+
+  // Add new overlay tag
+  const newBinding: OverlayTagBinding = {
+    type: TagBindingType.Depicted,
+    location: relRect,
+    tagId: null
+  };
+  props.media.overlayTags.push(newBinding);
+
+  newRect.value = null;
+  drawOrigin.value = null;
+  isDrawMode.value = false;
+
+  emit('change');
+
+  // Activate the newly created rect editor
+  nextTick(() => {
+    const lastIdx = props.media.overlayTags.length - 1;
+    const lastEditor = rectEditorRefs.value[lastIdx];
+    if (lastEditor) {
+      lastEditor.activate();
+    }
+  });
+}
+
+function removeOverlayTag(binding: OverlayTagBinding) {
+  const idx = props.media.overlayTags.indexOf(binding);
+  if (idx !== -1) {
+    props.media.overlayTags.splice(idx, 1);
+    emit('change');
+  }
+}
+
+function onRectChange() {
+  emit('change');
+}
+
+function onExtraTagsChange() {
+  emit('change');
+}
+
+// Exposed methods for keyboard shortcuts from parent
+function startDrawMode() {
+  toggleDrawMode(true);
+}
+
+function cancelDrawMode() {
+  toggleDrawMode(false);
+}
+
+defineExpose({
+  startDrawMode,
+  cancelDrawMode,
+  isDrawMode,
+  hasInvalidTags
+});
 </script>
 
 <template>
-    <div>
-        <div class="form-group">
-            <div class="pull-right">
-                <button class="btn btn-sm btn-outline-secondary mr-2" type="button"
-                        @click.prevent="toggleCreatingTagMode(true)"
-                        :disabled="isCreatingTag">
-                    <span class="fa fa-plus-circle"></span>
-                    <span v-if="isCreatingTag">Adding tag: Esc to cancel</span>
-                    <span v-else title="Add a new tag (Ctrl + Space)">Add tag</span>
-                </button>
-                <button class="btn btn-sm btn-outline-secondary" type="button"
-                        @click.prevent="$emit('pick-tags')"
-                        title="Configure tags">
-                    <span class="fa fa-cog"></span>
-                </button>
-            </div>
-            <div class="clearfix"></div>
-        </div>
-        <div class="form-group media-container">
-            <div class="media-wrapper" :class="{'crosshair': isCreatingTag }"
-                 @mousedown.prevent="createTagStarted($event)"
-                 @mousemove.prevent="createTagMoved($event)"
-                 @mouseup.prevent="createTagCompleted()"
-                 ref="wrapper">
-                <img :src="media.fullPath" />
-                <RectPreview v-if="newTagRect" :rect="newTagRect"></RectPreview>
-                <div class="tag-wrapper" v-if="!isCreatingTag">
-                    <RectEditor v-for="(b, idx) in media.overlayTags"
-                                :rect="b.location"
-                                :tag-binding="b"
-                                :tags-lookup="tagsLookup"
-                                :key="idx"
-                                ref="rects"
-                                @removed="removeTag(b)">
-                    </RectEditor>
-                </div>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-sm-3 col-form-label">Custom tags</label>
-            <div class="col-sm-9">
-                <v-select multiple :options="tagsLookup" v-model="extraTags" label="caption" :reduce="x => x.id"
-                          :disabled="isCreatingTag" v-burst-selection>
-                    <template slot="no-options">No tags created yet.</template>
-                </v-select>
-            </div>
-        </div>
-        <GlobalEvents @keydown.esc="toggleCreatingTagMode(false)"
-                      @keydown.ctrl.space.stop.prevent="toggleCreatingTagMode(true)">
-        </GlobalEvents>
+  <div class="media-tags-editor">
+    <!-- Warning when no tags exist -->
+    <div v-if="!hasTags" class="flex items-center gap-2 p-2 mb-3 rounded-lg border border-amber-500/50 bg-amber-50 text-amber-900 text-sm">
+      <AlertCircle class="h-4 w-4 shrink-0 text-amber-600" />
+      <span>There are no tags. Please <RouterLink to="/tags" class="underline font-medium hover:text-primary">create some</RouterLink> first.</span>
     </div>
+
+    <!-- Toolbar with tag selector and buttons -->
+    <div v-else class="flex items-center gap-2 mb-3">
+      <TagMultiselect
+        class="flex-1"
+        :tags="tags"
+        v-model="selectedTagIds"
+        :disabled="isDrawMode"
+        placeholder="Select custom tags..."
+        @update:model-value="onExtraTagsChange"
+      />
+      <Button
+        v-if="isDrawMode"
+        variant="outline"
+        size="sm"
+        @click="toggleDrawMode(false)"
+        title="Cancel (Esc)"
+      >
+        Cancel
+      </Button>
+      <Button
+        v-else
+        variant="outline"
+        size="sm"
+        @click="toggleDrawMode(true)"
+        title="Add tag (Ctrl+Space)"
+      >
+        <Plus class="h-4 w-4 mr-1" />
+        Add tag
+      </Button>
+      <Button
+        variant="outline"
+        size="icon-sm"
+        @click="emit('configureTags')"
+        title="Configure tags"
+      >
+        <Settings class="h-4 w-4" />
+      </Button>
+    </div>
+
+    <!-- Image with overlay tags -->
+    <div class="media-container">
+      <div
+        ref="wrapperRef"
+        class="media-wrapper"
+        :class="{ 'draw-mode': isDrawMode }"
+        @mousedown.prevent="onDrawStart"
+        @mousemove.prevent="onDrawMove"
+        @mouseup.prevent="onDrawComplete"
+        @mouseleave="onDrawComplete"
+      >
+        <img :src="media.fullPath" draggable="false" />
+
+        <!-- Preview rect while drawing -->
+        <RectPreview v-if="newRect" :rect="newRect" />
+
+        <!-- Existing overlay tags (hidden during draw mode) -->
+        <div v-if="!isDrawMode" class="tag-wrapper">
+          <RectEditor
+            v-for="(binding, idx) in media.overlayTags"
+            :key="idx"
+            :ref="el => { if (el) rectEditorRefs[idx] = el as InstanceType<typeof RectEditor> }"
+            :binding="binding"
+            :tags="tags"
+            :container-ref="wrapperRef"
+            @change="onRectChange"
+            @remove="removeOverlayTag(binding)"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.media-tags-editor {
+  overflow: visible;
+}
+
+.media-container {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+.media-wrapper {
+  position: relative;
+  display: inline-block;
+  user-select: none;
+}
+
+.media-wrapper img {
+  display: block;
+  max-width: 100%;
+  max-height: 400px;
+}
+
+.media-wrapper.draw-mode {
+  cursor: crosshair;
+}
+
+.tag-wrapper {
+  position: absolute;
+  inset: 0;
+}
+</style>
