@@ -8,6 +8,15 @@ export default defineConfig({
   plugins: [
     vue()
   ],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+        silenceDeprecations: ['import', 'global-builtin', 'legacy-js-api', 'color-functions', 'slash-div', 'if-function', 'abs-percent'],
+        loadPaths: [resolve(__dirname, 'node_modules')]
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'source'),

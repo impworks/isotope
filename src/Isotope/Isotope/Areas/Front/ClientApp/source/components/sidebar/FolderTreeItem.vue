@@ -62,8 +62,8 @@ onMounted(() => {
 
 <style lang="scss">
 @import "../../../../../Common/styles/variables";
-@import "./node_modules/bootstrap/scss/functions";
-@import "./node_modules/bootstrap/scss/variables";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
 
 .folder-tree-link {
   display: flex;

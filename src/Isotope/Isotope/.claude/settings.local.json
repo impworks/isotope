@@ -18,7 +18,9 @@
       "Bash(npx shadcn-vue@latest add:*)",
       "Bash(npm uninstall:*)",
       "WebFetch(domain:www.npmjs.com)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(npm run build-front:*)",
+      "Bash(npm run build-admin:*)"
     ],
     "deny": [],
     "ask": []
