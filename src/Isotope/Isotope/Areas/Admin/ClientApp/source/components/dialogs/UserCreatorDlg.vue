@@ -30,8 +30,8 @@ const value = ref<UserCreation>({
 });
 
 const accessLevels = [
-  { caption: 'User', isAdmin: false },
-  { caption: 'Admin', isAdmin: true }
+  { caption: 'User', isAdmin: false, color: 'bg-blue-500' },
+  { caption: 'Admin', isAdmin: true, color: 'bg-red-500' }
 ];
 
 watch(() => isOpen.value, (newVal) => {
@@ -109,9 +109,12 @@ function cancel() {
                 v-for="al in accessLevels"
                 :key="al.caption"
                 :value="al.isAdmin"
-                class="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                class="data-[state=on]:bg-gray-200 dark:data-[state=on]:bg-gray-700 data-[state=on]:text-foreground data-[state=on]:hover:bg-gray-300 dark:data-[state=on]:hover:bg-gray-600"
               >
-                {{ al.caption }}
+                <div class="flex items-center gap-2">
+                  <div :class="['w-2 h-2 rounded-full', al.color]"></div>
+                  <span>{{ al.caption }}</span>
+                </div>
               </ToggleGroupItem>
             </ToggleGroup>
           </div>

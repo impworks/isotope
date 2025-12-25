@@ -32,10 +32,10 @@ const result = ref(false);
 const captionInput = ref<InstanceType<typeof Input> | null>(null);
 
 const tagTypes = [
-  { type: TagType.Person, caption: 'Person' },
-  { type: TagType.Location, caption: 'Location' },
-  { type: TagType.Pet, caption: 'Pet' },
-  { type: TagType.Custom, caption: 'Other' }
+  { type: TagType.Person, caption: 'Person', color: 'bg-blue-500' },
+  { type: TagType.Pet, caption: 'Pet', color: 'bg-red-500' },
+  { type: TagType.Location, caption: 'Location', color: 'bg-green-500' },
+  { type: TagType.Custom, caption: 'Other', color: 'bg-gray-400' }
 ];
 
 // Watch for dialog open state and tag changes
@@ -128,9 +128,12 @@ function handleKeydown(e: KeyboardEvent) {
                 v-for="t in tagTypes"
                 :key="t.type"
                 :value="t.type"
-                class="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                class="data-[state=on]:bg-gray-200 dark:data-[state=on]:bg-gray-700 data-[state=on]:text-foreground data-[state=on]:hover:bg-gray-300 dark:data-[state=on]:hover:bg-gray-600"
               >
-                {{ t.caption }}
+                <div class="flex items-center gap-2">
+                  <div :class="['w-2 h-2 rounded-full', t.color]"></div>
+                  <span>{{ t.caption }}</span>
+                </div>
               </ToggleGroupItem>
             </ToggleGroup>
           </div>

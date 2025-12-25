@@ -128,7 +128,6 @@ function onConfirmed(result: boolean) {
           <TableHeader>
             <TableRow>
               <TableHead class="w-full">Username</TableHead>
-              <TableHead class="w-px whitespace-nowrap">Role</TableHead>
               <TableHead class="w-px"></TableHead>
             </TableRow>
           </TableHeader>
@@ -136,11 +135,10 @@ function onConfirmed(result: boolean) {
             <ContextMenu v-for="user in users" :key="user.id">
               <ContextMenuTrigger as-child>
                 <TableRow class="cursor-pointer">
-                  <TableCell class="font-medium">{{ user.userName }}</TableCell>
-                  <TableCell class="whitespace-nowrap">
+                  <TableCell class="font-medium" :title="user.isAdmin ? 'Admin' : 'User'">
                     <div class="flex items-center gap-2">
                       <div :class="['w-2 h-2 rounded-full', user.isAdmin ? 'bg-red-500' : 'bg-blue-500']"></div>
-                      <span class="text-sm text-muted-foreground">{{ user.isAdmin ? 'Admin' : 'User' }}</span>
+                      <span>{{ user.userName }}</span>
                     </div>
                   </TableCell>
                   <TableCell>

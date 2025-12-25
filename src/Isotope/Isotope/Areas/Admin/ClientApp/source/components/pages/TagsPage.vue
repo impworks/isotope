@@ -81,18 +81,18 @@ function externalLink(tag: Tag) {
   window.open('/?tags=' + tag.id, '_blank');
 }
 
-function getTagTypeColor(type: TagType) {
+function getTagTypeInfo(type: TagType) {
   switch (type) {
     case TagType.Person:
       return { color: 'bg-blue-500', label: 'Person' };
+    case TagType.Pet:
+      return { color: 'bg-red-500', label: 'Pet' };
     case TagType.Location:
       return { color: 'bg-green-500', label: 'Location' };
-    case TagType.Pet:
-      return { color: 'bg-orange-500', label: 'Pet' };
     case TagType.Custom:
-      return { color: 'bg-red-500', label: 'Other' };
+      return { color: 'bg-gray-400', label: 'Other' };
     default:
-      return { color: 'bg-gray-500', label: 'Unknown' };
+      return { color: 'bg-gray-400', label: 'Unknown' };
   }
 }
 
@@ -125,7 +125,6 @@ function getTagTypeColor(type: TagType) {
           <TableHeader>
             <TableRow>
               <TableHead class="w-full">Name</TableHead>
-              <TableHead class="w-px whitespace-nowrap">Type</TableHead>
               <TableHead class="w-px whitespace-nowrap text-right">Usages</TableHead>
               <TableHead class="w-px"></TableHead>
             </TableRow>
@@ -134,11 +133,10 @@ function getTagTypeColor(type: TagType) {
             <ContextMenu v-for="tag in tags" :key="tag.id">
               <ContextMenuTrigger as-child>
                 <TableRow class="cursor-pointer">
-                  <TableCell class="font-medium">{{ tag.caption }}</TableCell>
-                  <TableCell class="whitespace-nowrap">
+                  <TableCell class="font-medium" :title="getTagTypeInfo(tag.type).label">
                     <div class="flex items-center gap-2">
-                      <div :class="['w-2 h-2 rounded-full', getTagTypeColor(tag.type).color]"></div>
-                      <span class="text-sm text-muted-foreground">{{ getTagTypeColor(tag.type).label }}</span>
+                      <div :class="['w-2 h-2 rounded-full', getTagTypeInfo(tag.type).color]"></div>
+                      <span>{{ tag.caption }}</span>
                     </div>
                   </TableCell>
                   <TableCell class="whitespace-nowrap text-right text-sm text-muted-foreground">
