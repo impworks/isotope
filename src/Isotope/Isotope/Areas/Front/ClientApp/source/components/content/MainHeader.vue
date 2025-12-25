@@ -81,7 +81,7 @@ onUnmounted(() => {
         <filters></filters>
       </template>
       <template v-slot:footer>
-        <button type="button" class="btn btn-block btn-primary" @click.prevent="isMobileFiltersVisible = !isMobileFiltersVisible">
+        <button type="button" class="btn btn-primary w-100" @click.prevent="isMobileFiltersVisible = !isMobileFiltersVisible">
           Ok
         </button>
       </template>

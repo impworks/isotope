@@ -76,7 +76,7 @@ onMounted(async () => {
         </div>
       </div>
       <div class="card-footer bg-white">
-        <button type="submit" class="btn btn-primary btn-block" :disabled="!canSignIn || asyncState.isLoading">
+        <button type="submit" class="btn btn-primary w-100" :disabled="!canSignIn || asyncState.isLoading">
           <loading :is-loading="asyncState.isLoading" :text="'Working…'"> Log in </loading>
         </button>
       </div>

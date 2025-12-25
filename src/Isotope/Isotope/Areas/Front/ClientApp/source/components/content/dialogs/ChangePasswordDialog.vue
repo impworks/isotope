@@ -112,7 +112,7 @@ async function reset() {
       </div>
     </template>
     <template v-slot:footer>
-      <button type="button" class="btn btn-block btn-primary" :disabled="!canReset" @click.prevent="reset">
+      <button type="button" class="btn btn-primary w-100" :disabled="!canReset" @click.prevent="reset">
         <span v-if="asyncState.isSaving">Resetting...</span>
         <span v-else>Reset</span>
       </button>

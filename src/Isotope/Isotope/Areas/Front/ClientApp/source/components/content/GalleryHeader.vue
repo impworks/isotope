@@ -224,6 +224,7 @@ onMounted(async () => {
 
     a {
       color: $gray-700;
+      text-decoration: none;
 
       &:hover {
         color: $gray-700;

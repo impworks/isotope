@@ -13,7 +13,7 @@
     "@vuepic/vue-datepicker": "^12.1.0",
     "@vueuse/core": "^11.3.0",
     "axios": "^1.7.9",
-    "bootstrap": "4.6.2",
+    "bootstrap": "5.3",
     "font-awesome": "4.7.0",
     "lodash": "4.17.20",
     "luxon": "1.25.0",

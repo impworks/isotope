@@ -20,7 +20,8 @@
       "WebFetch(domain:www.npmjs.com)",
       "Bash(findstr:*)",
       "Bash(npm run build-front:*)",
-      "Bash(npm run build-admin:*)"
+      "Bash(npm run build-admin:*)",
+      "Bash(npm ls:*)"
     ],
     "deny": [],
     "ask": []

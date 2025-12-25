@@ -95,6 +95,7 @@ const isFilterShown = computed(() => {
     padding: 0.5em 1em;
     border-bottom: 1px solid $gray-300;
     transition: all 200ms linear;
+    text-decoration: none;
 
     &:before {
       left: 0;

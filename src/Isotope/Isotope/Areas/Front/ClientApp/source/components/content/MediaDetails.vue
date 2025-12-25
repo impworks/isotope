@@ -286,6 +286,7 @@ watch(isTransitioning, (value) => {
       display: inline-block;
       border-radius: $border-radius;
       background-color: $primary;
+      text-decoration: none;
 
       &:hover {
         color: $white;
@@ -294,7 +295,6 @@ watch(isTransitioning, (value) => {
 
       &:active,
       .no-touch &:hover {
-        text-decoration: underline;
         background-color: darken($primary, 4%);
       }
     }
