@@ -51,7 +51,7 @@ onMounted(async () => {
         <div class="logotype">{{ caption }}</div>
       </div>
       <div class="card-body">
-        <div class="form-group">
+        <div class="mb-3">
           <input
             type="text"
             class="form-control"
@@ -62,7 +62,7 @@ onMounted(async () => {
             v-autofocus
           />
         </div>
-        <div class="form-group mb-0">
+        <div>
           <input
             type="password"
             v-model="password"
@@ -75,7 +75,7 @@ onMounted(async () => {
           {{ error }}
         </div>
       </div>
-      <div class="card-footer bg-white">
+      <div class="card-footer bg-white p-3">
         <button type="submit" class="btn btn-primary w-100" :disabled="!canSignIn || asyncState.isLoading">
           <loading :is-loading="asyncState.isLoading" :text="'Working…'"> Log in </loading>
         </button>

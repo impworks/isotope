@@ -13,7 +13,7 @@ const props = defineProps<Props>();
         <div class="spinner-border spinner-large"></div>
     </div>
     <div v-if="isLoading && !isFullPage">
-        <span class="spinner-border spinner-border-sm spinner-small"></span>
+        <span class="spinner-border spinner-border-sm spinner-small me-2"></span>
         <span>{{text}}</span>
     </div>
     <slot v-if="!isLoading"></slot>
