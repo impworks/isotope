@@ -83,11 +83,12 @@ function formatDate(d: string) {
 </script>
 
 <template>
-  <div class="p-6">
-    <div class="mb-6">
+  <div class="flex flex-col h-full">
+    <div class="sticky top-0 z-10 bg-background border-b px-6 py-4">
       <h1 class="text-3xl font-bold">Shared Links</h1>
     </div>
 
+    <div class="flex-1 overflow-auto p-6">
     <Loading :is-loading="asyncState.isLoading" :is-full-page="true">
       <div v-if="links.length === 0">
         <Alert>
@@ -168,5 +169,6 @@ function formatDate(d: string) {
 
     <SharedLinkEditorDlg v-model:open="isEditorOpen" :link="editingLink" @updated="onEdited" />
     <ConfirmationDlg v-model:open="isConfirmOpen" :text="confirmText" @confirmed="onConfirmed" />
+    </div>
   </div>
 </template>

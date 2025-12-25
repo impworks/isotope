@@ -330,95 +330,98 @@ function onEditorSaved(result: boolean) {
 </script>
 
 <template>
-  <div class="p-6">
+  <div class="flex flex-col h-full">
     <Loading :is-loading="asyncState.isLoading" :is-full-page="true">
       <template v-if="folder">
         <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center gap-4">
-            <Button variant="ghost" size="icon" @click="goBack">
-              <ArrowLeft class="h-4 w-4" />
-            </Button>
-            <h1 class="text-3xl font-bold">{{ folder.caption }}</h1>
-          </div>
-
-          <!-- View mode actions -->
-          <div v-if="mode === 'View'" class="flex gap-2">
-            <Button variant="outline" size="sm" @click="startMassActions" :disabled="media.length < 2">
-              <Layers class="h-4 w-4 mr-2" /> Mass actions
-            </Button>
-            <Button variant="outline" size="sm" @click="startReorder" :disabled="media.length < 2">
-              <ArrowUpDown class="h-4 w-4 mr-2" /> Reorder
-            </Button>
-            <Button variant="outline" size="sm" @click="startUpload">
-              <Upload class="h-4 w-4 mr-2" /> Upload
-            </Button>
-          </div>
-
-          <!-- Upload mode actions -->
-          <div v-if="mode === 'Upload'" class="flex gap-2">
-            <Button variant="outline" size="sm" @click="cancelUpload" :disabled="!!batchSize">
-              <X class="h-4 w-4 mr-2" /> Cancel
-            </Button>
-          </div>
-
-          <!-- Reorder mode actions -->
-          <div v-if="mode === 'Reorder'" class="flex gap-2">
-            <Button variant="default" size="sm" @click="confirmReorder" :disabled="asyncState.isSaving">
-              <Check class="h-4 w-4 mr-2" /> Save
-            </Button>
-            <Button variant="outline" size="sm" @click="cancelReorder">
-              <X class="h-4 w-4 mr-2" /> Cancel
-            </Button>
-          </div>
-
-          <!-- Mass actions mode actions -->
-          <div v-if="mode === 'MassActions'" class="flex gap-2">
-            <div class="flex gap-1 mr-2">
-              <Button variant="outline" size="sm" @click="massEdit" :disabled="selectedCount === 0">
-                <Pencil class="h-4 w-4 mr-1" /> Edit {{ selectedCount > 0 ? selectedCount : '' }}
+        <div class="sticky top-0 z-10 bg-background border-b px-6 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <Button variant="ghost" size="icon" @click="goBack">
+                <ArrowLeft class="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="sm" @click="massMove" :disabled="selectedCount === 0">
-                <Forward class="h-4 w-4 mr-1" /> Move {{ selectedCount > 0 ? selectedCount : '' }}
+              <h1 class="text-3xl font-bold">{{ folder.caption }}</h1>
+            </div>
+
+            <!-- View mode actions -->
+            <div v-if="mode === 'View'" class="flex gap-2">
+              <Button variant="outline" size="sm" @click="startMassActions" :disabled="media.length < 2">
+                <Layers class="h-4 w-4 mr-2" /> Mass actions
               </Button>
-              <Button variant="destructive" size="sm" @click="massRemove" :disabled="selectedCount === 0">
-                <Trash2 class="h-4 w-4 mr-1" /> Remove {{ selectedCount > 0 ? selectedCount : '' }}
+              <Button variant="outline" size="sm" @click="startReorder" :disabled="media.length < 2">
+                <ArrowUpDown class="h-4 w-4 mr-2" /> Reorder
+              </Button>
+              <Button variant="outline" size="sm" @click="startUpload">
+                <Upload class="h-4 w-4 mr-2" /> Upload
               </Button>
             </div>
-            <div class="flex gap-1 mr-2">
-              <Button variant="outline" size="sm" @click="massSelect('All')">
-                <CheckSquare class="h-4 w-4 mr-1" /> All
-              </Button>
-              <Button variant="outline" size="sm" @click="massSelect('None')">
-                <Square class="h-4 w-4 mr-1" /> None
-              </Button>
-              <Button variant="outline" size="sm" @click="massSelect('Invert')">
-                <RotateCcw class="h-4 w-4 mr-1" /> Invert
+
+            <!-- Upload mode actions -->
+            <div v-if="mode === 'Upload'" class="flex gap-2">
+              <Button variant="outline" size="sm" @click="cancelUpload" :disabled="!!batchSize">
+                <X class="h-4 w-4 mr-2" /> Cancel
               </Button>
             </div>
-            <Button variant="outline" size="sm" @click="cancelMassActions">
-              <X class="h-4 w-4 mr-2" /> Cancel
-            </Button>
+
+            <!-- Reorder mode actions -->
+            <div v-if="mode === 'Reorder'" class="flex gap-2">
+              <Button variant="default" size="sm" @click="confirmReorder" :disabled="asyncState.isSaving">
+                <Check class="h-4 w-4 mr-2" /> Save
+              </Button>
+              <Button variant="outline" size="sm" @click="cancelReorder">
+                <X class="h-4 w-4 mr-2" /> Cancel
+              </Button>
+            </div>
+
+            <!-- Mass actions mode actions -->
+            <div v-if="mode === 'MassActions'" class="flex gap-2">
+              <div class="flex gap-1 mr-2">
+                <Button variant="outline" size="sm" @click="massEdit" :disabled="selectedCount === 0">
+                  <Pencil class="h-4 w-4 mr-1" /> Edit {{ selectedCount > 0 ? selectedCount : '' }}
+                </Button>
+                <Button variant="outline" size="sm" @click="massMove" :disabled="selectedCount === 0">
+                  <Forward class="h-4 w-4 mr-1" /> Move {{ selectedCount > 0 ? selectedCount : '' }}
+                </Button>
+                <Button variant="destructive" size="sm" @click="massRemove" :disabled="selectedCount === 0">
+                  <Trash2 class="h-4 w-4 mr-1" /> Remove {{ selectedCount > 0 ? selectedCount : '' }}
+                </Button>
+              </div>
+              <div class="flex gap-1 mr-2">
+                <Button variant="outline" size="sm" @click="massSelect('All')">
+                  <CheckSquare class="h-4 w-4 mr-1" /> All
+                </Button>
+                <Button variant="outline" size="sm" @click="massSelect('None')">
+                  <Square class="h-4 w-4 mr-1" /> None
+                </Button>
+                <Button variant="outline" size="sm" @click="massSelect('Invert')">
+                  <RotateCcw class="h-4 w-4 mr-1" /> Invert
+                </Button>
+              </div>
+              <Button variant="outline" size="sm" @click="cancelMassActions">
+                <X class="h-4 w-4 mr-2" /> Cancel
+              </Button>
+            </div>
           </div>
+
+          <!-- Upload picker -->
+          <FilePicker
+            v-if="mode === 'Upload'"
+            :multiple="true"
+            :disabled="!!batchSize"
+            @change="handleUpload"
+            class="mt-4"
+          >
+            <template v-if="!batchSize">
+              <Upload class="h-5 w-5 mr-2 inline" /> Drag files here or click to select
+            </template>
+            <template v-else>
+              <Loader2 class="h-5 w-5 mr-2 inline animate-spin" />
+              Uploading {{ batchIndex }} of {{ batchSize }}...
+            </template>
+          </FilePicker>
         </div>
 
-        <!-- Upload picker -->
-        <FilePicker
-          v-if="mode === 'Upload'"
-          :multiple="true"
-          :disabled="!!batchSize"
-          @change="handleUpload"
-          class="mb-4"
-        >
-          <template v-if="!batchSize">
-            <Upload class="h-5 w-5 mr-2 inline" /> Drag files here or click to select
-          </template>
-          <template v-else>
-            <Loader2 class="h-5 w-5 mr-2 inline animate-spin" />
-            Uploading {{ batchIndex }} of {{ batchSize }}...
-          </template>
-        </FilePicker>
-
+        <div class="flex-1 overflow-auto p-6">
         <!-- Media grid -->
         <div v-if="media.length > 0 || mediaWraps.some(w => w.isUploading || w.error)">
           <!-- Reorder mode with drag and drop -->
@@ -558,6 +561,7 @@ function onEditorSaved(result: boolean) {
             No media in this folder.
           </AlertDescription>
         </Alert>
+        </div>
       </template>
 
       <!-- Folder not found -->

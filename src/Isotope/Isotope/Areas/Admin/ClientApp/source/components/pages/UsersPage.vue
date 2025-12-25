@@ -102,15 +102,18 @@ function onConfirmed(result: boolean) {
 </script>
 
 <template>
-  <div class="p-6">
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-3xl font-bold">Users</h1>
-      <Button @click="create" size="sm">
-        <Plus class="h-4 w-4" />
-        <span>Create user</span>
-      </Button>
+  <div class="flex flex-col h-full">
+    <div class="sticky top-0 z-10 bg-background border-b px-6 py-4">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold">Users</h1>
+        <Button @click="create" size="sm">
+          <Plus class="h-4 w-4" />
+          <span>Create user</span>
+        </Button>
+      </div>
     </div>
 
+    <div class="flex-1 overflow-auto p-6">
     <Loading :is-loading="asyncState.isLoading" :is-full-page="true">
       <div v-if="users.length === 0">
         <Alert>
@@ -191,5 +194,6 @@ function onConfirmed(result: boolean) {
     <UserEditorDlg v-model:open="isEditorOpen" :user="editingUser" @updated="onEdited" />
     <UserPasswordDlg v-model:open="isPasswordOpen" :user="editingUser" @updated="onPasswordUpdated" />
     <ConfirmationDlg v-model:open="isConfirmOpen" :text="confirmText" @confirmed="onConfirmed" />
+    </div>
   </div>
 </template>
