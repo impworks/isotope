@@ -83,8 +83,19 @@
     }
 }
 
+.btn-primary {
+    color: $white;
+
+    &:hover,
+    &:focus,
+    &:active,
+    &:disabled {
+        color: $white;
+    }
+}
+
 .btn:not(:active) {
-    
+
     &.btn-primary {
 
         .touch &:hover {

@@ -162,6 +162,7 @@ onUnmounted(() => {
           color: $gray-800;
           display: block;
           padding: 0.6rem 1rem;
+          text-decoration: none;
 
           &:hover {
             color: $gray-800;

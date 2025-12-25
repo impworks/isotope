@@ -188,6 +188,15 @@ onUnmounted(() => {
     &:focus {
       outline: none;
     }
+
+    .popover-body a {
+      text-decoration: none;
+
+      &:active,
+      .no-touch &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   &:hover {

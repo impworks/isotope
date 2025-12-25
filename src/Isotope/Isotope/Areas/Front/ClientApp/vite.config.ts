@@ -12,7 +12,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: 'modern-compiler',
-        silenceDeprecations: ['import', 'global-builtin', 'legacy-js-api', 'color-functions', 'slash-div', 'if-function', 'abs-percent'],
+        silenceDeprecations: ['import', 'global-builtin', 'slash-div', 'if-function', 'color-functions'],
         loadPaths: [resolve(__dirname, 'node_modules')]
       }
     }

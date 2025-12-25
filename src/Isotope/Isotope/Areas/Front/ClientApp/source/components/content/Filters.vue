@@ -101,29 +101,29 @@ onMounted(async () => {
   </div>
   <div class="filter">
     <h6>Search in</h6>
-    <div class="custom-control custom-radio">
+    <div class="form-check">
       <input
         type="radio"
         id="sm-current-folder"
-        class="custom-control-input"
+        class="form-check-input"
         v-model="filter.scope"
         :value="1"
       />
-      <label class="custom-control-label" for="sm-current-folder"> Current folder </label>
+      <label class="form-check-label" for="sm-current-folder"> Current folder </label>
     </div>
-    <div class="custom-control custom-radio">
+    <div class="form-check">
       <input
         type="radio"
         id="sm-current-folder-nested"
-        class="custom-control-input"
+        class="form-check-input"
         v-model="filter.scope"
         :value="2"
       />
-      <label class="custom-control-label" for="sm-current-folder-nested"> Current and subfolders </label>
+      <label class="form-check-label" for="sm-current-folder-nested"> Current and subfolders </label>
     </div>
-    <div class="custom-control custom-radio">
-      <input id="sm-everywhere" type="radio" class="custom-control-input" v-model="filter.scope" :value="3" />
-      <label class="custom-control-label" for="sm-everywhere"> Everywhere </label>
+    <div class="form-check">
+      <input id="sm-everywhere" type="radio" class="form-check-input" v-model="filter.scope" :value="3" />
+      <label class="form-check-label" for="sm-everywhere"> Everywhere </label>
     </div>
   </div>
 </template>

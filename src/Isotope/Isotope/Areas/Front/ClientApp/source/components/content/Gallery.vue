@@ -285,6 +285,7 @@ onBeforeUnmount(() => {
       display: inline-block;
       border-radius: $border-radius;
       background-color: $primary;
+      text-decoration: none;
 
       &:hover {
         color: $white;
@@ -294,7 +295,6 @@ onBeforeUnmount(() => {
       &:active,
       .no-touch &:hover {
         color: $white;
-        text-decoration: underline;
         background-color: darken($primary, 4%);
       }
     }
@@ -333,6 +333,7 @@ onBeforeUnmount(() => {
       transition: border 150ms ease;
       width: 4.5833333333rem;
       box-sizing: content-box;
+      text-decoration: none;
 
       @media only screen and (min-width: 414px) {
         padding: 0.5rem;
@@ -348,6 +349,12 @@ onBeforeUnmount(() => {
         color: $gray-900;
         border-color: $gray-400;
         box-shadow: $box-shadow-sm;
+      }
+    }
+
+    &_folder &__content {
+      &:active,
+      .no-touch &:hover {
         text-decoration: underline;
       }
     }

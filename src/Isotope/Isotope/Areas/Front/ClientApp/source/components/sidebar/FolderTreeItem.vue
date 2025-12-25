@@ -70,6 +70,7 @@ onMounted(() => {
   flex-direction: row;
   padding: 0.5em 1em;
   color: $gray-800;
+  text-decoration: none;
 
   &:hover {
     color: $gray-800;

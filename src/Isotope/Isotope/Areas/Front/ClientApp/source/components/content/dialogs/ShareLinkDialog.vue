@@ -153,7 +153,7 @@ watch(model, (value) => {
           <div class="row" v-if="tags && tags.length">
             <div class="col-sm-3">Tags</div>
             <div class="col-sm-9">
-              <ul class="mb-0 pl-3">
+              <ul class="mb-0 ps-3">
                 <li v-for="(tag, i) in tags" :key="i">{{ tag }}</li>
               </ul>
             </div>
@@ -177,14 +177,14 @@ watch(model, (value) => {
       <button
         v-if="state === 'new'"
         type="button"
-        class="btn btn-block btn-primary"
+        class="btn btn-primary w-100"
         :disabled="!canCreate"
         @click.prevent="create"
       >
         <span v-if="asyncState.isSaving">Creating...</span>
         <span v-else>Create</span>
       </button>
-      <button v-if="state !== 'new'" type="button" class="btn btn-block btn-primary" @click.prevent="copyAndClose">
+      <button v-if="state !== 'new'" type="button" class="btn btn-primary w-100" @click.prevent="copyAndClose">
         Copy and close
       </button>
     </template>
