@@ -28,13 +28,13 @@ public class AuthService(AppDbContext db, SignInManager<AppUser> signInMgr, User
     {
         var user = await db.Users.FirstOrDefaultAsync(x => x.NormalizedUserName == request.Username.ToUpper());
         if (user == null)
-            return new LoginResponseVM {ErrorMessage = "Log in failed"};
+            return new LoginResponseVM {ErrorMessage = "Incorrect credentials"};
 
         var result = await signInMgr.PasswordSignInAsync(user, request.Password, false, true);
         if (result.IsLockedOut)
             return new LoginResponseVM {ErrorMessage = "User locked out"};
         if (!result.Succeeded)
-            return new LoginResponseVM {ErrorMessage = "Log in failed"};
+            return new LoginResponseVM {ErrorMessage = "Incorrect credentials"};
 
         var roles = await userMgr.GetRolesAsync(user);
         var token = GenerateToken(user, roles);
