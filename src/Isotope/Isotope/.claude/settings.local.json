@@ -21,7 +21,8 @@
       "Bash(findstr:*)",
       "Bash(npm run build-front:*)",
       "Bash(npm run build-admin:*)",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

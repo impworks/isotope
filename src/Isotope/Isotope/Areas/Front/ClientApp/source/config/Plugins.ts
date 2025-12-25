@@ -13,10 +13,6 @@ import 'vue-select/dist/vue-select.css';
 import { VueDatePicker } from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
-// Note: simplebar-vue and vue2-hammer need Vue3 alternatives
-// TODO: Add these packages when correct versions are available
-// For now, we'll handle these in components that need them
-
 import { createHead } from '@unhead/vue';
 
 // -----------------------------------
