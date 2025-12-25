@@ -35,16 +35,22 @@ const shown = ref(false);
 const index = ref<number | null>(null);
 const cache = reactive<ICachedMedia[]>([]);
 const upcomingIndex = ref<number | null>(null);
-const translateX = ref(0);
-const translateY = ref(0);
-const maxTranslateX = ref(0);
-const maxTranslateY = ref(0);
 const transformStyle = ref('translate(0, 0)');
 const transitionClass = ref('transition-initial');
 const isTransitioning = ref(false);
 const isMobile = ref(false);
 const isMobileOverlayVisible = ref(false);
 const isClosing = ref(false);
+
+// Touch/drag state
+const isDragging = ref(false);
+const dragDirection = ref<'horizontal' | 'vertical' | null>(null);
+const dragStartX = ref(0);
+const dragStartY = ref(0);
+const dragCurrentX = ref(0);
+const dragCurrentY = ref(0);
+const dragStartTime = ref(0);
+const viewportWidth = ref(window.innerWidth);
 
 // Computed properties
 const prev = computed<ICachedMedia | null>(() => {
@@ -156,70 +162,125 @@ function resizeHandler() {
   }, 50);
 }
 
-// TODO: Implement touch gestures
-// Original used v-hammer:swipe, v-hammer:pan, v-hammer:tap
-// Need to implement:
-// - Swipe left/right for navigation between images
-// - Pan for dragging images with smooth animation
-// - Pinch to zoom (if needed)
-// - Tap to toggle mobile overlay visibility
-// - Vertical pan to close viewer (swipe down)
-// Consider using native Pointer Events or a Vue3-compatible gesture library
+// Touch gesture handlers
+const SWIPE_THRESHOLD = 0.2; // 20% of viewport width to trigger navigation
+const VELOCITY_THRESHOLD = 0.3; // pixels per ms - fast flicks trigger navigation
+const MIN_SWIPE_DISTANCE = 30; // minimum pixels for velocity-based swipe
+const VERTICAL_THRESHOLD = 100; // pixels to trigger close
+const DIRECTION_LOCK_THRESHOLD = 10; // pixels before locking direction
 
-function handleHorizontalTouchEvents(e: any) {
-  // TODO: Implement horizontal touch/swipe gestures
-  // This should handle:
-  // - Horizontal panning to navigate between images
-  // - Edge cases when at first/last image
-  // - Smooth transition animations
-  console.warn('Touch gestures not yet implemented');
+function onTouchStart(e: TouchEvent) {
+  if (!isMobile.value || isTransitioning.value) return;
+
+  const touch = e.touches[0];
+  dragStartX.value = touch.clientX;
+  dragStartY.value = touch.clientY;
+  dragCurrentX.value = touch.clientX;
+  dragCurrentY.value = touch.clientY;
+  dragStartTime.value = Date.now();
+  isDragging.value = true;
+  dragDirection.value = null;
+  transitionClass.value = 'transition-initial';
+  viewportWidth.value = window.innerWidth;
 }
 
-function handleVerticalTouchEvents(e: any) {
-  // TODO: Implement vertical touch/swipe gestures
-  // This should handle:
-  // - Vertical panning to dismiss the viewer
-  // - Background opacity change during drag
-  // - Snap back if not dragged far enough
-  console.warn('Touch gestures not yet implemented');
-}
+function onTouchMove(e: TouchEvent) {
+  if (!isDragging.value || !isMobile.value) return;
 
-function handleHorizontalGestureMove(deltaX: number) {
-  // TODO: Implement horizontal gesture movement
-  // Calculate transform based on deltaX
-  // Handle edge resistance when no prev/next image
-}
+  const touch = e.touches[0];
+  dragCurrentX.value = touch.clientX;
+  dragCurrentY.value = touch.clientY;
 
-function handleHorizontalGestureEnd(deltaX: number) {
-  // TODO: Implement horizontal gesture end
-  // Decide whether to navigate or snap back
-}
+  const deltaX = dragCurrentX.value - dragStartX.value;
+  const deltaY = dragCurrentY.value - dragStartY.value;
 
-function handleVerticalGestureMove(deltaY: number) {
-  // TODO: Implement vertical gesture movement
-  // Update transform and closing state
-}
-
-function handleVerticalGestureEnd(deltaY: number) {
-  // TODO: Implement vertical gesture end
-  // Close viewer if dragged far enough
-}
-
-function swipe(dir: number) {
-  // TODO: Implement swipe animation
-  // Animate to next/prev image
-  if (isTransitioning.value || !cache[index.value! - dir]) {
-    return;
+  // Lock direction after initial movement
+  if (dragDirection.value === null) {
+    if (Math.abs(deltaX) > DIRECTION_LOCK_THRESHOLD || Math.abs(deltaY) > DIRECTION_LOCK_THRESHOLD) {
+      dragDirection.value = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+    } else {
+      return;
+    }
   }
 
+  if (dragDirection.value === 'horizontal') {
+    // Apply resistance at edges (no prev/next image)
+    let adjustedDeltaX = deltaX;
+    if ((deltaX > 0 && !prev.value) || (deltaX < 0 && !next.value)) {
+      adjustedDeltaX = deltaX * 0.3; // Resistance factor
+    }
+    transformStyle.value = `translate(${adjustedDeltaX}px, 0)`;
+  } else if (dragDirection.value === 'vertical') {
+    // Only allow downward drag for closing
+    if (deltaY > 0) {
+      transformStyle.value = `translate(0, ${deltaY}px)`;
+      isClosing.value = deltaY > VERTICAL_THRESHOLD;
+    }
+  }
+}
+
+function onTouchEnd() {
+  if (!isDragging.value || !isMobile.value) return;
+
+  const deltaX = dragCurrentX.value - dragStartX.value;
+  const deltaY = dragCurrentY.value - dragStartY.value;
+  const elapsed = Date.now() - dragStartTime.value;
+  const velocityX = Math.abs(deltaX) / elapsed;
+
+  isDragging.value = false;
+
+  if (dragDirection.value === 'horizontal') {
+    const distanceThreshold = viewportWidth.value * SWIPE_THRESHOLD;
+    const isFastSwipe = velocityX > VELOCITY_THRESHOLD && Math.abs(deltaX) > MIN_SWIPE_DISTANCE;
+
+    if ((deltaX > distanceThreshold || (isFastSwipe && deltaX > 0)) && prev.value) {
+      // Swipe right - go to previous
+      animateToImage(1);
+    } else if ((deltaX < -distanceThreshold || (isFastSwipe && deltaX < 0)) && next.value) {
+      // Swipe left - go to next
+      animateToImage(-1);
+    } else {
+      // Snap back
+      snapBack();
+    }
+  } else if (dragDirection.value === 'vertical') {
+    if (deltaY > VERTICAL_THRESHOLD) {
+      // Close viewer with animation
+      animateClose();
+    } else {
+      // Snap back
+      snapBack();
+    }
+  } else {
+    // No direction locked - treat as potential tap
+    snapBack();
+  }
+
+  dragDirection.value = null;
+}
+
+function animateToImage(dir: number) {
   transitionClass.value = 'transition-item';
-  transformStyle.value = `translate(${dir * 100}vw, 0)`;
-  upcomingIndex.value = Math.min(Math.max(index.value! - dir, 0), props.source.length - 1);
+  transformStyle.value = `translate(${dir * viewportWidth.value}px, 0)`;
+  upcomingIndex.value = Math.min(Math.max((index.value ?? 0) - dir, 0), props.source.length - 1);
+}
+
+function animateClose() {
+  transitionClass.value = 'transition-item';
+  transformStyle.value = `translate(0, ${window.innerHeight}px)`;
+  isClosing.value = true;
+}
+
+function snapBack() {
+  transitionClass.value = 'transition-edge';
+  transformStyle.value = 'translate(0, 0)';
+  isClosing.value = false;
 }
 
 function onTap(e: MouseEvent) {
-  // TODO: Replace with proper gesture detection
-  // For now, simple click to toggle overlay
+  // Only handle tap if we weren't dragging
+  if (dragDirection.value !== null) return;
+
   const target = e.target as HTMLElement;
   if (target.classList[0] !== 'overlay-tag' && target.tagName !== 'A' && isMobile.value) {
     isMobileOverlayVisible.value = !isMobileOverlayVisible.value;
@@ -235,19 +296,10 @@ function updateCurrentItem() {
   isTransitioning.value = false;
   transitionClass.value = 'transition-initial';
   transformStyle.value = 'translate(0, 0)';
-  translateX.value = 0;
-  maxTranslateX.value = 0;
-  translateY.value = 0;
-  maxTranslateY.value = 0;
 
   if (upcomingIndex.value !== null && upcomingIndex.value !== index.value) {
     show(upcomingIndex.value);
   }
-}
-
-function handleTouchEvents(e: any) {
-  // TODO: Implement unified touch event handler
-  // Determine direction and delegate to horizontal/vertical handlers
 }
 
 // Keyboard navigation handlers
@@ -322,7 +374,11 @@ interface ICachedMedia extends IMedia {
         <div
           class="media-viewer__content"
           @click="onTap"
-          :class="transitionClass"
+          @touchstart.passive="onTouchStart"
+          @touchmove="onTouchMove"
+          @touchend="onTouchEnd"
+          @touchcancel="onTouchEnd"
+          :class="[transitionClass, { 'is-dragging': isDragging }]"
           :style="{ transform: transformStyle }"
           @transitionstart.self="isTransitioning = true"
           @transitionend.self="updateCurrentItem"
@@ -393,7 +449,7 @@ interface ICachedMedia extends IMedia {
     height: 100%;
     width: 100%;
     box-sizing: border-box;
-    touch-action: pan-y;
+    touch-action: none;
     will-change: transform;
     transition: transform 0s linear;
     backface-visibility: hidden;
@@ -404,11 +460,15 @@ interface ICachedMedia extends IMedia {
     }
 
     &.transition-item {
-      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+      transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
     }
 
     &.transition-edge {
-      transition: transform 500ms ease-out;
+      transition: transform 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    &.is-dragging {
+      cursor: grabbing;
     }
   }
 
