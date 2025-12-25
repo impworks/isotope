@@ -67,9 +67,9 @@ onUnmounted(() => {
 
 <style lang="scss">
 @import "../../../../../Common/styles/variables";
-@import "./node_modules/bootstrap/scss/functions";
-@import "./node_modules/bootstrap/scss/variables";
-@import "./node_modules/bootstrap/scss/mixins";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
 
 .user-dropdown {
   position: relative;
