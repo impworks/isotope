@@ -46,4 +46,6 @@ public class DemoModeConfig
     public bool ClearOnStartup { get; set; }
     public bool SeedSampleData { get; set; }
     public string YandexMetrikaId { get; set; }
+    public string DefaultLogin { get; set; } = "admin@example.com";
+    public string DefaultPassword { get; set; } = "123456";
 }

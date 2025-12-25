@@ -40,7 +40,7 @@ public static class AppDbContextExtensions
     /// <summary>
     /// Ensures all system entries are created in the DB.
     /// </summary>
-    public static async Task EnsureSystemItemsCreatedAsync(this AppDbContext db, UserManager<AppUser> userMgr)
+    public static async Task EnsureSystemItemsCreatedAsync(this AppDbContext db, UserManager<AppUser> userMgr, DemoModeConfig demoCfg)
     {
         if (!db.Roles.Any())
         {
@@ -81,8 +81,8 @@ public static class AppDbContextExtensions
 
         if (!db.Users.Any())
         {
-            var user = new AppUser {UserName = "admin@example.com", IsAdmin = true};
-            await userMgr.CreateAsync(user, "123456");
+            var user = new AppUser {UserName = demoCfg.DefaultLogin, IsAdmin = true};
+            await userMgr.CreateAsync(user, demoCfg.DefaultPassword);
             await userMgr.AddToRoleAsync(user, nameof(UserRole.Admin));
         }
 

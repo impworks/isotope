@@ -62,7 +62,7 @@ public partial class Startup
         var userMgr = sp.GetService<UserManager<AppUser>>();
 
         await db.EnsureDatabaseCreatedAsync();
-        await db.EnsureSystemItemsCreatedAsync(userMgr);
+        await db.EnsureSystemItemsCreatedAsync(userMgr, demoCfg);
 
         if (demoCfg.Enabled && demoCfg.SeedSampleData)
             await SeedData.SeedSampleDataAsync(db);
