@@ -22,7 +22,7 @@ public class StatsManager(AppDbContext db)
 
         return new StatsVM
         {
-            FolderCount = await db.Folders.CountAsync(),
+            FolderCount = await db.Folders.CountAsync() - 1,
             PhotoCount = await db.Media.CountAsync(),
             TagCount = await db.Tags.CountAsync(),
             TagBindingCount = await db.MediaTags.CountAsync() + await db.FolderTags.CountAsync(),
