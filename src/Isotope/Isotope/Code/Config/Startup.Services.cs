@@ -37,5 +37,6 @@ public partial class Startup
         services.AddScoped<ConfigManager>();
         services.AddScoped<FolderManager>();
         services.AddScoped<MediaManager>();
+        services.AddScoped<StatsManager>();
     }
 }

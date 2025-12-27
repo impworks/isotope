@@ -34,6 +34,11 @@ const routes = [
     path: '/config',
     name: 'Config',
     component: () => import('@/components/pages/ConfigPage.vue')
+  },
+  {
+    path: '/stats',
+    name: 'Stats',
+    component: () => import('@/components/pages/StatsPage.vue')
   }
 ];
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import { useRoute } from 'vue-router';
-import { Folder, Tags, Share2, Users, Settings, type LucideIcon } from 'lucide-vue-next';
+import { Folder, Tags, Share2, Users, Settings, BarChart3, type LucideIcon } from 'lucide-vue-next';
 
 const route = useRoute();
 
@@ -10,7 +10,8 @@ const menuItems: { to: string; icon: LucideIcon; label: string }[] = [
   { to: '/tags', icon: Tags, label: 'Tags' },
   { to: '/shared-links', icon: Share2, label: 'Shared Links' },
   { to: '/users', icon: Users, label: 'Users' },
-  { to: '/config', icon: Settings, label: 'Configuration' }
+  { to: '/config', icon: Settings, label: 'Configuration' },
+  { to: '/stats', icon: BarChart3, label: 'Statistics' }
 ];
 
 function isActive(path: string): boolean {
