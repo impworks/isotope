@@ -34,6 +34,7 @@ COPY --from=net-builder /out .
 RUN chmod +x /app/Isotope
 
 ENV ASPNETCORE_ENVIRONMENT=Production
+ENV BuildCommit=$BUILD_COMMIT
 
 EXPOSE 5000
 

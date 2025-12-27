@@ -6,6 +6,7 @@ import { UserApiClient } from './api/UserApiClient';
 import { ConfigApiClient } from './api/ConfigApiClient';
 import { SharedLinkApiClient } from './api/SharedLinkApiClient';
 import { FrontApiClient } from './api/FrontApiClient';
+import { StatsApiClient } from './api/StatsApiClient';
 
 export class ApiService {
   readonly folders: FolderApiClient;
@@ -15,6 +16,7 @@ export class ApiService {
   readonly config: ConfigApiClient;
   readonly sharedLinks: SharedLinkApiClient;
   readonly front: FrontApiClient;
+  readonly stats: StatsApiClient;
 
   constructor($host: string, $auth: AuthService) {
     this.folders = new FolderApiClient($host, $auth);
@@ -24,5 +26,6 @@ export class ApiService {
     this.config = new ConfigApiClient($host, $auth);
     this.sharedLinks = new SharedLinkApiClient($host, $auth);
     this.front = new FrontApiClient($host, $auth);
+    this.stats = new StatsApiClient($host, $auth);
   }
 }

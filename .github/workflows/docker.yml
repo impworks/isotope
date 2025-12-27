@@ -25,3 +25,5 @@ jobs:
           context: .
           push: true
           tags: impworks/isotope:latest
+          build-args: |
+            BUILD_COMMIT=${{ github.sha }}

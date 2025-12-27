@@ -3,7 +3,7 @@ import { RouterView } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import MainMenu from './MainMenu.vue';
 import { Button } from '@ui/button';
-import { LogOut } from 'lucide-vue-next';
+import { LogOut, Github } from 'lucide-vue-next';
 
 const auth = useAuth();
 
@@ -28,8 +28,14 @@ function logout() {
           <MainMenu />
         </nav>
 
-        <!-- Logout -->
-        <div class="p-4 border-t">
+        <!-- Footer -->
+        <div class="p-4 border-t space-y-1">
+          <Button variant="ghost" class="w-full justify-start" as-child>
+            <a href="https://github.com/impworks/isotope" target="_blank" rel="noopener noreferrer">
+              <Github class="mr-2 h-4 w-4" />
+              GitHub
+            </a>
+          </Button>
           <Button variant="ghost" class="w-full justify-start" @click="logout">
             <LogOut class="mr-2 h-4 w-4" />
             Logout
