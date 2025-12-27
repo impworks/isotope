@@ -33,8 +33,10 @@ COPY --from=net-builder /out .
 
 RUN chmod +x /app/Isotope
 
+ARG BUILD_COMMIT
+ARG RAILWAY_GIT_COMMIT_SHA
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV BuildCommit=$BUILD_COMMIT
+ENV BuildCommit=${BUILD_COMMIT:-${RAILWAY_GIT_COMMIT_SHA}}
 
 EXPOSE 5000
 

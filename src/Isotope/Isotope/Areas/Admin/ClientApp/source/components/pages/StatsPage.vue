@@ -42,6 +42,10 @@ function formatBytes(bytes: number): string {
 function formatNumber(num: number): string {
   return num.toLocaleString();
 }
+
+function shortCommit(commit: string): string {
+  return commit.substring(0, 7);
+}
 </script>
 
 <template>
@@ -182,8 +186,8 @@ function formatNumber(num: number): string {
                 <GitCommit class="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div class="text-lg font-bold font-mono truncate" :title="stats.buildCommit">
-                  {{ stats.buildCommit }}
+                <div class="text-lg font-bold font-mono" :title="stats.buildCommit">
+                  {{ shortCommit(stats.buildCommit) }}
                 </div>
               </CardContent>
             </Card>
