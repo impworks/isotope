@@ -99,7 +99,7 @@ onMounted(async () => {
   }
 
   &__content {
-    flex: 1 0 auto;
+    flex: 1 1 auto;
     display: flex;
 
     @include media-breakpoint-down(md) {
@@ -108,6 +108,7 @@ onMounted(async () => {
 
     @include media-breakpoint-up(lg) {
       flex-direction: row;
+      min-height: 0;
     }
   }
 }

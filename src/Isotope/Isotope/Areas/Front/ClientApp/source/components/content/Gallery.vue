@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
     :class="{ 'gallery_safe-paddings': hasSafePaddings }"
   >
     <loading :is-full-page="true" :is-loading="asyncState.isLoading">
-      <simplebar v-if="contents && !error && !isEmpty" class="gallery__content">
+      <div v-if="contents && !error && !isEmpty" class="gallery__content">
         <div class="gallery__tags" v-if="contents.tags && contents.tags.length">
           <a
             class="gallery__tags__item clickable"
@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
-      </simplebar>
+      </div>
     </loading>
     <div v-if="!asyncState.isLoading && isEmpty && !error" class="gallery__error">
       <div class="gallery__error__content">
@@ -211,6 +211,7 @@ onBeforeUnmount(() => {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   --sar: env(safe-area-inset-right);
 
   $content-sizes: 3 375px 5.7291666667rem, 3 390px 6.0666666667rem, 3 414px 6.1666666667rem,
@@ -261,6 +262,7 @@ onBeforeUnmount(() => {
     width: 100%;
     flex: 1 1 auto;
     display: block;
+    overflow-y: auto;
 
     @include media-breakpoint-up(lg) {
       height: 0;
