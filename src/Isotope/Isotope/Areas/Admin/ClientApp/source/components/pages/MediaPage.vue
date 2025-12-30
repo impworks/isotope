@@ -283,24 +283,27 @@ async function uploadOne(file: File) {
   uploadWrap.isUploading = true;
   mediaWraps.value.push(uploadWrap);
 
+  // Get the reactive reference from the array (the original uploadWrap is not reactive)
+  const reactiveWrap = mediaWraps.value[mediaWraps.value.length - 1];
+
   try {
     const uploaded = await api.media.upload(
       folderKey.value,
       file,
       (progress) => {
-        uploadWrap.progress = progress;
+        reactiveWrap.progress = progress;
       }
     );
 
-    uploadWrap.media = uploaded;
-    uploadWrap.isUploading = false;
+    reactiveWrap.media = uploaded;
+    reactiveWrap.isUploading = false;
     media.value.push(uploaded);
   } catch (e: any) {
-    uploadWrap.isUploading = false;
+    reactiveWrap.isUploading = false;
     if (e.response?.status === 400) {
-      uploadWrap.error = e.response.data.error || 'Upload failed';
+      reactiveWrap.error = e.response.data.error || 'Upload failed';
     } else {
-      uploadWrap.error = e.message || 'Upload failed';
+      reactiveWrap.error = e.message || 'Upload failed';
     }
   }
 }
