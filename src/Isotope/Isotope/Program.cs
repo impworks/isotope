@@ -50,6 +50,7 @@ public class Program
 
                        services.AddTransient<RebuildInheritedTagsJob>();
                        services.AddTransient<UpdateThumbnailJob>();
+                       services.AddTransient<ExtractMediaMetadataJob>();
                    });
     }
 }

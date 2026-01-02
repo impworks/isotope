@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Impworks.Utils.Linq;
 using Isotope.Data.Models;
 using Serilog;
 using SixLabors.ImageSharp;
@@ -55,9 +53,24 @@ public class JpegMediaHandler(ILogger logger) : IMediaHandler
             if (exif == null)
                 return;
 
-            media.Date = ParseDate(exif.Values.FirstOrDefault(x => x.Tag == ExifTag.DateTimeOriginal)?.GetValue()
-                                       ?.ToString());
-            media.ExtraData = GetMetadata(exif);
+            // Date
+            media.Date = ParseDate(GetExifString(exif, ExifTag.DateTimeOriginal));
+
+            // Camera info
+            media.CameraMake = GetExifString(exif, ExifTag.Make)?.Trim();
+            media.CameraModel = GetExifString(exif, ExifTag.Model)?.Trim();
+            media.LensModel = GetExifString(exif, ExifTag.LensModel)?.Trim();
+
+            // Exposure settings
+            media.ExposureTime = FormatExposureTime(GetExifRational(exif, ExifTag.ExposureTime));
+            media.FNumber = FormatFNumber(GetExifRational(exif, ExifTag.FNumber));
+            media.IsoSpeed = GetExifUShortArray(exif, ExifTag.ISOSpeedRatings)?.FirstOrDefault();
+            media.FocalLength = FormatFocalLength(GetExifRational(exif, ExifTag.FocalLength));
+
+            // GPS coordinates
+            var (lat, lng) = ParseGpsCoordinates(exif);
+            media.Latitude = lat;
+            media.Longitude = lng;
         }
         catch (Exception ex)
         {
@@ -85,36 +98,123 @@ public class JpegMediaHandler(ILogger logger) : IMediaHandler
     }
 
     /// <summary>
-    /// Returns metadata entries.
+    /// Gets a string value from EXIF profile.
     /// </summary>
-    private Dictionary<string, string> GetMetadata(ExifProfile profile)
+    private static string GetExifString(ExifProfile profile, ExifTag<string> tag)
     {
-        // todo: only extract a couple of "interesting" tags
-        var result = new Dictionary<string, string>();
-        var entries = profile.Values
-                             .Select(x => new {Tag = x.Tag.ToString(), Value = GetReadableValue(x)})
-                             .Where(x => x.Value?.Length > 0 && x.Value != "0");
+        return profile.TryGetValue(tag, out var value) ? value.Value : null;
+    }
 
-        foreach (var entry in entries)
-            if (!result.ContainsKey(entry.Tag))
-                result[entry.Tag] = entry.Value;
+    /// <summary>
+    /// Gets a rational value from EXIF profile.
+    /// </summary>
+    private static Rational? GetExifRational(ExifProfile profile, ExifTag<Rational> tag)
+    {
+        return profile.TryGetValue(tag, out var value) ? value.Value : null;
+    }
 
-        return result;
+    /// <summary>
+    /// Gets a ushort array from EXIF profile.
+    /// </summary>
+    private static ushort[] GetExifUShortArray(ExifProfile profile, ExifTag<ushort[]> tag)
+    {
+        return profile.TryGetValue(tag, out var value) ? value.Value : null;
+    }
 
-        string GetReadableValue(IExifValue entry)
-        {
-            var value = entry.GetValue();
-            if (!entry.IsArray)
-                return value?.ToString();
+    /// <summary>
+    /// Gets an array of rationals from EXIF profile.
+    /// </summary>
+    private static Rational[] GetExifRationalArray(ExifProfile profile, ExifTag<Rational[]> tag)
+    {
+        return profile.TryGetValue(tag, out var value) ? value.Value : null;
+    }
 
-            if (value is IList<byte> bytes && bytes.Any(x => x != 0))
-                return "[" + bytes.JoinString(", ") + "]";
-
-            if (value is IList<short> shorts && shorts.Any(x => x != 0))
-                return "[" + shorts.JoinString(", ") + "]";
-
+    /// <summary>
+    /// Formats exposure time as a readable string (e.g., "1/250").
+    /// </summary>
+    private static string FormatExposureTime(Rational? rational)
+    {
+        if (rational == null)
             return null;
-        }
+
+        var value = rational.Value.ToDouble();
+        if (value <= 0)
+            return null;
+
+        if (value >= 1)
+            return $"{value:0.#}s";
+
+        // Express as fraction 1/x
+        var denominator = (int)Math.Round(1.0 / value);
+        return $"1/{denominator}";
+    }
+
+    /// <summary>
+    /// Formats f-number as a readable string (e.g., "f/2.8").
+    /// </summary>
+    private static string FormatFNumber(Rational? rational)
+    {
+        if (rational == null)
+            return null;
+
+        var value = rational.Value.ToDouble();
+        if (value <= 0)
+            return null;
+
+        return value % 1 == 0 ? $"f/{value:0}" : $"f/{value:0.#}";
+    }
+
+    /// <summary>
+    /// Formats focal length as a readable string (e.g., "50mm").
+    /// </summary>
+    private static string FormatFocalLength(Rational? rational)
+    {
+        if (rational == null)
+            return null;
+
+        var value = rational.Value.ToDouble();
+        if (value <= 0)
+            return null;
+
+        return value % 1 == 0 ? $"{value:0}mm" : $"{value:0.#}mm";
+    }
+
+    /// <summary>
+    /// Parses GPS coordinates from EXIF profile.
+    /// </summary>
+    private static (double? lat, double? lng) ParseGpsCoordinates(ExifProfile profile)
+    {
+        var latValues = GetExifRationalArray(profile, ExifTag.GPSLatitude);
+        var lngValues = GetExifRationalArray(profile, ExifTag.GPSLongitude);
+
+        if (latValues == null || lngValues == null || latValues.Length < 3 || lngValues.Length < 3)
+            return (null, null);
+
+        profile.TryGetValue(ExifTag.GPSLatitudeRef, out var latRef);
+        profile.TryGetValue(ExifTag.GPSLongitudeRef, out var lngRef);
+
+        var lat = ConvertGpsToDecimal(latValues);
+        var lng = ConvertGpsToDecimal(lngValues);
+
+        // Apply reference direction
+        if (latRef?.Value == "S")
+            lat = -lat;
+        if (lngRef?.Value == "W")
+            lng = -lng;
+
+        return (lat, lng);
+    }
+
+    /// <summary>
+    /// Converts GPS degrees/minutes/seconds to decimal degrees.
+    /// </summary>
+    private static double ConvertGpsToDecimal(Rational[] values)
+    {
+        var degrees = values[0].ToDouble();
+        var minutes = values[1].ToDouble();
+        var seconds = values[2].ToDouble();
+
+        return degrees + (minutes / 60.0) + (seconds / 3600.0);
     }
 
     #endregion

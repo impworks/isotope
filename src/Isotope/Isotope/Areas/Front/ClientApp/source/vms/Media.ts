@@ -11,6 +11,18 @@ export interface Media {
     description: string;
     width?: number;
     height?: number;
+
+    // EXIF metadata
+    cameraMake?: string;
+    cameraModel?: string;
+    lensModel?: string;
+    exposureTime?: string;
+    fNumber?: string;
+    isoSpeed?: number;
+    focalLength?: string;
+    latitude?: number;
+    longitude?: number;
+
     overlayTags: TagBindingWithLocation[];
     extraTags: TagBindingWithType[];
     folder?: Folder;

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Isotope.Areas.Admin.Services.Jobs;
 using Isotope.Code.Utils.Helpers;
 using Isotope.Data;
 using Isotope.Data.Models;
@@ -41,6 +42,33 @@ public class BackgroundJobService : IHostedService, IBackgroundJobService
     {
         foreach (var def in await LoadPendingJobsAsync())
             _ = ExecuteJobAsync(def);
+
+        await QueueMetadataExtractionIfNeededAsync();
+    }
+
+    /// <summary>
+    /// Checks if there are media files without EXIF metadata and queues the extraction job.
+    /// </summary>
+    private async Task QueueMetadataExtractionIfNeededAsync()
+    {
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var needsExtraction = await db.Media
+                .AnyAsync(x => x.CameraModel == null && x.Type == MediaType.Photo);
+
+            if (needsExtraction)
+            {
+                _logger.Information("Found media files without EXIF metadata, starting extraction job...");
+                await RunAsync(JobBuilder.For<ExtractMediaMetadataJob>());
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex.Demystify(), "Failed to check for media files needing metadata extraction");
+        }
     }
 
     /// <summary>

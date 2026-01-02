@@ -31,6 +31,38 @@ const canFilter = computed(() => {
   return !$filter.shareId;
 });
 
+const hasExifData = computed(() => {
+  const m = props.media;
+  return m.cameraMake || m.cameraModel || m.lensModel ||
+         m.exposureTime || m.fNumber || m.isoSpeed || m.focalLength ||
+         (m.latitude && m.longitude);
+});
+
+const cameraInfo = computed(() => {
+  const m = props.media;
+  if (!m.cameraModel) return m.cameraMake || null;
+  // If model already contains make, just use model
+  if (m.cameraMake && m.cameraModel.startsWith(m.cameraMake)) {
+    return m.cameraModel;
+  }
+  return [m.cameraMake, m.cameraModel].filter(Boolean).join(' ');
+});
+
+const exposureInfo = computed(() => {
+  const m = props.media;
+  const parts = [m.exposureTime, m.fNumber];
+  if (m.isoSpeed) parts.push(`ISO ${m.isoSpeed}`);
+  if (m.focalLength) parts.push(m.focalLength);
+  const result = parts.filter(Boolean).join(' · ');
+  return result || null;
+});
+
+const googleMapsUrl = computed(() => {
+  const m = props.media;
+  if (!m.latitude || !m.longitude) return null;
+  return `https://www.google.com/maps?q=${m.latitude},${m.longitude}`;
+});
+
 function filterByTag(binding: TagBinding) {
   if (!canFilter.value) {
     return;
@@ -129,6 +161,28 @@ watch(isTransitioning, (value) => {
       <div ref="contentRef" class="media-details__content">
         <div v-if="media.date">{{ media.date }}</div>
         <div v-if="media.description">{{ media.description }}</div>
+
+        <div class="media-details__exif" v-if="hasExifData">
+          <div v-if="cameraInfo" class="media-details__exif__row">
+            <span class="fa fa-fw fa-camera"></span>
+            <span>{{ cameraInfo }}</span>
+          </div>
+          <div v-if="media.lensModel" class="media-details__exif__row">
+            <span class="fa fa-fw fa-dot-circle-o"></span>
+            <span>{{ media.lensModel }}</span>
+          </div>
+          <div v-if="exposureInfo" class="media-details__exif__row">
+            <span class="fa fa-fw fa-sliders"></span>
+            <span>{{ exposureInfo }}</span>
+          </div>
+          <div v-if="googleMapsUrl" class="media-details__exif__row">
+            <span class="fa fa-fw fa-map-marker"></span>
+            <a :href="googleMapsUrl" target="_blank" rel="noopener" class="media-details__exif__link">
+              View on map
+            </a>
+          </div>
+        </div>
+
         <div class="media-details__tags" v-if="media.extraTags.length">
           <template v-for="t in media.extraTags">
             <a
@@ -296,6 +350,38 @@ watch(isTransitioning, (value) => {
       &:active,
       .no-touch &:hover {
         background-color: darken($primary, 4%);
+      }
+    }
+  }
+
+  &__exif {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+    &__row {
+      display: flex;
+      align-items: center;
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      .fa {
+        width: 1.5rem;
+        flex-shrink: 0;
+      }
+    }
+
+    &__link {
+      color: $light;
+      text-decoration: underline;
+
+      &:hover {
+        color: $white;
       }
     }
   }

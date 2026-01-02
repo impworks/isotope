@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Isotope.Data.Models;
 using SixLabors.ImageSharp;
 
@@ -29,11 +28,53 @@ public class MediaInfo: IDisposable
     /// Media creation date (from metadata).
     /// </summary>
     public DateTime? Date { get; set; }
-        
+
+    // ----- EXIF Metadata -----
+
     /// <summary>
-    /// Additional metadata (EXIF, etc).
+    /// Camera manufacturer.
     /// </summary>
-    public Dictionary<string, string> ExtraData { get; set; }
+    public string CameraMake { get; set; }
+
+    /// <summary>
+    /// Camera model.
+    /// </summary>
+    public string CameraModel { get; set; }
+
+    /// <summary>
+    /// Lens model.
+    /// </summary>
+    public string LensModel { get; set; }
+
+    /// <summary>
+    /// Exposure time as formatted string (e.g., "1/250").
+    /// </summary>
+    public string ExposureTime { get; set; }
+
+    /// <summary>
+    /// F-number/aperture as formatted string (e.g., "f/2.8").
+    /// </summary>
+    public string FNumber { get; set; }
+
+    /// <summary>
+    /// ISO speed rating.
+    /// </summary>
+    public int? IsoSpeed { get; set; }
+
+    /// <summary>
+    /// Focal length as formatted string (e.g., "50mm").
+    /// </summary>
+    public string FocalLength { get; set; }
+
+    /// <summary>
+    /// GPS latitude coordinate.
+    /// </summary>
+    public double? Latitude { get; set; }
+
+    /// <summary>
+    /// GPS longitude coordinate.
+    /// </summary>
+    public double? Longitude { get; set; }
 
     /// <summary>
     /// Releases the image resources back to the pool.
