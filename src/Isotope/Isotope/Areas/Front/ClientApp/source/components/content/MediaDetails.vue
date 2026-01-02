@@ -360,8 +360,6 @@ watch(isTransitioning, (value) => {
     border-top: 1px solid rgba(255, 255, 255, 0.2);
 
     &__row {
-      display: flex;
-      align-items: center;
       margin-top: 0.25rem;
       font-size: 0.9rem;
       opacity: 0.9;
@@ -371,8 +369,7 @@ watch(isTransitioning, (value) => {
       }
 
       .fa {
-        width: 1.5rem;
-        flex-shrink: 0;
+        padding-right: 1rem;
       }
     }
 
