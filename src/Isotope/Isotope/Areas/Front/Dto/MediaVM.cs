@@ -53,7 +53,54 @@ public class MediaVM: IMapped
     /// Original media height in pixels.
     /// </summary>
     public int? Height { get; set; }
-        
+
+    // ----- EXIF Metadata -----
+
+    /// <summary>
+    /// Camera manufacturer.
+    /// </summary>
+    public string CameraMake { get; set; }
+
+    /// <summary>
+    /// Camera model.
+    /// </summary>
+    public string CameraModel { get; set; }
+
+    /// <summary>
+    /// Lens model.
+    /// </summary>
+    public string LensModel { get; set; }
+
+    /// <summary>
+    /// Exposure time (e.g., "1/250").
+    /// </summary>
+    public string ExposureTime { get; set; }
+
+    /// <summary>
+    /// F-number/aperture (e.g., "f/2.8").
+    /// </summary>
+    public string FNumber { get; set; }
+
+    /// <summary>
+    /// ISO speed rating.
+    /// </summary>
+    public int? IsoSpeed { get; set; }
+
+    /// <summary>
+    /// Focal length (e.g., "50mm").
+    /// </summary>
+    public string FocalLength { get; set; }
+
+    /// <summary>
+    /// GPS latitude coordinate.
+    /// </summary>
+    public double? Latitude { get; set; }
+
+    /// <summary>
+    /// GPS longitude coordinate.
+    /// </summary>
+    public double? Longitude { get; set; }
+
     /// <summary>
     /// Tags to be displayed over the image.
     /// </summary>
@@ -80,6 +127,15 @@ public class MediaVM: IMapped
               .Map(x => x.Description, x => x.Description)
               .Map(x => x.Width, x => x.Width)
               .Map(x => x.Height, x => x.Height)
+              .Map(x => x.CameraMake, x => x.CameraMake)
+              .Map(x => x.CameraModel, x => x.CameraModel)
+              .Map(x => x.LensModel, x => x.LensModel)
+              .Map(x => x.ExposureTime, x => x.ExposureTime)
+              .Map(x => x.FNumber, x => x.FNumber)
+              .Map(x => x.IsoSpeed, x => x.IsoSpeed)
+              .Map(x => x.FocalLength, x => x.FocalLength)
+              .Map(x => x.Latitude, x => x.Latitude)
+              .Map(x => x.Longitude, x => x.Longitude)
               .Map(x => x.OverlayTags, x => x.Tags.Where(y => y.Location != null))
               .Map(x => x.ExtraTags, x => x.Tags.Where(y => y.Location == null && y.Type != TagBindingType.Inherited))
               .Map(x => x.Folder, x => x.Folder);

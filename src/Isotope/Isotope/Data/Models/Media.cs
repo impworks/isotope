@@ -80,6 +80,59 @@ public class Media
     /// </summary>
     public int? Height { get; set; }
 
+    // ----- EXIF Metadata -----
+
+    /// <summary>
+    /// Camera manufacturer (e.g., "Canon", "Nikon", "Sony").
+    /// </summary>
+    [StringLength(100)]
+    public string CameraMake { get; set; }
+
+    /// <summary>
+    /// Camera model (e.g., "EOS R5", "Z6 II").
+    /// </summary>
+    [StringLength(200)]
+    public string CameraModel { get; set; }
+
+    /// <summary>
+    /// Lens model (e.g., "EF 24-70mm f/2.8L II USM").
+    /// </summary>
+    [StringLength(200)]
+    public string LensModel { get; set; }
+
+    /// <summary>
+    /// Exposure time as a formatted string (e.g., "1/250").
+    /// </summary>
+    [StringLength(50)]
+    public string ExposureTime { get; set; }
+
+    /// <summary>
+    /// F-number/aperture as a formatted string (e.g., "f/2.8").
+    /// </summary>
+    [StringLength(20)]
+    public string FNumber { get; set; }
+
+    /// <summary>
+    /// ISO speed rating.
+    /// </summary>
+    public int? IsoSpeed { get; set; }
+
+    /// <summary>
+    /// Focal length as a formatted string (e.g., "50mm").
+    /// </summary>
+    [StringLength(30)]
+    public string FocalLength { get; set; }
+
+    /// <summary>
+    /// GPS latitude coordinate.
+    /// </summary>
+    public double? Latitude { get; set; }
+
+    /// <summary>
+    /// GPS longitude coordinate.
+    /// </summary>
+    public double? Longitude { get; set; }
+
     /// <summary>
     /// List of entities tagged on this image.
     /// </summary>

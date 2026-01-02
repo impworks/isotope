@@ -89,7 +89,18 @@ public class MediaManager
             UploadDate = DateTime.Now,
             VersionDate = DateTime.Now,
             Order = maxOrder + 1,
-            Tags = tags
+            Tags = tags,
+
+            // EXIF metadata
+            CameraMake = mediaInfo.CameraMake,
+            CameraModel = mediaInfo.CameraModel,
+            LensModel = mediaInfo.LensModel,
+            ExposureTime = mediaInfo.ExposureTime,
+            FNumber = mediaInfo.FNumber,
+            IsoSpeed = mediaInfo.IsoSpeed,
+            FocalLength = mediaInfo.FocalLength,
+            Latitude = mediaInfo.Latitude,
+            Longitude = mediaInfo.Longitude
         };
 
         _db.Media.Add(media);
