@@ -133,10 +133,10 @@ function getTagTypeInfo(type: TagType) {
             <ContextMenu v-for="tag in tags" :key="tag.id">
               <ContextMenuTrigger as-child>
                 <TableRow class="cursor-pointer">
-                  <TableCell class="font-medium" :title="getTagTypeInfo(tag.type).label">
+                  <TableCell class="font-medium" :title="getTagTypeInfo(tag.type).label" @click="edit(tag)">
                     <div class="flex items-center gap-2">
                       <div :class="['w-2 h-2 rounded-full', getTagTypeInfo(tag.type).color]"></div>
-                      <span>{{ tag.caption }}</span>
+                      <span class="hover:underline">{{ tag.caption }}</span>
                     </div>
                   </TableCell>
                   <TableCell class="whitespace-nowrap text-right text-sm text-muted-foreground">
