@@ -483,6 +483,7 @@ function onEditorSaved(result: boolean) {
                     <div
                       class="w-40 h-40 bg-cover bg-center border rounded cursor-pointer relative group"
                       :style="{ backgroundImage: `url(${wrap.media.thumbnailPath})` }"
+                      @click="openEditor(wrap.media!.key, 'tags')"
                     >
                       <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <DropdownMenu>
