@@ -8,6 +8,7 @@ export interface Stats {
     databaseSizeBytes: number;
     originalPhotosSizeBytes: number;
     imageCacheSizeBytes: number;
+    totalDiskBytes: number;
 
     usedMemoryBytes: number;
     availableMemoryBytes: number;

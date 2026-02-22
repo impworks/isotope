@@ -14,6 +14,7 @@ public class StatsVM
     public long DatabaseSizeBytes { get; set; }
     public long OriginalPhotosSizeBytes { get; set; }
     public long ImageCacheSizeBytes { get; set; }
+    public long TotalDiskBytes { get; set; }
 
     public long UsedMemoryBytes { get; set; }
     public long AvailableMemoryBytes { get; set; }

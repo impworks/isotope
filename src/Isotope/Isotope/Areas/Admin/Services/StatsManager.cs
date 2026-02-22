@@ -31,6 +31,7 @@ public class StatsManager(AppDbContext db)
             DatabaseSizeBytes = await GetDatabaseSizeAsync(),
             OriginalPhotosSizeBytes = originalSize,
             ImageCacheSizeBytes = cacheSize,
+            TotalDiskBytes = GetTotalDiskBytes(),
 
             UsedMemoryBytes = GC.GetTotalMemory(false),
             AvailableMemoryBytes = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes,
@@ -54,6 +55,20 @@ public class StatsManager(AppDbContext db)
         finally
         {
             await conn.CloseAsync();
+        }
+    }
+
+    private static long GetTotalDiskBytes()
+    {
+        try
+        {
+            var appDataPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "App_Data"));
+            var root = Path.GetPathRoot(appDataPath) ?? "/";
+            return new DriveInfo(root).TotalSize;
+        }
+        catch
+        {
+            return 0;
         }
     }
 
