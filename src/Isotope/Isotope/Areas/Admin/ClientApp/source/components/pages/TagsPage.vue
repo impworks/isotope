@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useApi } from '@/composables/useApi';
 import { useAsyncState } from '@/composables/useAsyncState';
 import { useToast } from '@/composables/useToast';
@@ -14,7 +14,10 @@ import { Alert, AlertDescription } from '@ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@ui/dropdown-menu';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@ui/context-menu';
-import { Plus, MoreVertical, Pencil, ExternalLink, Trash2 } from 'lucide-vue-next';
+import { Plus, MoreVertical, Pencil, ExternalLink, Trash2, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-vue-next';
+
+type SortKey = 'caption' | 'count';
+type SortDir = 'asc' | 'desc';
 
 const api = useApi();
 const toast = useToast();
@@ -27,6 +30,19 @@ const editingTag = ref<Tag | null>(null);
 const confirmText = ref('');
 const confirmCallback = ref<(() => void) | null>(null);
 const dropdownMenuOpen = ref<{ [key: number]: boolean }>({});
+const sortKey = ref<SortKey>('caption');
+const sortDir = ref<SortDir>('asc');
+
+const sortedTags = computed(() => {
+  const dir = sortDir.value === 'asc' ? 1 : -1;
+  return [...tags.value].sort((a, b) => {
+    const av = a[sortKey.value];
+    const bv = b[sortKey.value];
+    if (av < bv) return -dir;
+    if (av > bv) return dir;
+    return 0;
+  });
+});
 
 onMounted(async () => {
   await load(true);
@@ -81,6 +97,15 @@ function externalLink(tag: Tag) {
   window.open('/?tags=' + tag.id, '_blank');
 }
 
+function sort(key: SortKey) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortKey.value = key;
+    sortDir.value = 'asc';
+  }
+}
+
 function getTagTypeInfo(type: TagType) {
   switch (type) {
     case TagType.Person:
@@ -124,13 +149,27 @@ function getTagTypeInfo(type: TagType) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead class="w-full">Name</TableHead>
-              <TableHead class="w-px whitespace-nowrap text-right">Usages</TableHead>
+              <TableHead class="w-full cursor-pointer select-none" @click="sort('caption')">
+                <span class="flex items-center gap-1">
+                  Name
+                  <ChevronUp v-if="sortKey === 'caption' && sortDir === 'asc'" class="h-3.5 w-3.5" />
+                  <ChevronDown v-else-if="sortKey === 'caption' && sortDir === 'desc'" class="h-3.5 w-3.5" />
+                  <ChevronsUpDown v-else class="h-3.5 w-3.5 opacity-40" />
+                </span>
+              </TableHead>
+              <TableHead class="w-px whitespace-nowrap text-right cursor-pointer select-none" @click="sort('count')">
+                <span class="flex items-center justify-end gap-1">
+                  Usages
+                  <ChevronUp v-if="sortKey === 'count' && sortDir === 'asc'" class="h-3.5 w-3.5" />
+                  <ChevronDown v-else-if="sortKey === 'count' && sortDir === 'desc'" class="h-3.5 w-3.5" />
+                  <ChevronsUpDown v-else class="h-3.5 w-3.5 opacity-40" />
+                </span>
+              </TableHead>
               <TableHead class="w-px"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <ContextMenu v-for="tag in tags" :key="tag.id">
+            <ContextMenu v-for="tag in sortedTags" :key="tag.id">
               <ContextMenuTrigger as-child>
                 <TableRow class="cursor-pointer">
                   <TableCell class="font-medium" :title="getTagTypeInfo(tag.type).label" @click="edit(tag)">
