@@ -53,4 +53,9 @@ public class SharedLink
     /// Date of the link's creation.
     /// </summary>
     public DateTime CreationDate { get; set; }
+
+    /// <summary>
+    /// Number of times the link has been visited.
+    /// </summary>
+    public int VisitCount { get; set; }
 }

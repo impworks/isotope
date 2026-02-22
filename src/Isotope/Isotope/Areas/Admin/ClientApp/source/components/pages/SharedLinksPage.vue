@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useApi } from '@/composables/useApi';
 import { useAsyncState } from '@/composables/useAsyncState';
 import { useToast } from '@/composables/useToast';
@@ -14,7 +14,10 @@ import { Alert, AlertDescription } from '@ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@ui/dropdown-menu';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@ui/context-menu';
-import { MoreVertical, Pencil, ExternalLink, Trash2 } from 'lucide-vue-next';
+import { MoreVertical, Pencil, ExternalLink, Trash2, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-vue-next';
+
+type SortKey = 'caption' | 'creationDate' | 'visitCount';
+type SortDir = 'asc' | 'desc';
 
 const api = useApi();
 const toast = useToast();
@@ -27,6 +30,20 @@ const editingLink = ref<SharedLinkDetails | null>(null);
 const confirmText = ref('');
 const confirmCallback = ref<(() => void) | null>(null);
 const dropdownMenuOpen = ref<{ [key: string]: boolean }>({});
+const sortKey = ref<SortKey>('creationDate');
+const sortDir = ref<SortDir>('desc');
+
+const sortedLinks = computed(() => {
+  const dir = sortDir.value === 'asc' ? 1 : -1;
+  return [...links.value].sort((a, b) => {
+    const av = a[sortKey.value];
+    const bv = b[sortKey.value];
+    if (av == null && bv == null) return 0;
+    if (av == null) return dir;
+    if (bv == null) return -dir;
+    return av < bv ? -dir : av > bv ? dir : 0;
+  });
+});
 
 onMounted(async () => {
   await load(true);
@@ -80,6 +97,15 @@ function formatDate(d: string) {
   return DateHelper.formatFull(d);
 }
 
+function sort(key: SortKey) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortKey.value = key;
+    sortDir.value = 'asc';
+  }
+}
+
 </script>
 
 <template>
@@ -102,15 +128,37 @@ function formatDate(d: string) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead class="w-full">Caption</TableHead>
+              <TableHead class="w-full cursor-pointer select-none" @click="sort('caption')">
+                <span class="flex items-center gap-1">
+                  Caption
+                  <ChevronUp v-if="sortKey === 'caption' && sortDir === 'asc'" class="h-3.5 w-3.5" />
+                  <ChevronDown v-else-if="sortKey === 'caption' && sortDir === 'desc'" class="h-3.5 w-3.5" />
+                  <ChevronsUpDown v-else class="h-3.5 w-3.5 opacity-40" />
+                </span>
+              </TableHead>
               <TableHead class="w-px whitespace-nowrap">Folder</TableHead>
-              <TableHead class="w-px whitespace-nowrap">Created</TableHead>
+              <TableHead class="w-px whitespace-nowrap cursor-pointer select-none" @click="sort('creationDate')">
+                <span class="flex items-center gap-1">
+                  Created
+                  <ChevronUp v-if="sortKey === 'creationDate' && sortDir === 'asc'" class="h-3.5 w-3.5" />
+                  <ChevronDown v-else-if="sortKey === 'creationDate' && sortDir === 'desc'" class="h-3.5 w-3.5" />
+                  <ChevronsUpDown v-else class="h-3.5 w-3.5 opacity-40" />
+                </span>
+              </TableHead>
               <TableHead class="w-px whitespace-nowrap text-right">Tags</TableHead>
+              <TableHead class="w-px whitespace-nowrap text-right cursor-pointer select-none" @click="sort('visitCount')">
+                <span class="flex items-center justify-end gap-1">
+                  Visits
+                  <ChevronUp v-if="sortKey === 'visitCount' && sortDir === 'asc'" class="h-3.5 w-3.5" />
+                  <ChevronDown v-else-if="sortKey === 'visitCount' && sortDir === 'desc'" class="h-3.5 w-3.5" />
+                  <ChevronsUpDown v-else class="h-3.5 w-3.5 opacity-40" />
+                </span>
+              </TableHead>
               <TableHead class="w-px"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <ContextMenu v-for="link in links" :key="link.key">
+            <ContextMenu v-for="link in sortedLinks" :key="link.key">
               <ContextMenuTrigger as-child>
                 <TableRow class="cursor-pointer">
                   <TableCell class="font-medium">{{ link.caption || '-' }}</TableCell>
@@ -120,6 +168,7 @@ function formatDate(d: string) {
                     <span v-if="link.tagCount > 0">{{ link.tagCount }}</span>
                     <span v-else>-</span>
                   </TableCell>
+                  <TableCell class="whitespace-nowrap text-right text-sm text-muted-foreground">{{ link.visitCount }}</TableCell>
                   <TableCell>
                     <DropdownMenu v-model:open="dropdownMenuOpen[link.key]">
                       <DropdownMenuTrigger as-child>
