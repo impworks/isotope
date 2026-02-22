@@ -27,6 +27,11 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
     /// </summary>
     public async Task<FolderVM[]> GetFolderTreeAsync(UserContext ctx)
     {
+        if (ctx.Link != null)
+            await db.SharedLinks
+                    .Where(x => x.Key == ctx.LinkId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(x => x.VisitCount, x => x.VisitCount + 1));
+
         var query = db.Folders
                        .Include(x => x.Thumbnail)
                        .AsNoTracking()

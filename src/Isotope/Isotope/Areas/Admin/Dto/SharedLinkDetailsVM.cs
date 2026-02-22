@@ -13,6 +13,7 @@ public class SharedLinkDetailsVM: SharedLinkVM
     public DateTime CreationDate { get; set; }
     public string Key { get; set; }
     public string FolderCaption { get; set; }
+    public int VisitCount { get; set; }
 
     public override void Configure(TypeAdapterConfig config)
     {
@@ -25,6 +26,7 @@ public class SharedLinkDetailsVM: SharedLinkVM
               .Map(x => x.Key, x => x.Key)
               .Map(x => x.Folder, x => x.Folder.Path)
               .Map(x => x.FolderCaption, x => x.Folder.Caption)
-              .Map(x => x.CreationDate, x => x.CreationDate);
+              .Map(x => x.CreationDate, x => x.CreationDate)
+              .Map(x => x.VisitCount, x => x.VisitCount);
     }
 }
