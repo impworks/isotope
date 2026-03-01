@@ -93,6 +93,12 @@ onMounted(() => {
             options: {
               element: '.arrow'
             }
+          },
+          {
+            name: 'offset',
+            options: {
+              offset: [0, 5]
+            }
           }
         ]
       });
@@ -184,6 +190,15 @@ onUnmounted(() => {
   .popover {
     opacity: 0;
     transition: opacity 200ms linear;
+
+    &.tag-popover {
+      min-width: 130px;
+
+      .popover-body {
+        padding: 0.3rem 0.6rem;
+        text-align: center;
+      }
+    }
 
     &:focus {
       outline: none;
