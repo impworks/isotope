@@ -52,6 +52,29 @@ const dragCurrentY = ref(0);
 const dragStartTime = ref(0);
 const viewportWidth = ref(window.innerWidth);
 
+// Zoom state
+const isZoomed = ref(false);
+const zoomLevel = ref(1);
+const zoomPanX = ref(0);
+const zoomPanY = ref(0);
+const zoomAnimating = ref(false);
+
+// Pinch state
+const isPinching = ref(false);
+const pinchStartDistance = ref(0);
+const pinchStartZoom = ref(1);
+const pinchStartCenterX = ref(0);
+const pinchStartCenterY = ref(0);
+const pinchPanStartX = ref(0);
+const pinchPanStartY = ref(0);
+
+// Pan state (1-finger in zoom mode)
+const isPanning = ref(false);
+const panTouchStartX = ref(0);
+const panTouchStartY = ref(0);
+const panOffsetStartX = ref(0);
+const panOffsetStartY = ref(0);
+
 // Computed properties
 const prev = computed<ICachedMedia | null>(() => {
   return index.value !== null ? cache[index.value - 1] || null : null;
@@ -69,6 +92,7 @@ const next = computed<ICachedMedia | null>(() => {
 function hide() {
   if (!shown.value) return;
 
+  resetZoom();
   shown.value = false;
   index.value = null;
   clearCache();
@@ -79,6 +103,7 @@ function hide() {
 function show(i: number) {
   if (i < 0 || i >= props.source.length) return;
 
+  if (i !== index.value) resetZoom();
   shown.value = true;
   index.value = i;
   upcomingIndex.value = null;
@@ -168,9 +193,95 @@ const VELOCITY_THRESHOLD = 0.3; // pixels per ms - fast flicks trigger navigatio
 const MIN_SWIPE_DISTANCE = 30; // minimum pixels for velocity-based swipe
 const VERTICAL_THRESHOLD = 100; // pixels to trigger close
 const DIRECTION_LOCK_THRESHOLD = 10; // pixels before locking direction
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 8;
+
+const zoomStyle = computed(() => {
+  if (zoomLevel.value === 1 && zoomPanX.value === 0 && zoomPanY.value === 0) return '';
+  return `translate(${zoomPanX.value}px, ${zoomPanY.value}px) scale(${zoomLevel.value})`;
+});
+
+function getPinchDistance(touches: TouchList): number {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function getPinchCenter(touches: TouchList): { x: number; y: number } {
+  return {
+    x: (touches[0].clientX + touches[1].clientX) / 2,
+    y: (touches[0].clientY + touches[1].clientY) / 2,
+  };
+}
+
+function getDisplayedImageSize(): { w: number; h: number } {
+  const img = curr.value?.img;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  if (!img || !img.naturalWidth) return { w: vw, h: vh };
+  const PADDING = 32;
+  const aw = vw - PADDING;
+  const ah = vh - PADDING;
+  const aspect = img.naturalWidth / img.naturalHeight;
+  return aw / ah > aspect ? { w: ah * aspect, h: ah } : { w: aw, h: aw / aspect };
+}
+
+function clampZoomPan(panX: number, panY: number, zoom: number): { x: number; y: number } {
+  if (zoom <= 1) return { x: 0, y: 0 };
+  const { w, h } = getDisplayedImageSize();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const maxX = Math.max(0, (w * zoom - vw) / 2);
+  const maxY = Math.max(0, (h * zoom - vh) / 2);
+  return {
+    x: Math.max(-maxX, Math.min(maxX, panX)),
+    y: Math.max(-maxY, Math.min(maxY, panY)),
+  };
+}
+
+let zoomAnimatingTimeout: number | undefined;
+
+function resetZoom() {
+  isZoomed.value = false;
+  zoomLevel.value = 1;
+  zoomPanX.value = 0;
+  zoomPanY.value = 0;
+  zoomAnimating.value = false;
+}
 
 function onTouchStart(e: TouchEvent) {
   if (!isMobile.value || isTransitioning.value) return;
+
+  zoomAnimating.value = false;
+  if (zoomAnimatingTimeout) clearTimeout(zoomAnimatingTimeout);
+
+  if (e.touches.length >= 2) {
+    if (isDragging.value) {
+      snapBack();
+      isDragging.value = false;
+      dragDirection.value = null;
+    }
+    isPanning.value = false;
+    isPinching.value = true;
+    pinchStartDistance.value = getPinchDistance(e.touches);
+    pinchStartZoom.value = zoomLevel.value;
+    const center = getPinchCenter(e.touches);
+    pinchStartCenterX.value = center.x;
+    pinchStartCenterY.value = center.y;
+    pinchPanStartX.value = zoomPanX.value;
+    pinchPanStartY.value = zoomPanY.value;
+    return;
+  }
+
+  if (isZoomed.value) {
+    const touch = e.touches[0];
+    isPanning.value = true;
+    panTouchStartX.value = touch.clientX;
+    panTouchStartY.value = touch.clientY;
+    panOffsetStartX.value = zoomPanX.value;
+    panOffsetStartY.value = zoomPanY.value;
+    return;
+  }
 
   const touch = e.touches[0];
   dragStartX.value = touch.clientX;
@@ -185,7 +296,46 @@ function onTouchStart(e: TouchEvent) {
 }
 
 function onTouchMove(e: TouchEvent) {
-  if (!isDragging.value || !isMobile.value) return;
+  if (!isMobile.value) return;
+
+  if (isPinching.value && e.touches.length >= 2) {
+    const newDist = getPinchDistance(e.touches);
+    const newCenter = getPinchCenter(e.touches);
+    const rawZoom = pinchStartZoom.value * (newDist / pinchStartDistance.value);
+    const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, rawZoom));
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const zoomRatio = newZoom / pinchStartZoom.value;
+    // Keep the pinch center point fixed on the image: derive new pan from invariant
+    const newPanX = newCenter.x - vw / 2 - (pinchStartCenterX.value - vw / 2 - pinchPanStartX.value) * zoomRatio;
+    const newPanY = newCenter.y - vh / 2 - (pinchStartCenterY.value - vh / 2 - pinchPanStartY.value) * zoomRatio;
+
+    zoomLevel.value = newZoom;
+    const clamped = clampZoomPan(newPanX, newPanY, newZoom);
+    zoomPanX.value = clamped.x;
+    zoomPanY.value = clamped.y;
+
+    if (newZoom > 1) {
+      isZoomed.value = true;
+      isMobileOverlayVisible.value = false;
+    }
+    return;
+  }
+
+  if (isPanning.value && isZoomed.value && e.touches.length === 1) {
+    const touch = e.touches[0];
+    const clamped = clampZoomPan(
+      panOffsetStartX.value + touch.clientX - panTouchStartX.value,
+      panOffsetStartY.value + touch.clientY - panTouchStartY.value,
+      zoomLevel.value
+    );
+    zoomPanX.value = clamped.x;
+    zoomPanY.value = clamped.y;
+    return;
+  }
+
+  if (!isDragging.value) return;
 
   const touch = e.touches[0];
   dragCurrentX.value = touch.clientX;
@@ -219,8 +369,34 @@ function onTouchMove(e: TouchEvent) {
   }
 }
 
-function onTouchEnd() {
-  if (!isDragging.value || !isMobile.value) return;
+function onTouchEnd(e: TouchEvent) {
+  if (!isMobile.value) return;
+
+  if (isPinching.value && e.touches.length < 2) {
+    isPinching.value = false;
+
+    if (zoomLevel.value <= 1.05) {
+      zoomAnimating.value = true;
+      resetZoom();
+      zoomAnimating.value = true; // keep true after resetZoom clears it, for transition
+      zoomAnimatingTimeout = window.setTimeout(() => { zoomAnimating.value = false; }, 250);
+    } else if (e.touches.length === 1) {
+      // Seamlessly transition to 1-finger pan
+      isPanning.value = true;
+      panTouchStartX.value = e.touches[0].clientX;
+      panTouchStartY.value = e.touches[0].clientY;
+      panOffsetStartX.value = zoomPanX.value;
+      panOffsetStartY.value = zoomPanY.value;
+    }
+    return;
+  }
+
+  if (isPanning.value) {
+    isPanning.value = false;
+    return;
+  }
+
+  if (!isDragging.value) return;
 
   const deltaX = dragCurrentX.value - dragStartX.value;
   const deltaY = dragCurrentY.value - dragStartY.value;
@@ -234,25 +410,19 @@ function onTouchEnd() {
     const isFastSwipe = velocityX > VELOCITY_THRESHOLD && Math.abs(deltaX) > MIN_SWIPE_DISTANCE;
 
     if ((deltaX > distanceThreshold || (isFastSwipe && deltaX > 0)) && prev.value) {
-      // Swipe right - go to previous
       animateToImage(1);
     } else if ((deltaX < -distanceThreshold || (isFastSwipe && deltaX < 0)) && next.value) {
-      // Swipe left - go to next
       animateToImage(-1);
     } else {
-      // Snap back
       snapBack();
     }
   } else if (dragDirection.value === 'vertical') {
     if (deltaY > VERTICAL_THRESHOLD) {
-      // Close viewer with animation
       animateClose();
     } else {
-      // Snap back
       snapBack();
     }
   } else {
-    // No direction locked - treat as potential tap
     snapBack();
   }
 
@@ -278,8 +448,8 @@ function snapBack() {
 }
 
 function onTap(e: MouseEvent) {
-  // Only handle tap if we weren't dragging
   if (dragDirection.value !== null) return;
+  if (isZoomed.value) return;
 
   const target = e.target as HTMLElement;
   if (target.classList[0] !== 'overlay-tag' && target.tagName !== 'A' && isMobile.value) {
@@ -341,6 +511,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('orientationchange', orientationHandler);
   window.removeEventListener('keydown', handleKeyDown);
   if (resizeTimeout) clearTimeout(resizeTimeout);
+  if (zoomAnimatingTimeout) clearTimeout(zoomAnimatingTimeout);
 });
 
 // Interfaces
@@ -395,6 +566,8 @@ interface ICachedMedia extends IMedia {
             :isFirst="!prev"
             :isLast="!next"
             :isMobileOverlayVisible="isMobileOverlayVisible"
+            :zoomStyle="zoomStyle"
+            :zoomAnimating="zoomAnimating"
             @nav="nav($event)"
             @close="hide()"
           >

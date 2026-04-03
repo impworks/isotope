@@ -23,6 +23,8 @@ interface Props {
   isLast?: boolean;
   hasOverlay?: boolean;
   isMobileOverlayVisible?: boolean;
+  zoomStyle?: string;
+  zoomAnimating?: boolean;
 }
 
 const props = defineProps<Props>();
@@ -106,9 +108,10 @@ onUnmounted(() => {
       <div
         ref="cardRef"
         class="media-content__card"
+        :style="zoomStyle ? { transform: zoomStyle } : {}"
+        :class="{ 'media-content__card_visible': hover, 'media-content__card_zoom-animated': zoomAnimating }"
         @mouseover="hover = true"
         @mouseleave="hover = false"
-        :class="{ 'media-content__card_visible': hover }"
       >
         <div class="media-content__wrapper">
           <template v-if="!elem.isLoading">
@@ -198,6 +201,11 @@ onUnmounted(() => {
     position: relative;
     z-index: $zindex-modal;
     border-radius: $border-radius;
+    transform-origin: center center;
+
+    &_zoom-animated {
+      transition: transform 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
 
     @include media-breakpoint-down(md) {
       padding: 0.5rem;
