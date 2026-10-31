@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isotope.Areas.Admin.Dto;
 using Isotope.Areas.Admin.Services;
+using Isotope.Code.Utils.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +35,7 @@ public class MediaController(MediaManager mediaMgr) : AdminControllerBase
     /// <summary>
     /// Uploads a new media file.
     /// </summary>
-    [HttpPost, Route("")]
+    [HttpPost, Route(""), UploadSizeLimit]
     public Task<MediaThumbnailVM> Upload([FromQuery] string folder, IFormFile file) => mediaMgr.UploadAsync(folder, file);
 
     /// <summary>

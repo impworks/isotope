@@ -31,6 +31,8 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger logger)
                 await ErrorAsync(ctx, 403, nae.Message);
             else if (ex is OperationException oe)
                 await ErrorAsync(ctx, 400, oe.Message);
+            else if (ex is BadHttpRequestException bre)
+                await ErrorAsync(ctx, bre.StatusCode, bre.StatusCode == 413 ? "Request is too large" : "Bad request");
             else
             {
                 logger.Error(ex.Demystify(), "Unhandled exception in " + ctx.Request.GetDisplayUrl());

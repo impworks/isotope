@@ -81,8 +81,9 @@ public class ExtractMediaMetadataJob(AppDbContext db, ILogger logger) : JobBase
     {
         var path = MediaHelper.GetFullMediaPath(media.Path);
 
-        using var image = await Image.LoadAsync(path, token);
-        var exif = image.Metadata.ExifProfile;
+        // only reads the headers & metadata, without decoding pixel data
+        var info = await Image.IdentifyAsync(path, token);
+        var exif = info.Metadata.ExifProfile;
 
         if (exif == null)
         {

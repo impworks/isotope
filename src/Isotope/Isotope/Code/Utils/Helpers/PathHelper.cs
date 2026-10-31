@@ -30,6 +30,35 @@ public static partial class PathHelper
     }
 
     /// <summary>
+    /// Returns the prefix that all descendants of the folder share (always ends with a slash).
+    /// Use with StartsWith() to avoid matching sibling folders that share a prefix (e.g. "/a" vs "/ab").
+    /// </summary>
+    public static string GetDescendantPrefix(string path)
+    {
+        return path.EndsWith('/') ? path : path + '/';
+    }
+
+    /// <summary>
+    /// Checks if the path is equal to the root path or is nested inside it.
+    /// </summary>
+    public static bool IsSameOrDescendant(string path, string root)
+    {
+        return path == root || path.StartsWith(GetDescendantPrefix(root));
+    }
+
+    /// <summary>
+    /// Returns the path relative to the root folder (with a leading slash).
+    /// </summary>
+    public static string GetRelativePath(string path, string root)
+    {
+        if (root == "/" || !IsSameOrDescendant(path, root))
+            return path;
+
+        var rel = path.Substring(root.Length);
+        return rel.Length == 0 ? "/" : rel;
+    }
+
+    /// <summary>
     /// Returns the path of the immediately containing folder.
     /// </summary>
     public static string GetParentPath(string path)
