@@ -44,7 +44,8 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
                                .AsNoTracking()
                                .GetAsync(x => x.Key == rootKey, $"Folder '{rootKey}' does not exist.");
 
-            foldersQuery = foldersQuery.Where(x => x.Path.StartsWith(root.Path) && x.Depth > root.Depth);
+            var rootPrefix = PathHelper.GetDescendantPrefix(root.Path);
+            foldersQuery = foldersQuery.Where(x => x.Path.StartsWith(rootPrefix) && x.Depth > root.Depth);
         }
 
         var folders = await foldersQuery.OrderBy(x => x.Caption)
@@ -57,7 +58,7 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
         {
             var vm = mapper.Map<FolderTitleVM>(folder);
                 
-            var nested = folders.Where(x => x.Path.StartsWith(folder.Path) && x.Depth == folder.Depth + 1).ToList();
+            var nested = folders.Where(x => PathHelper.IsSameOrDescendant(x.Path, folder.Path) && x.Depth == folder.Depth + 1).ToList();
             foreach (var n in nested)
                 folders.Remove(n);
                 
@@ -153,9 +154,10 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
             var newPath = PathHelper.Combine(PathHelper.GetParentPath(folder.Path), vm.Slug);
 
             folder.Path = newPath;
-                
+
+            var oldPrefix = PathHelper.GetDescendantPrefix(oldPath);
             var subfolders = await db.Folders
-                                      .Where(x => x.Path.StartsWith(oldPath) && x.Depth > folder.Depth)
+                                      .Where(x => x.Path.StartsWith(oldPrefix) && x.Depth > folder.Depth)
                                       .ToListAsync();
                 
             foreach (var subfolder in subfolders)
@@ -193,7 +195,7 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
         if (target == null)
             throw new OperationException($"Folder '{targetKey}' does not exist.");
 
-        if(target.Path.StartsWith(folder.Path))
+        if(PathHelper.IsSameOrDescendant(target.Path, folder.Path))
             throw new OperationException("Folder cannot be moved inside itself.");
 
         var oldPath = folder.Path;
@@ -204,14 +206,14 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
                                   .Where(x => x.Key == folderKey || x.Path.StartsWith(oldPath + "/"))
                                   .ToListAsync();
             
-        var newPaths = allFolders.Select(x => x.Path.Replace(oldPath, newPath)).ToList();
+        var newPaths = allFolders.Select(x => newPath + x.Path.Substring(oldPath.Length)).ToList();
         var conflict = await db.Folders.FirstOrDefaultAsync(x => newPaths.Contains(x.Path));
         if (conflict != null)
             throw new OperationException($"Folder name conflict: path '{conflict.Path}' already exists at destination.");
 
         foreach (var f in allFolders)
         {
-            f.Path = f.Path.Replace(oldPath, newPath);
+            f.Path = newPath + f.Path.Substring(oldPath.Length);
             f.Depth += depthDiff;
         }
 
@@ -267,9 +269,10 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
             if (string.IsNullOrEmpty(key))
             {
                 var parent = await GetParentFolderAsync(parentKey);
+                var newParentPrefix = PathHelper.GetDescendantPrefix(parent.Path);
                 return await db.Folders
                                 .AsNoTracking()
-                                .Where(x => x.Path.StartsWith(parent.Path) && x.Depth == parent.Depth + 1)
+                                .Where(x => x.Path.StartsWith(newParentPrefix) && x.Depth == parent.Depth + 1)
                                 .ToListAsync();
             }
 
@@ -279,10 +282,10 @@ public partial class FolderManager(AppDbContext db, IMapper mapper, IBackgroundJ
             if(folder == null)
                 throw new OperationException($"Folder '{key}' does not exist.");
 
-            var parentPath = PathHelper.GetParentPath(folder.Path);
+            var parentPrefix = PathHelper.GetDescendantPrefix(PathHelper.GetParentPath(folder.Path));
             return await db.Folders
                             .AsNoTracking()
-                            .Where(x => x.Path.StartsWith(parentPath)
+                            .Where(x => x.Path.StartsWith(parentPrefix)
                                 && x.Depth == folder.Depth
                                 && x.Key != key)
                             .ToListAsync();

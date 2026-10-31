@@ -15,6 +15,11 @@ public class PngMediaHandler : IMediaHandler
     public string[] SupportedMimeTypes => ["image/png"];
 
     /// <summary>
+    /// Extension for the stored file.
+    /// </summary>
+    public string FileExtension => ".png";
+
+    /// <summary>
     /// Media processing.
     /// </summary>
     public async Task<MediaInfo> ProcessAsync(string key, string path)

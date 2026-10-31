@@ -23,6 +23,11 @@ public class JpegMediaHandler(ILogger logger) : IMediaHandler
     public string[] SupportedMimeTypes { get; } = {"image/jpeg"};
 
     /// <summary>
+    /// Extension for the stored file.
+    /// </summary>
+    public string FileExtension => ".jpg";
+
+    /// <summary>
     /// Media processing.
     /// </summary>
     public async Task<MediaInfo> ProcessAsync(string key, string path)

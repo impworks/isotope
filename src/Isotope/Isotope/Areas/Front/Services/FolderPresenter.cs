@@ -47,7 +47,8 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
                 return Array.Empty<FolderVM>();
 
             baseFolder = link.Folder;
-            query = query.Where(x => x.Path.StartsWith(baseFolder.Path) && x.Depth > baseFolder.Depth); // current folder is root, only include nested ones
+            var basePrefix = PathHelper.GetDescendantPrefix(baseFolder.Path);
+            query = query.Where(x => x.Path.StartsWith(basePrefix) && x.Depth > baseFolder.Depth); // current folder is root, only include nested ones
         }
 
         var folders = await query.ToListAsync();
@@ -69,9 +70,9 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
         {
             var vm = mapper.Map<FolderVM>(folder);
             if (baseFolder != null)
-                vm.Path = vm.Path.Replace(baseFolder.Path, "");
+                vm.Path = PathHelper.GetRelativePath(vm.Path, baseFolder.Path);
                 
-            var nested = source.Where(x => x.Path.StartsWith(folder.Path) && x.Depth == folder.Depth + 1).ToList();
+            var nested = source.Where(x => PathHelper.IsSameOrDescendant(x.Path, folder.Path) && x.Depth == folder.Depth + 1).ToList();
             foreach (var n in nested)
                 source.Remove(n);
                 
@@ -111,9 +112,13 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
         var link = ctx.Link;
         var rootPath = link.Folder.Path;
         var hasFilter = link.Tags != null || link.DateFrom != null || link.DateTo != null;
+
+        // only links that include subfolders may navigate below the link's own folder
+        var canNavigate = !hasFilter && link.Scope != SearchScope.CurrentFolder;
         return new FolderContentsRequestVM
         {
-            Folder = hasFilter ? rootPath : PathHelper.Combine(rootPath, request.Folder),
+            Folder = canNavigate ? PathHelper.Combine(rootPath, request.Folder) : rootPath,
+            Scope = link.Scope,
             Tags = link.Tags,
             From = link.DateFrom,
             To = link.DateTo
@@ -133,18 +138,19 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
                              .GetAsync(x => x.Path == request.Folder, $"Folder ({request.Folder})");
 
         var canShowSubfolders = ctx.Link == null || ctx.Link.Scope == SearchScope.CurrentFolderAndSubfolders;
+        var folderPrefix = PathHelper.GetDescendantPrefix(folder.Path);
         var subfolders = canShowSubfolders
             ? await db.Folders
                       .AsNoTracking()
                       .Include(x => x.Thumbnail)
-                      .Where(x => x.Path.StartsWith(folder.Path) && x.Depth == folder.Depth + 1)
+                      .Where(x => x.Path.StartsWith(folderPrefix) && x.Depth == folder.Depth + 1)
                       .OrderBy(x => x.Caption)
                       .ToArrayAsync()
             : [];
 
         if (ctx.Link?.Folder is { } root)
             foreach (var sf in subfolders)
-                sf.Path = sf.Path.Replace(root.Path, "");
+                sf.Path = PathHelper.GetRelativePath(sf.Path, root.Path);
 
         var media = await db.Media
                             .AsNoTracking()
@@ -181,7 +187,10 @@ public class FolderPresenter(AppDbContext db, IMapper mapper)
         if (request.Scope == SearchScope.CurrentFolder)
             query = query.Where(x => x.FolderKey == folder.Key);
         else if (request.Scope == SearchScope.CurrentFolderAndSubfolders)
-            query = query.Where(x => x.Folder.Path.StartsWith(folder.Path));
+        {
+            var folderPrefix = PathHelper.GetDescendantPrefix(folder.Path);
+            query = query.Where(x => x.FolderKey == folder.Key || x.Folder.Path.StartsWith(folderPrefix));
+        }
 
         var media = await query.OrderBy(x => x.Date)
                                .ThenBy(x => x.Folder.Caption)

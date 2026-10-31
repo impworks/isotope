@@ -22,7 +22,7 @@ public class MediaVM: IMapped
     public void Configure(TypeAdapterConfig config)
     {
         config.NewConfig<Media, MediaVM>()
-              .Map(x => x.ThumbnailPath, x => MediaHelper.GetSizedMediaPath(x.Path, MediaSize.Small))
+              .Map(x => x.ThumbnailPath, x => MediaHelper.GetThumbnailUrl(x))
               .Map(x => x.FullPath, x => MediaHelper.GetSizedMediaPath(x.Path, MediaSize.Large))
               .Map(x => x.Description, x => x.Description)
               .Map(x => x.Date, x => x.Date)

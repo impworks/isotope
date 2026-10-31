@@ -50,7 +50,7 @@ public class RebuildInheritedTagsJob(AppDbContext db) : JobBase
             }
 
             if (folders.TryGetValue(folder.Depth + 1, out var nextLevel))
-                foreach (var subfolder in nextLevel.Where(x => x.Path.StartsWith(folder.Path)))
+                foreach (var subfolder in nextLevel.Where(x => PathHelper.IsSameOrDescendant(x.Path, folder.Path)))
                     ProcessFolder(subfolder, currTagIds);
         }
     }

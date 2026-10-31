@@ -13,6 +13,11 @@ public interface IMediaHandler
     string[] SupportedMimeTypes { get; }
 
     /// <summary>
+    /// Extension (with leading dot) used for storing the original file.
+    /// </summary>
+    string FileExtension { get; }
+
+    /// <summary>
     /// Parses the saved media, creating a thumbnail image and detecting 
     /// </summary>
     Task<MediaInfo> ProcessAsync(string key, string path);

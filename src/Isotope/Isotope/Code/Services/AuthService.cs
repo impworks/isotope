@@ -26,7 +26,11 @@ public class AuthService(AppDbContext db, SignInManager<AppUser> signInMgr, User
     /// </summary>
     public async Task<LoginResponseVM> TryLoginAsync(LoginRequestVM request)
     {
-        var user = await db.Users.FirstOrDefaultAsync(x => x.NormalizedUserName == request.Username.ToUpper());
+        if (string.IsNullOrWhiteSpace(request?.Username) || string.IsNullOrEmpty(request.Password))
+            return new LoginResponseVM {ErrorMessage = "Incorrect credentials"};
+
+        var normalizedName = userMgr.NormalizeName(request.Username);
+        var user = await db.Users.FirstOrDefaultAsync(x => x.NormalizedUserName == normalizedName);
         if (user == null)
             return new LoginResponseVM {ErrorMessage = "Incorrect credentials"};
 

@@ -37,7 +37,7 @@ public class MediaPresenter(AppDbContext db, IMapper mapper)
                 throw new NotFoundException(errorKey);
             
             // inside subfolder
-            if (!media.Folder.Path.StartsWith(ctx.Link.Folder.Path))
+            if (!PathHelper.IsSameOrDescendant(media.Folder.Path, ctx.Link.Folder.Path))
                 throw new NotFoundException(errorKey);
 
             // must have tags
@@ -64,7 +64,7 @@ public class MediaPresenter(AppDbContext db, IMapper mapper)
                 if (media.FolderKey == ctx.Link.Folder.Key)
                     media.Folder = null;
                 else
-                    media.Folder.Path = media.Folder.Path.Substring(ctx.Link.Folder.Path.Length);
+                    media.Folder.Path = PathHelper.GetRelativePath(media.Folder.Path, ctx.Link.Folder.Path);
             }
         }
 

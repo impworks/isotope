@@ -18,6 +18,7 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
 
 namespace Isotope.Areas.Admin.Services;
 
@@ -59,14 +60,35 @@ public class MediaManager
     /// </summary>
     public async Task<MediaThumbnailVM> UploadAsync(string folderKey, IFormFile file)
     {
+        if (file == null)
+            throw new OperationException("No file was uploaded, or the file exceeds the maximum upload size.");
+
         var folder = await _db.Folders.GetAsync(x => x.Key == folderKey, $"Folder '{folderKey}' does not exist.");
         var handler = _mediaHandlers.FirstOrDefault(x => x.SupportedMimeTypes.Contains(file.ContentType));
         if(handler == null)
             throw new OperationException($"Media type '{file.ContentType}' is not supported!");
 
         var key = UniqueKey.Get();
-        var paths = await SaveUploadAsync(file, folder, key);
-        using var mediaInfo = await handler.ProcessAsync(key, paths.Path);
+        var paths = await SaveUploadAsync(file, folder, key, handler.FileExtension);
+
+        MediaInfo mediaInfo = null;
+        try
+        {
+            mediaInfo = await handler.ProcessAsync(key, paths.Path);
+            await ImageHelper.CreateThumbnailsAsync(mediaInfo.FullImage, paths.Path);
+        }
+        catch (Exception ex)
+        {
+            mediaInfo?.Dispose();
+            DeleteMediaFiles(paths.Path);
+
+            if (ex is UnknownImageFormatException or InvalidImageContentException)
+                throw new OperationException($"File '{file.FileName}' is not a valid image.");
+
+            throw;
+        }
+
+        using var processedMedia = mediaInfo;
 
         var tagsIds = await GetInheritedTagsAsync(folder);
         var tags = tagsIds.Select(x => new MediaTagBinding {TagId = x, Type = TagBindingType.Inherited}).ToList();
@@ -109,8 +131,6 @@ public class MediaManager
         folder.ThumbnailKey ??= media.Key;
         folder.MediaCount = await _db.Media.CountAsync(x => x.FolderKey == folderKey);
         await _db.SaveChangesAsync();
-
-        await ImageHelper.CreateThumbnailsAsync(mediaInfo.FullImage, paths.Path);
 
         return await _db.Media
                         .Where(x => x.Key == key)
@@ -269,14 +289,8 @@ public class MediaManager
 
         await _db.SaveChangesAsync();
 
-        var sizedPaths = from p in paths
-                         from s in EnumHelper.GetEnumValues<MediaSize>()
-                         let sizedPath = MediaHelper.GetSizedMediaPath(p, s)
-                         where File.Exists(sizedPath)
-                         select sizedPath;
-            
-        foreach (var sizedPath in sizedPaths)
-            File.Delete(sizedPath);
+        foreach (var p in paths)
+            DeleteMediaFiles(MediaHelper.GetFullMediaPath(p));
     }
 
     /// <summary>
@@ -361,9 +375,9 @@ public class MediaManager
     /// <summary>
     /// Caches the uploaded file to disk within specified folder.
     /// </summary>
-    private async Task<(string Path, string Url)> SaveUploadAsync(IFormFile file, Folder folder, string key)
+    private async Task<(string Path, string Url)> SaveUploadAsync(IFormFile file, Folder folder, string key, string extension)
     {
-        var fileName = key + Path.GetExtension(file.FileName);
+        var fileName = key + extension;
         var path = $"/@media/{folder.Key}/{fileName}";
         var localPath = MediaHelper.GetFullMediaPath(path);
             
@@ -373,6 +387,19 @@ public class MediaManager
         await file.CopyToAsync(fs);
 
         return (localPath, path);
+    }
+
+    /// <summary>
+    /// Removes the original media file and all its generated sizes from disk.
+    /// </summary>
+    private static void DeleteMediaFiles(string fullPath)
+    {
+        foreach (var size in EnumHelper.GetEnumValues<MediaSize>())
+        {
+            var sizedPath = MediaHelper.GetSizedMediaPath(fullPath, size);
+            if (File.Exists(sizedPath))
+                File.Delete(sizedPath);
+        }
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.IO;
 using Isotope.Code.Services.Config;
@@ -116,7 +117,20 @@ public partial class Startup
             RequestPath = new PathString("/@media"),
             FileProvider = new PhysicalFileProvider(
                 Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "@media")
-            )
+            ),
+            OnPrepareResponse = ctx =>
+            {
+                // File names are unique keys and never reused, so the content is immutable.
+                // The only exception is the small thumbnail, which is regenerated in place when the crop changes:
+                // its URLs carry a version nonce, so it's only safe to cache forever when the nonce is present.
+                var req = ctx.Context.Request;
+                var isMutable = req.Path.Value?.EndsWith(".sm.jpg", StringComparison.OrdinalIgnoreCase) == true
+                                && !req.Query.ContainsKey("nonce");
+
+                ctx.Context.Response.Headers.CacheControl = isMutable
+                    ? "private, no-cache"
+                    : "private, max-age=31536000, immutable";
+            }
         };
     }
 }
